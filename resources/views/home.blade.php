@@ -19,6 +19,7 @@
         </div>
     </section>
 
+    
     {{-- BAGIAN 2: NEW MENU - Dibuat lebih menonjol dengan Shado --}}
     <section class="new-menu container my-5 py-5">
         <div class="text-center mb-5" data-aos="fade-down">
