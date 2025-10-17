@@ -13,11 +13,11 @@ Route::get('/home', [HomeController::class, 'index']);
 
 // Routes untuk Autentikasi (jika belum ada controller khusus)
 Route::get('/login', function () {
-    return view('login'); // File ini ada di root views
+    return view('login'); 
 });
 
 Route::get('/register', function () {
-    return view('register'); // File ini ada di root views
+    return view('register');
 });
 
 
@@ -32,3 +32,4 @@ Route::get('/checkout', [CheckoutController::class, 'create']);
 Route::get('/profil', [ProfileController::class, 'show']);
 Route::get('/profil/pesanan', [ProfileController::class, 'orderHistory']);
 Route::get('/profil/reservasi', [ProfileController::class, 'reservationHistory']);
+
