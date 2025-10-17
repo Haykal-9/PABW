@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MenuController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,3 +16,7 @@ Route::get('/login', function () {
 Route::get('/home', [HomeController::class, 'index']);
 
 Route::get('/reservasi', [ReservasiController::class, 'create']);
+
+
+Route::get('/menu', [MenuController::class, 'index']);
+Route::get('/menu/{id}', [MenuController::class, 'show']);
