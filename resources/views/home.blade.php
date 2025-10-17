@@ -19,7 +19,7 @@
         </div>
     </section>
 
-    {{-- BAGIAN 2: NEW MENU - Dibuat lebih menonjol dengan Shadow --}}
+    {{-- BAGIAN 2: NEW MENU - Dibuat lebih menonjol dengan Shado --}}
     <section class="new-menu container my-5 py-5">
         <div class="text-center mb-5" data-aos="fade-down">
             <h1 class="title-new-menu display-4 fw-bold">Menu <span class="text-primary">Terbaru</span></h1>
