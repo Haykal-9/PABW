@@ -4,15 +4,25 @@
 
 @section('content')
 
-<section class="login-page d-flex align-items-center justify-content-center min-vh-100 bg-light">
-    <div class="container">
+{{-- Perubahan: Tambahkan background-image dan overlay --}}
+<section class="login-page d-flex align-items-center justify-content-center min-vh-100 text-white" 
+         style="background-image: url('{{ asset('logo/biji.jpg') }}'); 
+                background-size: cover; 
+                background-position: center;
+                background-attachment: fixed; /* Opsional: Membuat background tetap saat scroll */
+                position: relative; /* Penting untuk positioning overlay */">
+    
+    {{-- Overlay gelap untuk kontras teks. Sesuaikan opacity jika perlu. --}}
+    <div class="bg-dark position-absolute top-0 start-0 w-100 h-100 opacity-75" style="z-index: 1;"></div>
+
+    <div class="container" style="z-index: 2;"> {{-- Z-index lebih tinggi agar konten di atas overlay --}}
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5" data-aos="fade-up">
                 
                 <div class="card border-0 shadow-lg p-4 p-md-5">
                     <div class="card-body">
                         <h2 class="text-center fw-bold mb-4 text-primary-dark">Masuk ke Akun Anda</h2>
-                        <p class="text-center text-muted mb-4">Silakan masukkan kredensial Anda untuk melanjutkan.</p>
+                        
 
                         {{-- Form Login --}}
                         <form id="loginForm">
