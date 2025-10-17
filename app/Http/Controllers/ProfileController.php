@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class ProfileController extends Controller
+{
+    // ... (method show yang sudah ada)
+
+    public function orderHistory()
+    {
+        // Data dummy untuk riwayat pesanan
+        $orders = [
+            (object) ['id' => 1, 'order_date' => '2024-10-26 10:00', 'total_amount' => 33000, 'order_status_name' => 'Completed', 'order_type_name' => 'Dine In', 'payment_method_name' => 'Cash'],
+            (object) ['id' => 2, 'order_date' => '2024-10-25 15:30', 'total_amount' => 20000, 'order_status_name' => 'Completed', 'order_type_name' => 'Take Away', 'payment_method_name' => 'QRIS']
+        ];
+        return view('history.orders', compact('orders'));
+    }
+
+    public function reservationHistory()
+    {
+        // Data dummy untuk riwayat reservasi
+        $reservations = [
+            (object) ['kode_reservasi' => 'RSV20241026001', 'tanggal_reservasi' => '2024-11-01 19:00', 'jumlah_orang' => 4, 'reservation_status_name' => 'Dikonfirmasi'],
+            (object) ['kode_reservasi' => 'RSV20241020001', 'tanggal_reservasi' => '2024-10-22 18:00', 'jumlah_orang' => 2, 'reservation_status_name' => 'Dibatalkan']
+        ];
+        return view('history.reservations', compact('reservations'));
+    }
+}
