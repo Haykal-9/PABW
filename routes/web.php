@@ -33,3 +33,4 @@ Route::get('/profil', [ProfileController::class, 'show']);
 Route::get('/profil/pesanan', [ProfileController::class, 'orderHistory']);
 Route::get('/profil/reservasi', [ProfileController::class, 'reservationHistory']);
 
+

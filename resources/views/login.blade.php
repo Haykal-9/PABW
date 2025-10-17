@@ -1,28 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tapal Kuda - @yield('title')</title>
-    {{-- Bootstrap CSS --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="{{ asset('css/home.css') }}" rel="stylesheet">
-    @stack('styles')
-</head>
-<body>
+@extends('layouts.app')
 
-    @include('layouts.header')
+@section('title', 'TapalKuda - Masuk Akun')
 
-    <main>
-        @yield('content')
-    </main>
+@section('content')
 
-    @include('layouts.footer')
+<section class="login-page d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5" data-aos="fade-up">
+                
+                <div class="card border-0 shadow-lg p-4 p-md-5">
+                    <div class="card-body">
+                        <h2 class="text-center fw-bold mb-4 text-primary-dark">Masuk ke Akun Anda</h2>
+                        <p class="text-center text-muted mb-4">Silakan masukkan kredensial Anda untuk melanjutkan.</p>
 
-    {{-- Bootstrap JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    @stack('scripts')
-</body>
-</html>
+                        {{-- Form Login --}}
+                        <form id="loginForm">
+                            @csrf
+                            
+                            {{-- Input Username --}}
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-bold">Username</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="username" 
+                                       name="username" 
+                                       placeholder="Masukkan username Anda">
+                            </div>
+                            
+                            {{-- Input Password --}}
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-bold">Password</label>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Masukkan password Anda">
+                            </div>
+
+                            {{-- Pesan Sukses (Akan tampil setelah submit) --}}
+                            <div id="loginMessage" class="alert d-none" role="alert"></div>
+
+                            {{-- Tombol Login --}}
+                            <button type="submit" 
+                                    class="btn btn-primary-dark btn-lg w-100 shadow-sm">
+                                LOGIN
+                            </button>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <p class="text-center text-muted small">
+                            Belum punya akun? <a href="{{ url('/register') }}" class="text-primary-dark text-decoration-none fw-bold">Daftar di sini</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@endsection
+
+{{-- JAVASCRIPT LOGIC (Selalu Sukses) --}}
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('loginForm');
+        const messageBox = document.getElementById('loginMessage');
+
+        // URL tujuan setelah login berhasil
+        const SUCCESS_REDIRECT = '{{ url('/') }}'; 
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Mencegah form submit default
+
+            // 1. Tampilkan status loading/sukses
+            messageBox.classList.remove('d-none', 'alert-danger');
+            messageBox.classList.add('alert-success');
+
+            // Menggunakan pesan yang umum digunakan saat autentikasi berhasil
+            messageBox.innerHTML = 'Autentikasi Berhasil. Mengalihkan Anda ke halaman utama...';
+            
+            // 2. Lakukan pengalihan
+            setTimeout(() => {
+                window.location.href = SUCCESS_REDIRECT;
+            }, 500); // Jeda singkat (0.5 detik)
+        });
+    });
+</script>
+@endpush
