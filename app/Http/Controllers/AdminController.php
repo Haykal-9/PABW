@@ -99,16 +99,46 @@ class AdminController extends Controller
 
     public function reservations()
     {
-        // Data Dummy untuk Reservasi
+        // Data Dummy untuk Reservasi (DENGAN EMAIL, TELEPON, DAN CATATAN BARU)
         $reservations = [
-            ['kode' => 'RSV2025101901', 'tanggal' => '2025-10-25', 'jam' => '19:00', 'orang' => 4, 'nama' => 'Dummy User', 'status' => 'Dikonfirmasi'],
-            ['kode' => 'RSV2025101902', 'tanggal' => '2025-10-20', 'jam' => '15:30', 'orang' => 2, 'nama' => 'Joko Susanto', 'status' => 'Menunggu Konfirmasi'],
-            ['kode' => 'RSV2025101801', 'tanggal' => '2025-10-18', 'jam' => '18:00', 'orang' => 5, 'nama' => 'Ani Mardiana', 'status' => 'Selesai'],
+            [
+                'kode' => 'RSV2025101901', 
+                'tanggal' => '2025-10-25', 
+                'jam' => '19:00', 
+                'orang' => 4, 
+                'nama' => 'Dummy User', 
+                'email' => 'dummy@mail.com',      // BARU
+                'phone' => '081234567890',         // BARU
+                'status' => 'Dikonfirmasi',
+                'note' => 'Butuh meja dekat jendela, ada anak kecil.', // BARU
+            ],
+            [
+                'kode' => 'RSV2025101902', 
+                'tanggal' => '2025-10-20', 
+                'jam' => '15:30', 
+                'orang' => 2, 
+                'nama' => 'Joko Susanto', 
+                'email' => 'joko@mail.com',
+                'phone' => '085711223344',
+                'status' => 'Menunggu Konfirmasi',
+                'note' => 'Tidak ada catatan khusus.',
+            ],
+            [
+                'kode' => 'RSV2025101801', 
+                'tanggal' => '2025-10-18', 
+                'jam' => '18:00', 
+                'orang' => 5, 
+                'nama' => 'Ani Mardiana', 
+                'email' => 'ani@mail.com',
+                'phone' => '081998877665',
+                'status' => 'Selesai',
+                'note' => 'Ulang tahun, mohon hiasan sederhana di meja.',
+            ],
         ];
 
         return view('admin.reservations', compact('reservations'));
     }
-
+    
     public function ratings()
     {
         // Data Dummy untuk Rating/Ulasan

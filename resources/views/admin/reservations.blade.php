@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Data Reservasi')
+@section('admin_page_title', 'Data Reservasi')
 
 @section('admin_content')
 <div class="card shadow mb-4">
@@ -12,11 +12,13 @@
             <table class="table table-bordered" width="100%" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>Kode Reservasi</th>
-                        <th>Tanggal</th>
-                        <th>Jam</th>
-                        <th>Jml Orang</th>
+                        <th>Kode</th>
+                        <th>Tanggal/Jam</th>
                         <th>Nama Pemesan</th>
+                        <th>Email</th>              {{-- KOLOM BARU --}}
+                        <th>No. Telepon</th>        {{-- KOLOM BARU --}}
+                        <th>Jml Orang</th>
+                        <th>Catatan</th>            {{-- KOLOM BARU --}}
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -24,10 +26,15 @@
                     @foreach ($reservations as $res)
                     <tr>
                         <td>{{ $res['kode'] }}</td>
-                        <td>{{ $res['tanggal'] }}</td>
-                        <td>{{ $res['jam'] }}</td>
-                        <td>{{ $res['orang'] }}</td>
+                        <td>
+                            {{ $res['tanggal'] }}
+                            <br><small class="text-muted">({{ $res['jam'] }})</small>
+                        </td>
                         <td>{{ $res['nama'] }}</td>
+                        <td>{{ $res['email'] }}</td>         {{-- DATA BARU --}}
+                        <td>{{ $res['phone'] }}</td>         {{-- DATA BARU --}}
+                        <td>{{ $res['orang'] }}</td>
+                        <td><small>{{ $res['note'] }}</small></td> {{-- DATA BARU --}}
                         <td>
                             <span class="badge bg-{{ $res['status'] == 'Dikonfirmasi' ? 'success' : ($res['status'] == 'Selesai' ? 'primary' : 'warning') }}">
                                 {{ $res['status'] }}
