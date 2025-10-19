@@ -37,8 +37,6 @@ Route::get('/profil/pesanan', [ProfileController::class, 'orderHistory']);
 Route::get('/profil/reservasi', [ProfileController::class, 'reservationHistory']);
 
 // Routes untuk Admin
-
-
 Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/menu', [AdminController::class, 'menu'])->name('admin.menu');
 Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
