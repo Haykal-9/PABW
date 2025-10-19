@@ -33,3 +33,13 @@ Route::get('/profil', [ProfileController::class, 'show']);
 Route::get('/profil/pesanan', [ProfileController::class, 'orderHistory']);
 Route::get('/profil/reservasi', [ProfileController::class, 'reservationHistory']);
 
+// Routes untuk Admin
+
+Route::prefix('admin')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/menu', [AdminController::class, 'menu'])->name('admin.menu');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
+    Route::get('/reservations', [AdminController::class, 'reservations'])->name('admin.reservations');
+    Route::get('/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
+});
