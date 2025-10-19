@@ -23,23 +23,15 @@
 
 <body>
 
-    {{-- PERBAIKAN: Sembunyikan Header di halaman Admin --}}
-    @if(!request()->is('admin*'))
-        @include('customers.layouts.header')
-    @endif
+    @include('customers.layouts.header')
 
     <main>
         {{-- Konten Utama Customer --}}
         @yield('content')
-
-        {{-- Konten Utama Admin (Dipindahkan dari @yield('content') ke @yield('admin_layout')) --}}
-        @yield('admin_layout')
     </main>
 
-    {{-- PERBAIKAN: Sembunyikan Footer di halaman Admin --}}
-    @if(!request()->is('admin*'))
-        @include('customers.layouts.footer')
-    @endif
+    @include('customers.layouts.footer')
+
 
     {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
