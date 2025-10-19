@@ -1,18 +1,14 @@
 @extends('customers.layouts.app')
 
-@section('title', 'TapalKuda - Inovasi Kopi')
+@section('title', 'Inovasi Kopi')
 
 @section('content')
 
 {{-- Versi 3: HERO SECTION - Minimalis dan Berani (Dimodifikasi dengan Background Gambar) --}}
-<section class="hero-minimalist min-vh-100 d-flex align-items-center text-white" 
-         id="hero-minimalist"
-         style="background-image: url('{{ asset('logo/biji.jpg') }}'); 
-                background-size: cover; 
-                background-position: center;
-                /* Opsional: Tambahkan overlay gelap di sini atau di CSS kustom */
-                /* position: relative; */ 
-                /* z-index: 1; */"> 
+<section class="hero-minimalist d-flex align-items-center text-white" id="hero-minimalist"
+         style="background-image: url('{{ asset('logo/biji.jpg') }}'); background-size: cover; background-position: center;">
+    {{-- Overlay hangat agar teks tetap terbaca --}}
+    <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
     
     {{-- Tambahkan div overlay di sini jika gambar background Anda terlalu terang. --}}
     {{-- <div class="bg-dark position-absolute top-0 start-0 w-100 h-100 opacity-50" style="z-index: 2;"></div> --}}
@@ -28,12 +24,10 @@
                     Kami memperlakukan kopi sebagai seni dan sains. Eksplorasi rasa terbaru dari biji lokal yang dikurasi khusus untuk Anda.
                 </p>
                 
-                {{-- Tombol diubah agar terlihat di latar belakang gelap --}}
-                <a href="{{ url('/menu') }}" class="btn btn-light btn-lg px-5 py-3 shadow-lg">Pesan Sekarang</a> 
+                {{-- Tombol diubah agar sesuai tema Cozy Rustic --}}
+                <a href="{{ url('/menu') }}" class="btn btn-primary-dark btn-lg px-5 py-3 shadow-lg">Pesan Sekarang</a> 
             </div>
             <div class="col-lg-6 text-center" data-aos="fade-left" data-aos-delay="300">
-                {{-- HAPUS GAMBAR UTAMA di sini, karena sudah menggunakan background. --}}
-                {{-- Jika ingin gambar cangkir tetap ada, biarkan. Jika tidak, hapus/ganti. --}}
                 </div>
         </div>
     </div>

@@ -1,6 +1,6 @@
 @extends('customers.layouts.app')
 
-@section('title', 'TapalKuda - Buat Reservasi')
+@section('title', 'Buat Reservasi')
 
 {{-- Menghapus push('styles') karena kita hanya akan menggunakan kelas Bootstrap --}}
 

@@ -25,6 +25,9 @@ Route::get('/register', function () {
 Route::get('/menu', [MenuController::class, 'index']);
 Route::get('/menu/{id}', [MenuController::class, 'show']);
 
+// Route untuk Keranjang (dummy)
+Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index']);
+
 Route::get('/reservasi', [ReservasiController::class, 'create']);
 
 Route::get('/checkout', [CheckoutController::class, 'create']);

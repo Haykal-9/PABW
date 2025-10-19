@@ -1,6 +1,6 @@
 @extends('customers.layouts.app')
 
-@section('title', 'TapalKuda - Daftar Menu Lengkap')
+@section('title', 'Daftar Menu Lengkap')
 
 @section('content')
 
@@ -67,137 +67,23 @@
             {{-- KOLOM KANAN: DAFTAR MENU (MENU CARDS) (10 Kolom) --}}
             <div class="col-lg-10" data-aos="fade-left">
                 <div class="row g-4" id="menu-cards-container">
-                    
-                    {{-- Item Menu 1 (Contoh Kopi) --}}
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="coffee" data-aos="zoom-in">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/arabika.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Arabika</h5>
-                                 <p class="card-text text-secondary small">Espresso, Fresh Milk, Sirup Vanila.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 35.000</p>
-                             </div>
+                    @foreach($menus as $menu)
+                        <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="{{ $menu['category'] }}" data-aos="zoom-in" data-aos-delay="{{ $loop->index * 100 }}">
+                            <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
+                                <div class="image-wrap">
+                                    <img src="{{ asset($menu['image_url']) }}" class="card-img-top" alt="{{ $menu['name'] }}">
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold text-dark">{{ $menu['name'] }}</h5>
+                                    <p class="card-text text-secondary small">{{ $menu['description_short'] }}</p>
+                                    <p class="fw-bold text-primary-dark">Rp {{ number_format($menu['price'],0,',','.') }}</p>
+                                    <div class="mt-3">
+                                        <a href="{{ url('/menu/'.$menu['id']) }}" class="btn btn-primary-dark btn-sm">Detail</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-
-                    {{-- Item Menu 2 (Contoh Non-Kopi) --}}
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="non-coffee" data-aos="zoom-in" data-aos-delay="100">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/red.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Matcha Premium</h5>
-                                 <p class="card-text text-secondary small">Bubuk matcha Jepang dan susu segar.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 40.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    
-                    {{-- Item Menu 3 (Contoh Cemilan) --}}
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="cemilan" data-aos="zoom-in" data-aos-delay="200">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/kentangSosis.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Classic Croissant</h5>
-                                 <p class="card-text text-secondary small">Roti lapis mentega Prancis.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 25.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    
-                    {{-- Item Menu 4 (Contoh Kopi) --}}
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="makanan" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/AyamTeriyaki.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Americano Dingin</h5>
-                                 <p class="card-text text-secondary small">House blend TapalKuda dengan air dingin.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 20.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="cemilan" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/balabala.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Americano Dingin</h5>
-                                 <p class="card-text text-secondary small">House blend TapalKuda dengan air dingin.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 20.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="makanan" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/cuanki.png') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Americano Dingin</h5>
-                                 <p class="card-text text-secondary small">House blend TapalKuda dengan air dingin.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 20.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="coffee" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/ESPRESSO.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Americano Dingin</h5>
-                                 <p class="card-text text-secondary small">House blend TapalKuda dengan air dingin.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 20.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="coffee" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/JAPAN.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Americano Dingin</h5>
-                                 <p class="card-text text-secondary small">House blend TapalKuda dengan air dingin.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 20.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="non-coffee" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/taro.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Americano Dingin</h5>
-                                 <p class="card-text text-secondary small">House blend TapalKuda dengan air dingin.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 20.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="non-coffee" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/TehManis.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Americano Dingin</h5>
-                                 <p class="card-text text-secondary small">House blend TapalKuda dengan air dingin.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 20.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="non-coffee" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/wedang.jpg') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Americano Dingin</h5>
-                                 <p class="card-text text-secondary small">House blend TapalKuda dengan air dingin.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 20.000</p>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4 col-lg-3 menu-card-item" data-category="makanan" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="card border-0 shadow-sm h-100 bg-secondary bg-opacity-25">
-                             <img src="{{ asset('foto/nasiTutug.webp') }}" class="card-img-top" alt="Menu Item">
-                             <div class="card-body">
-                                 <h5 class="card-title fw-bold text-dark">Americano Dingin</h5>
-                                 <p class="card-text text-secondary small">House blend TapalKuda dengan air dingin.</p>
-                                 <p class="fw-bold text-primary-dark">Rp 20.000</p>
-                             </div>
-                        </div>
-                    </div>
-
-                    {{-- ... Tambahkan lebih banyak item menu di sini ... --}}
-                    
+                    @endforeach
                 </div>
             </div>
 

@@ -1,6 +1,5 @@
-<header class="navbar navbar-expand-lg navbar-white bg-white shadow-sm py-3">
+<header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
     <div class="container">
-        {{-- BRAND NAME: Bold dan menggunakan warna tema --}}
         <a class="navbar-brand fw-bolder fs-3 text-primary-dark" href="{{ url('/') }}">
             TapalKuda
         </a>
@@ -10,7 +9,6 @@
         </button>
         
         <div class="collapse navbar-collapse" id="navbarNav">
-            {{-- Navigasi utama ditarik ke kanan (ms-auto) --}}
             <ul class="navbar-nav ms-auto align-items-center">
                 
                 <li class="nav-item me-3">
@@ -25,14 +23,21 @@
                     <a class="nav-link fw-semibold text-dark" href="{{ url('/reservasi') }}">Reservasi</a>
                 </li>
 
-                {{-- Link Profil yang selalu tampil (bisa menuju data dummy jika belum login) --}}
                 <li class="nav-item me-3">
                     <a class="nav-link fw-semibold text-dark" href="{{ url('/profil') }}">Profil</a>
+                </li>
+
+                <li class="nav-item me-3">
+                    <a class="nav-link position-relative text-dark" href="{{ url('/cart') }}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="ms-2">Keranjang</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">2</span>
+                    </a>
                 </li>
                 
                 {{-- Tombol Login yang menonjol --}}
                 <li class="nav-item ms-lg-2">
-                    <a class="btn btn-primary-dark px-4 py-2 fw-bold shadow-sm" href="{{ url('/login') }}">
+                    <a class="btn btn-login" href="{{ url('/login') }}">
                         Login
                     </a>
                 </li>
