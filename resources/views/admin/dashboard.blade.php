@@ -86,13 +86,6 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="alert alert-info shadow" role="alert">
-                <i class="fas fa-info-circle me-2"></i> Data di atas adalah data dummy statis dari
-                <code>AdminController.php</code>.
-            </div>
-        </div>
-    </div>
+    
 
 @endsection
