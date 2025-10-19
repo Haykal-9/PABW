@@ -10,8 +10,8 @@ class MenuController extends Controller
     {
         // Data dummy terstruktur untuk ditampilkan dinamis di view
         $menus = [
-            ['id' => 1, 'name' => 'Arabika', 'image_url' => 'foto/arabika.jpg', 'price' => 35000, 'category' => 'coffee', 'description_short' => 'Espresso, Fresh Milk, Sirup Vanila.'],
-            ['id' => 2, 'name' => 'Matcha Premium', 'image_url' => 'foto/red.jpg', 'price' => 40000, 'category' => 'non-coffee', 'description_short' => 'Bubuk matcha Jepang dan susu segar.'],
+            ['id' => 1, 'name' => 'Kopi Tubruk Robusta', 'image_url' => 'foto/KOPITUBRUKROBUSTA.jpg', 'price' => 15000, 'category' => 'coffee', 'description_short' => 'Espresso, Fresh Milk, Sirup Vanila.'],
+            ['id' => 2, 'name' => 'Kopi Tubruk Arabika', 'image_url' => 'foto/arabika.jpg', 'price' => 12000, 'category' => 'non-coffee', 'description_short' => 'Bubuk matcha Jepang dan susu segar.'],
             ['id' => 3, 'name' => 'Classic Croissant', 'image_url' => 'foto/kentangSosis.jpg', 'price' => 25000, 'category' => 'cemilan', 'description_short' => 'Roti lapis mentega Prancis.'],
             ['id' => 4, 'name' => 'Americano Dingin', 'image_url' => 'foto/AyamTeriyaki.jpg', 'price' => 20000, 'category' => 'makanan', 'description_short' => 'House blend TapalKuda dengan air dingin.'],
             ['id' => 5, 'name' => 'Snack Balabala', 'image_url' => 'foto/balabala.jpg', 'price' => 20000, 'category' => 'cemilan', 'description_short' => 'Cemilan renyah.'],
@@ -41,21 +41,19 @@ class MenuController extends Controller
     public function show($id)
     {
         // Data dummy untuk detail menu
-        $product = (object) [
-            'id' => $id,
-            'name' => 'Kopi Tubruk Robusta',
-            'price' => 15000,
-            'description_long' => 'Kopi tubruk klasik dengan karakter robusta yang pekat.',
-            'image_url' => 'foto/KOPITUBRUKROBUSTA.jpg',
-            'category' => 'Kopi',
-            'slug' => 'kopi-tubruk-robusta'
+        $menus = [
+            ['id' => 1, 'name' => 'Kopi Tubruk Robusta', 'price' => 15000, 'description_long' => 'Kopi tubruk klasik dengan karakter robusta yang pekat.', 'image_url' => 'foto/KOPITUBRUKROBUSTA.jpg', 'category' => 'Kopi', 'slug' => 'kopi-tubruk-robusta'],
+            ['id' => 2, 'name' => 'Kopi Tubruk Arabika', 'price' => 12000, 'description_long' => 'Kopi tubruk klasik dengan karakter arabika yang lembut.', 'image_url' => 'foto/arabika.jpg', 'category' => 'Kopi', 'slug' => 'kopi-tubruk-arabika'],
         ];
 
-        $reviews = [];
-        $recommendations = [];
+        $product = collect($menus)->firstWhere('id', $id);
+
+        if (!$product) {
+            abort(404, 'Menu tidak ditemukan');
+        }
 
         // Sesuaikan nama variabel agar view 'customers.detail' menerima $menu
-        $menu = $product;
+        $menu = (object) $product;
 
         return view('customers.detail', compact('menu', 'reviews', 'recommendations'));
     }
