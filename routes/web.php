@@ -33,17 +33,3 @@ Route::get('/profil', [ProfileController::class, 'show']);
 Route::get('/profil/pesanan', [ProfileController::class, 'orderHistory']);
 Route::get('/profil/reservasi', [ProfileController::class, 'reservationHistory']);
 
-
-// Routes untuk Admin
-
-Route::prefix('admin')->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/menu', [AdminController::class, 'menu'])->name('admin.menu');
-    Route::get('/reservasi', [AdminController::class, 'reservations'])->name('admin.reservasi');
-
-    // Simulasi Aksi CRUD (menggunakan Redirect setelah aksi dummy)
-    Route::post('/menu/delete/{id}', function ($id) {
-        return redirect()->route('admin.menu')->with('success', "Menu ID $id berhasil dihapus (Simulasi).");
-    })->name('admin.menu.delete');
-});
-
