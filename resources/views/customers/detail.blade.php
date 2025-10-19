@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('customers.layouts.app')
 
 {{-- Pastikan variabel $menu sudah ada dan memiliki properti name --}}
 @section('title', 'Detail Menu - ' . $menu->name ?? 'Menu Item')

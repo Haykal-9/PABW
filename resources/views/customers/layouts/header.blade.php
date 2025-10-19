@@ -1,4 +1,4 @@
-<header class="navbar navbar-expand-lg navbar-white bg-white shadow-sm sticky-top py-3">
+<header class="navbar navbar-expand-lg navbar-white bg-white shadow-sm py-3">
     <div class="container">
         {{-- BRAND NAME: Bold dan menggunakan warna tema --}}
         <a class="navbar-brand fw-bolder fs-3 text-primary-dark" href="{{ url('/') }}">
@@ -23,6 +23,11 @@
                 
                 <li class="nav-item me-3">
                     <a class="nav-link fw-semibold text-dark" href="{{ url('/reservasi') }}">Reservasi</a>
+                </li>
+
+                {{-- Link Profil yang selalu tampil (bisa menuju data dummy jika belum login) --}}
+                <li class="nav-item me-3">
+                    <a class="nav-link fw-semibold text-dark" href="{{ url('/profil') }}">Profil</a>
                 </li>
                 
                 {{-- Tombol Login yang menonjol --}}

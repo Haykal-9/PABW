@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('customers.layouts.app')
 
 {{-- FIX: Menggunakan @section block untuk menimpa title di browser --}}
 @section('title')

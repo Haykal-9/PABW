@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('customers.layouts.app')
 
 @section('title', 'Riwayat Pesanan')
 
@@ -21,7 +21,8 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="card-title riwayat-title">#{{ $order->id }} -
-                                {{ date('d M Y H:i', strtotime($order->order_date)) }}</h5>
+                                {{ date('d M Y H:i', strtotime($order->order_date)) }}
+                            </h5>
                             <small class="text-muted">{{ $order->order_type_name }} | {{ $order->payment_method_name }}</small>
                         </div>
                         <div class="text-end">
