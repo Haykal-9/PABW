@@ -1,0 +1,366 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+            *{
+                box-sizing: border-box;
+            }.kasir-page{
+                display: flex;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                font-family: 'Inter', sans-serif;
+                background-color: #1c2431;
+            }.kasir-page .container{
+                display: flex;
+                height: 100vh;
+            }.kasir-page /* Sidebar */
+            .sidebar{
+                background-color: #222b3a;
+                width: 80px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 32px 0;
+                gap: 40px;
+                border-top-left-radius: 12px;
+                border-bottom-left-radius: 12px;
+                height: 100vh;
+                position: fixed;
+                /* Fixed position */
+                left: 0;
+                /* Align to left */
+                top: 0;
+                /* Align to top */
+                z-index: 100;
+                /* Higher z-index to be on top */
+            }.kasir-page .sidebar button{
+                background: none;
+                border: none;
+                color: #e07b6c;
+                font-size: 20px;
+                cursor: pointer;
+            }.kasir-page /* Main content */
+            main{
+                flex: 1 1 auto;
+                padding: 32px;
+                display: flex;
+                flex-direction: column;
+                gap: 24px;
+                margin-left: 80px; /* untuk sidebar kiri */
+                overflow: visible;
+            }.kasir-page main header{
+                margin-bottom: 24px;
+            }.kasir-page main header h1{
+                color: white;
+                font-weight: 600;
+                font-size: 20px;
+                margin: 0 0 4px 0;
+            }.kasir-page main header p{
+                font-size: 14px;
+                color: #6b7280;
+                margin: 0;
+            }.kasir-page nav.tabs{
+                display: flex;
+                align-items: center;
+                gap: 24px;
+                font-size: 14px;
+                font-weight: 600;
+            }.kasir-page .tab-link{
+                background: none;
+                border: none;
+                color: #6b7280;
+                padding-bottom: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                margin-right: 18px;
+            }.kasir-page .tab-link.active{
+                color: #e07b6c;
+                border-bottom: 2px solid #e07b6c;
+            }.kasir-page .tab-link span{
+                color: #f7b267;
+                font-weight: 400;
+                font-size: 13px;
+                margin-left: 2px;
+            }.kasir-page .search-container{
+                margin-left: auto;
+                position: relative;
+                width: 240px;
+            }.kasir-page .search-container input[type="search"]{
+                width: 100%;
+                padding: 8px 12px 8px 36px;
+                border-radius: 6px;
+                border: none;
+                background-color: #2a3345;
+                color: #9ca3af;
+                font-size: 14px;
+            }.kasir-page .search-container input::placeholder{
+                color: #6b7280;
+            }.kasir-page .search-container .icon-search{
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #6b7280;
+                font-size: 14px;
+                pointer-events: none;
+            }.kasir-page select.dine-in{
+                margin-left: 16px;
+                background-color: #2a3345;
+                border: none;
+                border-radius: 6px;
+                color: #9ca3af;
+                font-size: 14px;
+                padding: 8px 12px;
+                cursor: pointer;
+            }.kasir-page /* Choose Dishes */
+            section.choose-dishes h2{
+                font-weight: 700;
+                color: white;
+                margin-bottom: 16px;
+            }.kasir-page .dishes-grid{
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 24px;
+            }.kasir-page .dish-card{
+                background-color: #2a3345;
+                border-radius: 12px;
+                padding: 24px 24px 32px 24px;
+                text-align: center;
+                color: #9ca3af;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: relative;
+            }.kasir-page .dish-card img{
+                width: 96px;
+                height: 96px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-bottom: 16px;
+            }.kasir-page .dish-card h3{
+                color: white;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+                font-size: 16px;
+            }.kasir-page .dish-card p.price{
+                margin: 0 0 4px 0;
+                font-size: 14px;
+            }.kasir-page .dish-card p.available{
+                margin: 0;
+                font-size: 12px;
+                color: #6b7280;
+            }.kasir-page .dish-card button.add-to-order{
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                background: #e07b6c;
+                color: #fff;
+                border: none;
+                border-radius: 50%;
+                width: 32px;
+                height: 32px;
+                font-size: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: background 0.2s;
+                z-index: 2;
+            }.kasir-page .dish-card button.add-to-order:hover{
+                background: #f7b267;
+                color: #222b3a;
+            }.kasir-page /* Orders panel */
+            aside.orders-panel{
+                background-color: #2a3345;
+                width: 384px;
+                border-top-right-radius: 12px;
+                border-bottom-right-radius: 12px;
+                padding: 32px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                height: calc(100vh - 32px);
+                top: 16px;
+                position: sticky;
+            }.kasir-page aside.orders-panel header h2{
+                color: white;
+                font-weight: 600;
+                font-size: 16px;
+                margin: 0 0 12px 0;
+            }.kasir-page aside.orders-panel header h2 span{
+                color: #6b7280;
+                font-weight: 400;
+                font-size: 14px;
+            }.kasir-page nav.order-types{
+                display: flex;
+                gap: 12px;
+                font-size: 12px;
+                font-weight: 700;
+            }.kasir-page nav.order-types button{
+                border-radius: 8px;
+                border: none;
+                padding: 6px 16px;
+                cursor: pointer;
+                color: #9ca3af;
+                background-color: #3f4556;
+            }.kasir-page nav.order-types button.active{
+                background-color: #e07b6c;
+                color: white;
+            }.kasir-page ul.order-list{
+                list-style: none;
+                padding: 0;
+                margin: 24px 0 0 0;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }.kasir-page ul.order-list li{
+                display: flex;
+                gap: 12px;
+                align-items: flex-start;
+            }.kasir-page ul.order-list li img{
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                flex-shrink: 0;
+            }.kasir-page ul.order-list li .order-info{
+                flex: 1;
+            }.kasir-page ul.order-list li .order-info p.name{
+                margin: 0 0 4px 0;
+                font-weight: 600;
+                font-size: 14px;
+                color: white;
+            }.kasir-page ul.order-list li .order-info p.price{
+                margin: 0 0 6px 0;
+                font-size: 12px;
+                color: #6b7280;
+            }.kasir-page ul.order-list li .order-info input[type="text"]{
+                width: 100%;
+                background-color: #1c2431;
+                border: none;
+                border-radius: 6px;
+                padding: 6px 12px;
+                font-size: 12px;
+                color: #9ca3af;
+            }.kasir-page ul.order-list li .order-info input::placeholder{
+                color: #6b7280;
+            }.kasir-page ul.order-list li .order-qty-delete{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }.kasir-page ul.order-list li .order-qty-delete .qty-controls{
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }.kasir-page ul.order-list li .order-qty-delete .qty-controls button{
+                background-color: #3f4556;
+                color: #9ca3af;
+                border: none;
+                border-radius: 4px;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-size: 12px;
+                transition: background-color 0.2s;
+            }.kasir-page ul.order-list li .order-qty-delete .qty-controls button:hover{
+                background-color: #555;
+            }.kasir-page ul.order-list li .order-qty-delete span.qty{
+                background-color: #1c2431;
+                color: #9ca3af;
+                font-size: 12px;
+                border-radius: 8px;
+                padding: 2px 8px;
+                user-select: none;
+            }.kasir-page ul.order-list li .order-qty-delete button.delete-btn{
+                background: none;
+                border: none;
+                color: #e07b6c;
+                cursor: pointer;
+                font-size: 14px;
+            }.kasir-page ul.order-list li .order-qty-delete button.delete-btn:hover{
+                color: #f28a7a;
+            }.kasir-page /* Footer */
+            aside.orders-panel footer{
+                border-top: 1px solid #374151;
+                padding-top: 24px;
+            }.kasir-page aside.orders-panel footer .discount, .kasir-page aside.orders-panel footer .subtotal{
+                display: flex;
+                justify-content: space-between;
+                font-size: 12px;
+                margin-bottom: 8px;
+            }.kasir-page aside.orders-panel footer .subtotal{
+                font-weight: 700;
+                color: white;
+                font-size: 16px;
+                margin-bottom: 24px;
+            }.kasir-page aside.orders-panel footer button{
+                width: 100%;
+                background-color: #e07b6c;
+                border: none;
+                border-radius: 12px;
+                padding: 12px 0;
+                font-weight: 700;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+            }.kasir-page aside.orders-panel footer button:hover{
+                background-color: #d46a5a;
+            }.kasir-page button.active i{
+                color: white;
+                /* atau warna lain sesuai tema aktif */
+            }.kasir-page button.active{
+                background: black;
+                /* contoh warna background aktif */
+            }.kasir-page /* Responsive */
+            @media (max-width: 768px){
+                .container {
+                    flex-direction: column;
+                    min-height: auto;
+                    border-radius: 0;
+                }
+
+                .sidebar {
+                    flex-direction: row;
+                    width: 100%;
+                    padding: 16px 0;
+                    gap: 24px;
+                    border-radius: 0;
+                    justify-content: center;
+                    position: static;
+                }
+
+                main {
+                    padding: 16px;
+                    margin-left: 0;
+                    /* Remove offset for mobile */
+                    margin-right: 0;
+                    /* Remove offset for mobile */
+                }
+
+                aside.orders-panel {
+                    width: 100%;
+                    border-radius: 0;
+                    padding: 16px;
+                    margin-top: 24px;
+                    position: static;
+                    /* Change to static for mobile */
+                    height: auto;
+                }
+
+                .dishes-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                    gap: 16px;
+                }
+                }
+                .kasir-page .sidebar .btn-icon{
+                width:100%; display:flex; justify-content:center; align-items:center;
+                height:48px; color:#cbd5e1; text-decoration:none;
+                }
+                .kasir-page .sidebar .btn-icon i{ font-size:20px; }
+                .kasir-page .sidebar .btn-icon:hover, .kasir-page .sidebar .btn-icon.active{ color:#fff; background:#111827; }

@@ -1,12 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\KasirController;
+
 // Route Halaman Utama
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/home', [HomeController::class, 'index']);
@@ -26,7 +29,7 @@ Route::get('/menu', [MenuController::class, 'index']);
 Route::get('/menu/{id}', [MenuController::class, 'show']);
 
 // Route untuk Keranjang (dummy)
-Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index']);
+Route::get('/cart', [CartController::class, 'index']);
 
 Route::get('/reservasi', [ReservasiController::class, 'create']);
 
@@ -43,3 +46,9 @@ Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users
 Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
 Route::get('/admin/reservations', [AdminController::class, 'reservations'])->name('admin.reservations');
 Route::get('/admin/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
+
+Route::get('/kasir',      [KasirController::class, 'index'])->name('kasir.index');
+Route::get('/reservasi',  [KasirController::class, 'reservasi'])->name('kasir.reservasi');
+Route::get('/notif',      [KasirController::class, 'notif'])->name('kasir.notif');
+Route::get('/profile',    [KasirController::class, 'profile'])->name('kasir.profile');
+Route::get('/riwayat',    [KasirController::class, 'riwayat'])->name('kasir.riwayat');

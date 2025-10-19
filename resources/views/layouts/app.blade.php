@@ -2,3 +2,5 @@
 @extends('customers.layouts.app')
 
 {{-- Optional: Anda bisa menambahkan komentar atau section default di sini jika diperlukan --}}
+
+
