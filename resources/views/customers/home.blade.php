@@ -6,17 +6,17 @@
 
     <section class="hero-minimalist d-flex align-items-center text-white vh-100" id="hero-minimalist"
         style="background-image: url('{{ asset('logo/biji.jpg') }}'); background-size: cover; background-position: center;">
-        <div class="hero-overlay top-0 start-0 w-100 h-100"></div>
+        <div class="hero-overlay top-0 start-0 w-300 h-100"></div>
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-6" data-aos="fade-right">
+                <div class="col-lg-6 text-start" data-aos="fade-right">
                     <h1 class="display-3 fw-light mb-2">TapalKuda</h1>
                     <h2 class="display-1 fw-bold mb-4 text-white">Seni Menyeduh</h2>
                     <p class="lead mb-4">
                         Kami memperlakukan kopi sebagai seni dan sains. Eksplorasi rasa terbaru dari biji lokal yang
                         dikurasi khusus untuk Anda.
                     </p>
-                    <a href="{{ url('/menu') }}" class="btn btn-primary-dark btn-lg px-5 py-3 shadow-lg">Pesan Sekarang</a>
+                    <a href="{{ url('/menu') }}" class="btn btn-dark btn-lg px-5 py-3 shadow-lg">Pesan Sekarang</a>
                 </div>
             </div>
         </div>
