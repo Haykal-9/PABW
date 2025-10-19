@@ -4,26 +4,19 @@
 
 @section('content')
 
-    <section class="hero-minimalist d-flex align-items-center text-white" id="hero-minimalist"
+    <section class="hero-minimalist d-flex align-items-center text-white vh-100" id="hero-minimalist"
         style="background-image: url('{{ asset('logo/biji.jpg') }}'); background-size: cover; background-position: center;">
-        {{-- Overlay hangat agar teks tetap terbaca --}}
         <div class="hero-overlay top-0 start-0 w-100 h-100"></div>
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6" data-aos="fade-right">
                     <h1 class="display-3 fw-light mb-2">TapalKuda</h1>
-
-                    {{-- WARNA TEKS diubah menjadi WHITE agar kontras dengan background gelap --}}
                     <h2 class="display-1 fw-bold mb-4 text-white">Seni Menyeduh</h2>
                     <p class="lead mb-4">
                         Kami memperlakukan kopi sebagai seni dan sains. Eksplorasi rasa terbaru dari biji lokal yang
                         dikurasi khusus untuk Anda.
                     </p>
-
-                    {{-- Tombol diubah agar sesuai tema Cozy Rustic --}}
-                    <a href="{{ url('/menu') }}" class="btn btn-dark btn-lg px-5 py-3 shadow-lg">Pesan Sekarang</a>
-                </div>
-                <div class="col-lg-6 text-center" data-aos="fade-left" data-aos-delay="300">
+                    <a href="{{ url('/menu') }}" class="btn btn-primary-dark btn-lg px-5 py-3 shadow-lg">Pesan Sekarang</a>
                 </div>
             </div>
         </div>
