@@ -7,6 +7,7 @@ use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CartController;
 // Route Halaman Utama
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/home', [HomeController::class, 'index']);
@@ -26,7 +27,7 @@ Route::get('/menu', [MenuController::class, 'index']);
 Route::get('/menu/{id}', [MenuController::class, 'show']);
 
 // Route untuk Keranjang (dummy)
-Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index']);
+Route::get('/cart', [CartController::class, 'index']);
 
 Route::get('/reservasi', [ReservasiController::class, 'create']);
 

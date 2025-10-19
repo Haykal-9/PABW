@@ -16,22 +16,22 @@
              <i class="fas fa-cog me-2"></i> TapalKuda Admin
         </div>
         <div class="list-group list-group-flush">
-            <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary {{ request()->is('admin') ? 'active bg-secondary' : '' }}">
+            <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary">
                 <i class="fas fa-tachometer-alt me-2"></i> Dashboard
             </a>
-            <a href="{{ route('admin.menu') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary {{ request()->is('admin/menu') ? 'active bg-secondary' : '' }}">
+            <a href="{{ route('admin.menu') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary">
                 <i class="fas fa-coffee me-2"></i> Daftar Menu
             </a>
-            <a href="{{ route('admin.users') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary {{ request()->is('admin/users') ? 'active bg-secondary' : '' }}">
+            <a href="{{ route('admin.users') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary">
                 <i class="fas fa-users me-2"></i> User
             </a>
-            <a href="{{ route('admin.orders') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary {{ request()->is('admin/orders') ? 'active bg-secondary' : '' }}">
+            <a href="{{ route('admin.orders') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary">
                 <i class="fas fa-receipt me-2"></i> Riwayat Penjualan
             </a>
-            <a href="{{ route('admin.reservations') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary {{ request()->is('admin/reservations') ? 'active bg-secondary' : '' }}">
+            <a href="{{ route('admin.reservations') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary">
                 <i class="fas fa-calendar-alt me-2"></i> Reservasi
             </a>
-            <a href="{{ route('admin.ratings') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary {{ request()->is('admin/ratings') ? 'active bg-secondary' : '' }}">
+            <a href="{{ route('admin.ratings') }}" class="list-group-item list-group-item-action bg-dark text-white border-bottom border-secondary">
                 <i class="fas fa-star me-2"></i> Rating & Ulasan
             </a>
         </div>
