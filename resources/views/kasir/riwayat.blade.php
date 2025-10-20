@@ -35,16 +35,16 @@
         <i class="fas fa-table me-1"></i> Data Riwayat Pesanan
       </div>
 
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover table-sm align-middle">
+          <thead class="table-dark">
             <tr>
-              <th>No</th>
-              <th>ID Pesanan</th>
-              <th>Pembeli</th>
-              <th>Tanggal</th>
-              <th>Total</th>
-              <th>Status</th>
+              <th scope="col">No</th>
+              <th scope="col">ID Pesanan</th>
+              <th scope="col">Pembeli</th>
+              <th scope="col">Tanggal</th>
+              <th scope="col">Total</th>
+              <th scope="col">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -59,7 +59,7 @@
                   @php
                     $ok = strtolower($r['status']) === 'selesai';
                   @endphp
-                  <span class="badge {{ $ok ? 'badge-success' : 'badge-danger' }}">
+                  <span style="color: black;" class="badge {{ $ok ? 'badge-success' : 'badge-danger' }}">
                     {{ ucfirst($r['status']) }}
                   </span>
                 </td>

@@ -41,9 +41,9 @@
           @forelse ($notifikasi as $n)
             <article class="notification-card">
               <div class="notification-info">
-                <h3>{{ $n['judul'] }}</h3>
-                <p class="time">{{ $n['waktu'] }}</p>
-                <p class="body">{{ $n['isi'] }}</p>
+                <h3 style="color: white;">{{ $n['judul'] }}</h3>
+                <p class="time" style="color: white;">{{ $n['waktu'] }}</p>
+                <p class="body" style="color: white;">{{ $n['isi'] }}</p>
               </div>
 
               {{-- Tombol contoh (opsional). Saat sudah pakai route Laravel, ganti action-nya. --}}

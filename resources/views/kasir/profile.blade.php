@@ -55,26 +55,26 @@
       </div>
 
       <div class="profile-info">
-        <span class="info-label">Name</span><br>
-        <span class="info-value">{{ $user['nama'] ?? '—' }}</span><br>
+        <span class="info-label" style="color: white;">Name</span><br>
+        <span class="info-value" style="color: white;">{{ $user['nama'] ?? '—' }}</span><br>
 
-        <span class="info-label">Email</span><br>
-        <span class="info-value">{{ $user['email'] ?? '—' }}</span><br>
+        <span class="info-label" style="color: white;">Email</span><br>
+        <span class="info-value" style="color: white;">{{ $user['email'] ?? '—' }}</span><br>
 
-        <span class="info-label">Phone</span><br>
-        <span class="info-value">{{ $user['telepon'] ?? '—' }}</span><br>
+        <span class="info-label" style="color: white;">Phone</span><br>
+        <span class="info-value" style="color: white;">{{ $user['telepon'] ?? '—' }}</span><br>
 
-        <span class="info-label">Gender</span><br>
-        <span class="info-value">{{ $user['gender'] ?? '—' }}</span><br>
+        <span class="info-label" style="color: white;">Gender</span><br>
+        <span class="info-value" style="color: white;">{{ $user['gender'] ?? '—' }}</span><br>
 
-        <span class="info-label">Address</span><br>
-        <span class="info-value">{{ $user['alamat'] ?? '—' }}</span><br>
+        <span class="info-label" style="color: white;">Address</span><br>
+        <span class="info-value" style="color: white;">{{ $user['alamat'] ?? '—' }}</span><br>
       </div>
 
       {{-- Ganti route di bawah jika punya halaman edit profil --}}
       <a href="{{ route('kasir.profile') }}#"
          class="edit-button">
-        <i class="fas fa-pencil-alt"></i> Edit Profile
+        <button><i class="fas fa-pencil-alt"></i> Edit Profile</button>
       </a>
     </section>
   </main>

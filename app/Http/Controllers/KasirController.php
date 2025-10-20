@@ -41,7 +41,7 @@ class KasirController extends Controller
         ]);
     }
 
-    public function reservasi()
+    public function reservasikasir()
     {
         $reservasi = [
             ['kode'=>'RSV-001','nama'=>'Aqila','email'=>'aqila@example.com','no_telp'=>'0812-1111-2222','jumlah_orang'=>2,'tanggal'=>'2025-10-21','pesan'=>'Non-smoking, dekat jendela'],
