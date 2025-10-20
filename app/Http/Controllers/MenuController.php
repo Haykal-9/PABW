@@ -55,6 +55,6 @@ class MenuController extends Controller
         // Sesuaikan nama variabel agar view 'customers.detail' menerima $menu
         $menu = (object) $product;
 
-        return view('customers.detail', compact('menu', 'reviews', 'recommendations'));
+        return view('customers.detail', compact('menu',));
     }
 }
