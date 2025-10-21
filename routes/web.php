@@ -48,12 +48,7 @@ Route::get('/admin/reservations', [AdminController::class, 'reservations'])->nam
 Route::get('/admin/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
 
 
-//
-Route::get('/kasir',      [KasirController::class, 'index'])->name('kasir.index');
-Route::get('/reservasikasir',  [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
-Route::get('/notif',      [KasirController::class, 'notif'])->name('kasir.notif');
-Route::get('/profile',    [KasirController::class, 'profile'])->name('kasir.profile');
-Route::get('/riwayat',    [KasirController::class, 'riwayat'])->name('kasir.riwayat');
+// routes kasir
 
 Route::get('/kasir/kasir',      [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/kasir/reservasi', [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
