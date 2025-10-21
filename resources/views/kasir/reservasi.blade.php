@@ -1,44 +1,58 @@
-@extends('layouts.kasir')
-@section('title', 'Tapal Kuda | Reservasi Kasir')
+@extends('kasir.layouts.app')
 
 @push('styles')
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+<style>
+    .reservasi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .reservasi-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+    }
+    .reservasi-card h5 {
+        font-weight: 600;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+    }
+    .reservasi-card p {
+        margin-bottom: 0.5rem;
+        color: var(--text-muted-color);
+        font-size: 0.9rem;
+    }
+    .reservasi-card p strong {
+        color: var(--text-color);
+        min-width: 110px;
+        display: inline-block;
+    }
+</style>
 @endpush
 
-
 @section('content')
-
-    <div class="container" role="main">
-
-        <main>
-            <header>
-                <h1>Reservasi Kasir</h1>
-                <p>Daftar semua reservasi yang telah dikonfirmasi</p>
-            </header>
-            <section class="reservasi-section" aria-label="Reservation List">
-                <div class="reservasi-container">
-                    
-                        <div class="reservasi-grid">
-                            @forelse ($reservasi as $r)
-                                <div class="reservasi-card">
-                                <h3>Kode Reservasi: {{ $r['kode'] }}</h3>
-                                <p style="color: white;"><strong>Nama:</strong> {{ $r['nama'] }}</p>
-                                <p style="color: white;"><strong>Email:</strong> {{ $r['email'] }}</p>
-                                <p style="color: white;"><strong>No. Telepon:</strong> {{ $r['no_telp'] }}</p>
-                                <p style="color: white;"><strong>Jumlah Orang:</strong> {{ $r['jumlah_orang'] }}</p>
-                                <p style="color: white;"><strong>Tanggal:</strong> {{ $r['tanggal'] }}</p>
-                                <p style="color: white;"><strong>Pesan:</strong> {{ $r['pesan'] }}</p>
-                                <p class="status status-dikonfirmasi" style="color: white;"><>Status: Dikonfirmasi</p>
-                                </div>
-                            @empty
-                                <p class="no-reservasi" style="color: white;">Tidak ada reservasi yang tersedia.</p>
-                            @endforelse
-                    
-                </div>
-            </section>
-        </main>
+<main class="content">
+    <div class="header">
+        <h1>Daftar Reservasi</h1>
+        <p>Daftar semua reservasi yang telah dikonfirmasi oleh pelanggan.</p>
     </div>
-
+    
+    <div class="reservasi-grid">
+        @forelse ($reservasi as $item)
+            <div class="reservasi-card">
+                <h5>Kode Reservasi: {{ $item['kode'] }}</h5>
+                <p><strong>Nama</strong>: {{ $item['nama'] }}</p>
+                <p><strong>Email</strong>: {{ $item['email'] }}</p>
+                <p><strong>No. Telepon</strong>: {{ $item['no_telp'] }}</p>
+                <p><strong>Jumlah Orang</strong>: {{ $item['jumlah_orang'] }}</p>
+                <p><strong>Tanggal</strong>: {{ $item['tanggal'] }}</p>
+                <p><strong>Pesan</strong>: {{ $item['pesan'] }}</p>
+            </div>
+        @empty
+            <p class="text-center text-muted">Tidak ada data reservasi.</p>
+        @endforelse
+    </div>
+</main>
 @endsection
-

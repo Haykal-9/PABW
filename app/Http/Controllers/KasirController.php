@@ -6,41 +6,35 @@ use Illuminate\Http\Request;
 
 class KasirController extends Controller
 {
+    /**
+     * Menampilkan halaman utama kasir.
+     */
     public function index()
     {
         $menu = [
-            ['id'=>1,'nama'=>'Espresso','harga'=>15000,'img'=>'https://placehold.co/250x160?text=Espresso'],
-            ['id'=>2,'nama'=>'Cappuccino','harga'=>22000,'img'=>'https://placehold.co/250x160?text=Cappuccino'],
-            ['id'=>3,'nama'=>'Latte','harga'=>24000,'img'=>'https://placehold.co/250x160?text=Latte'],
-            ['id'=>4,'nama'=>'Americano','harga'=>18000,'img'=>'https://placehold.co/250x160?text=Americano'],
+            ['id'=>1,'nama'=>'Espresso','harga'=>15000,'img'=>'https://placehold.co/250x160/3b2e26/ffffff?text=Espresso'],
+            ['id'=>2,'nama'=>'Cappuccino','harga'=>22000,'img'=>'https://placehold.co/250x160/a56e49/ffffff?text=Cappuccino'],
+            ['id'=>3,'nama'=>'Latte','harga'=>24000,'img'=>'https://placehold.co/250x160/bf8f6f/ffffff?text=Latte'],
+            ['id'=>4,'nama'=>'Americano','harga'=>18000,'img'=>'https://placehold.co/250x160/5e453a/ffffff?text=Americano'],
         ];
 
+        // Data keranjang awal
         $order_items = [
-            ['nama'=>'Latte','qty'=>1,'harga'=>24000],
-            ['nama'=>'Espresso','qty'=>2,'harga'=>15000],
+             ['id'=>3, 'nama'=>'Latte', 'harga'=>24000, 'qty'=>1, 'img'=>'https://placehold.co/250x160/bf8f6f/ffffff?text=Latte'],
+             ['id'=>1, 'nama'=>'Espresso', 'harga'=>15000, 'qty'=>2, 'img'=>'https://placehold.co/250x160/3b2e26/ffffff?text=Espresso'],
         ];
-
-        $pajak  = 0.10;
-        $diskon = 0;
-
         
-        $subtotal  = array_reduce($order_items, fn($c, $i) => $c + ($i['qty'] * $i['harga']), 0);
-        $pajak_val = $subtotal * $pajak;
-        $total     = $subtotal + $pajak_val - $diskon;
-
         return view('kasir.kasir', [
             'title'       => 'Tapal Kuda | Kasir',
-            'activePage'  => 'kasir',
-            'menu'       => $menu,
+            'activePage'  => 'kasir', // Variabel untuk menandai menu aktif di sidebar
+            'menu'        => $menu,
             'order_items' => $order_items,
-            'pajak'       => $pajak,
-            'diskon'      => $diskon,
-            'subtotal'    => $subtotal,
-            'pajak_val'   => $pajak_val,
-            'total'       => $total,
         ]);
     }
 
+    /**
+     * Menampilkan halaman reservasi.
+     */
     public function reservasikasir()
     {
         $reservasi = [
@@ -56,6 +50,9 @@ class KasirController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan halaman notifikasi.
+     */
     public function notif()
     {
         $notifikasi = [
@@ -71,22 +68,9 @@ class KasirController extends Controller
         ]);
     }
 
-    public function profile()
-    {
-        $user = [
-            'nama'    => 'Kasir Tapal Kuda',
-            'email'   => 'kasir@tapalkuda.com',
-            'telepon' => '0812-3456-7890',
-            'foto'    => 'https://placehold.co/140x140?text=Kasir',
-        ];
-
-        return view('kasir.profile', [
-            'title'      => 'Tapal Kuda | Profile',
-            'activePage' => 'profile',
-            'user'       => $user,
-        ]);
-    }
-
+    /**
+     * Menampilkan halaman riwayat pesanan.
+     */
     public function riwayat()
     {
         $riwayat = [
@@ -95,32 +79,35 @@ class KasirController extends Controller
             ['kode'=>'INV-1021','tanggal'=>'2025-10-18','pelanggan'=>'Aqila','total'=>18000,'status'=>'Batal'],
         ];
 
-        return view('kasir.riwayat', [
-            'title'      => 'Tapal Kuda | Riwayat Pesanan',
-            'activePage' => 'history',
-            'riwayat'    => $riwayat,
-        ]);
-    }
-
-    public function struk(Request $request)
-    {
-        $struk = [
-            'kode'      => 'INV-1023',
-            'tanggal'   => date('Y-m-d H:i'),
-            'kasir'     => 'Kasir Tapal Kuda',
-            'pelanggan' => 'Diki',
-            'items'     => [
-                ['nama'=>'Latte','qty'=>1,'harga'=>24000],
-                ['nama'=>'Espresso','qty'=>2,'harga'=>15000],
-            ],
-            'pajak'  => 0.10,
-            'diskon' => 0,
+        // Data dummy untuk detail struk. Di aplikasi nyata, ini akan diambil dari database berdasarkan kode.
+        $detailStruk = [
+            'INV-1023' => ['kasir' => 'Kasir Tapal Kuda', 'items' => [['nama'=>'Latte','qty'=>1,'harga'=>24000],['nama'=>'Espresso','qty'=>2,'harga'=>15000]], 'pajak' => 0.10, 'diskon' => 0],
+            'INV-1022' => ['kasir' => 'Kasir Tapal Kuda', 'items' => [['nama'=>'Cappuccino','qty'=>1,'harga'=>22000],['nama'=>'Americano','qty'=>1,'harga'=>15000]], 'pajak' => 0.10, 'diskon' => 0],
+            'INV-1021' => ['kasir' => 'Kasir Tapal Kuda', 'items' => [['nama'=>'Americano','qty'=>1,'harga'=>18000]], 'pajak' => 0.10, 'diskon' => 0],
         ];
 
-        return view('kasir.struk', [
-            'title'      => 'Tapal Kuda | Struk Pembayaran',
-            'activePage' => 'history',
-            'struk'      => $struk,
+
+        return view('kasir.riwayat', [
+            'title'       => 'Tapal Kuda | Riwayat Pesanan',
+            'activePage'  => 'riwayat',
+            'riwayat'     => $riwayat,
+            'detailStruk' => $detailStruk,
+        ]);
+    }
+    
+     public function profile()
+    {
+        $user = [
+            'nama'    => 'Kasir Tapal Kuda',
+            'email'   => 'kasir@tapalkuda.com',
+            'telepon' => '0812-3456-7890',
+            'foto'    => 'https://placehold.co/140x140/54453d/ffffff?text=Kasir',
+        ];
+
+        return view('kasir.profile', [
+            'title'      => 'Tapal Kuda | Profile',
+            'activePage' => 'profile',
+            'user'       => $user,
         ]);
     }
 }

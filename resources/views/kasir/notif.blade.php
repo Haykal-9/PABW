@@ -1,63 +1,50 @@
-@extends('layouts.kasir')
-@section('title', 'Tapal Kuda | Notifikasi Reservasi')
+@extends('kasir.layouts.app')
 
 @push('styles')
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  <style>
-    /* Halaman notifikasi tidak punya panel kanan */
-    .kasir-page main{ margin-right:0 !important; overflow:visible !important; }
-    .kasir-page .orders-panel{ display:none !important; }
-    /* Styling kartu sederhana; bisa dipindah ke CSS file */
-    .kasir-page .notification-list{ display:flex; flex-direction:column; gap:16px; }
-    .kasir-page .notification-card{
-      background:#2a3345; border-radius:12px; padding:16px 20px; color:#cbd5e1;
-      display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
+<style>
+    .notif-list {
+        margin-top: 2rem;
     }
-    .kasir-page .notification-card h3{ color:#fff; font-size:16px; margin:0 0 6px 0; }
-    .kasir-page .notification-card .time{ font-size:12px; color:#9ca3af; margin:0 0 8px 0; }
-    .kasir-page .notification-card .body{ margin:0; }
-    .kasir-page .actions{ display:flex; gap:8px; }
-    .kasir-page .btn-confirm{ background:#22c55e; color:#0b1; color:#0a1a12; color:#0a1a12; }
-    .kasir-page .btn-confirm,
-    .kasir-page .btn-cancel{
-      border:none; border-radius:8px; padding:8px 14px; font-weight:600; cursor:pointer;
+    .notif-item {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
     }
-    .kasir-page .btn-confirm{ background:#10b981; color:#fff; }
-    .kasir-page .btn-cancel{ background:#dc3545; color:#fff; }
-  </style>
+    .notif-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .notif-header h5 { font-weight: 600; margin: 0; }
+    .notif-header .time { font-size: 0.85rem; color: var(--text-muted-color); }
+    .notif-body { font-size: 0.95rem; color: var(--text-muted-color); }
+</style>
 @endpush
 
 @section('content')
-<div class="kasir-page">
-  <main>
-    <header>
-      <h1>Notifikasi Reservasi</h1>
-      <p>Daftar reservasi baru yang perlu dikonfirmasi</p>
-    </header>
-
-    <section class="notification-section" aria-label="Reservation Notifications">
-      <div class="notification-container">
-        <div class="notification-list">
-          @forelse ($notifikasi as $n)
-            <article class="notification-card">
-              <div class="notification-info">
-                <h3 style="color: white;">{{ $n['judul'] }}</h3>
-                <p class="time" style="color: white;">{{ $n['waktu'] }}</p>
-                <p class="body" style="color: white;">{{ $n['isi'] }}</p>
-              </div>
-
-              {{-- Tombol contoh (opsional). Saat sudah pakai route Laravel, ganti action-nya. --}}
-              <div class="actions">
-                <button class="btn-confirm" type="button">Konfirmasi</button>
-                <button class="btn-cancel"  type="button">Batalkan</button>
-              </div>
-            </article>
-          @empty
-            <p class="text-muted" style="color:#cbd5e1">Belum ada notifikasi.</p>
-          @endforelse
-        </div>
-      </div>
-    </section>
-  </main>
-</div>
+<main class="content">
+    <div class="header">
+        <h1>Notifikasi</h1>
+        <p>Semua pemberitahuan dan pembaruan penting ada di sini.</p>
+    </div>
+    
+    <div class="notif-list">
+        @forelse ($notifikasi as $item)
+            <div class="notif-item">
+                <div class="notif-header">
+                    <h5>{{ $item['judul'] }}</h5>
+                    <span class="time">{{ $item['waktu'] }}</span>
+                </div>
+                <div class="notif-body">
+                    <p>{{ $item['isi'] }}</p>
+                </div>
+            </div>
+        @empty
+             <p class="text-center text-muted">Tidak ada notifikasi baru.</p>
+        @endforelse
+    </div>
+</main>
 @endsection

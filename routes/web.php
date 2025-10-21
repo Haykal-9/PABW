@@ -47,8 +47,15 @@ Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.ord
 Route::get('/admin/reservations', [AdminController::class, 'reservations'])->name('admin.reservations');
 Route::get('/admin/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
 
-Route::get('/kasir',      [KasirController::class, 'index'])->name('kasir.index');
-Route::get('/reservasikasir',  [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
-Route::get('/notif',      [KasirController::class, 'notif'])->name('kasir.notif');
-Route::get('/profile',    [KasirController::class, 'profile'])->name('kasir.profile');
-Route::get('/riwayat',    [KasirController::class, 'riwayat'])->name('kasir.riwayat');
+Route::get('/kasir/kasir',      [KasirController::class, 'index'])->name('kasir.index');
+Route::get('/kasir/reservasi', [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
+Route::get('/kasir/riwayat', [KasirController::class, 'riwayat'])->name('kasir.riwayat');
+Route::get('/kasir/notifikasi', [KasirController::class, 'notif'])->name('kasir.notif');
+
+// Rute baru untuk halaman profil dan logout
+Route::get('/kasir/profile', [KasirController::class, 'profile'])->name('kasir.profile');
+Route::get('/kasir/logout', function() {
+    // Di aplikasi nyata, di sini akan ada logika untuk logout
+    // Untuk saat ini, kita arahkan kembali ke halaman kasir
+    return redirect()->route('kasir');
+})->name('logout');
