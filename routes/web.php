@@ -42,24 +42,35 @@ Route::get('/profil/reservasi', [ProfileController::class, 'reservationHistory']
 // Routes untuk Admin
 Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/menu', [AdminController::class, 'menu'])->name('admin.menu');
+
+// --- ROUTES CRUD MENU ---
+Route::post('/admin/menu', [AdminController::class, 'storeMenu'])->name('admin.menu.store');
+Route::put('/admin/menu/{id}', [AdminController::class, 'updateMenu'])->name('admin.menu.update');
+Route::delete('/admin/menu/{id}', [AdminController::class, 'destroyMenu'])->name('admin.menu.destroy');
+
+// --- ROUTES CRUD USERS ---
 Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
-Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
+Route::put('/admin/users/{id}', [AdminController::class, 'updateUserRole'])->name('admin.users.update'); // Update Role
+Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy'); // Delete User
+
+// --- ROUTES CRUD RESERVATIONS ---
 Route::get('/admin/reservations', [AdminController::class, 'reservations'])->name('admin.reservations');
+Route::put('/admin/reservations/{id}', [AdminController::class, 'updateReservationStatus'])->name('admin.reservations.update'); // Update Status
+Route::delete('/admin/reservations/{id}', [AdminController::class, 'destroyReservation'])->name('admin.reservations.destroy'); // Delete Reservation
+
+// --- ROUTES CRUD RATINGS (HANYA DELETE) ---
 Route::get('/admin/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
+Route::delete('/admin/ratings/{id}', [AdminController::class, 'destroyRating'])->name('admin.ratings.destroy'); // Delete Rating
 
+// --- RIWAYAT PENJUALAN (READ ONLY) ---
+Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
 
-// routes kasir
-
+// --- KASIR ROUTES ---
 Route::get('/kasir/kasir',      [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/kasir/reservasi', [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
 Route::get('/kasir/riwayat', [KasirController::class, 'riwayat'])->name('kasir.riwayat');
 Route::get('/kasir/notifikasi', [KasirController::class, 'notif'])->name('kasir.notif');
-
-// Rute baru untuk halaman profil dan logout
 Route::get('/kasir/profile', [KasirController::class, 'profile'])->name('kasir.profile');
 Route::get('/kasir/logout', function() {
-    // Di aplikasi nyata, di sini akan ada logika untuk logout
-    // Untuk saat ini, kita arahkan kembali ke halaman kasir
     return redirect()->route('kasir');
 })->name('logout');
-

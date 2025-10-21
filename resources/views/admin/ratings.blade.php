@@ -18,11 +18,12 @@
                         <th>Rating</th>
                         <th>Ulasan</th>
                         <th>Tanggal</th>
+                        <th>Aksi</th> {{-- KOLOM BARU --}}
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($ratings as $rating)
-                    <tr>
+                    <tr data-id="{{ $rating['id'] }}">
                         <td>{{ $rating['id'] }}</td>
                         <td>{{ $rating['menu'] }}</td>
                         <td>{{ $rating['user'] }}</td>
@@ -36,6 +37,11 @@
                         </td>
                         <td>{{ $rating['ulasan'] }}</td>
                         <td>{{ $rating['tanggal'] }}</td>
+                        <td>
+                             <button class="btn btn-sm btn-danger btn-delete-rating" data-id="{{ $rating['id'] }}">
+                                <i class="fas fa-trash"></i> Hapus
+                            </button>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -44,3 +50,40 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Delete Button Handler
+        document.querySelectorAll('.btn-delete-rating').forEach(button => {
+            button.addEventListener('click', async function() {
+                const ratingId = this.dataset.id;
+                if (!confirm(`Hapus Ulasan ID ${ratingId}?`)) {
+                    return;
+                }
+                
+                const url = `{{ url('/admin/ratings') }}/${ratingId}`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                        }
+                    });
+
+                    if (response.ok) {
+                        window.location.reload(); 
+                    } else {
+                        alert('Gagal menghapus ulasan.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menghapus.');
+                }
+            });
+        });
+    });
+</script>
+@endpush
