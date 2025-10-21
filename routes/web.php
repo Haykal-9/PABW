@@ -47,6 +47,7 @@ Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.ord
 Route::get('/admin/reservations', [AdminController::class, 'reservations'])->name('admin.reservations');
 Route::get('/admin/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
 
+//
 Route::get('/kasir',      [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/reservasikasir',  [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
 Route::get('/notif',      [KasirController::class, 'notif'])->name('kasir.notif');
