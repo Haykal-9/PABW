@@ -2,94 +2,91 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\menu;
+use App\Models\reservasi;
+use App\Models\review;
+use App\Models\pembayaran; // Diperlukan untuk Orders
+use App\Models\detailPembayaran; // Diperlukan untuk Orders
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
     // ====================================================================
-    // FUNGSI PEMBANTU UNTUK MENGAMBIL DATA DARI SESSION ATAU DUMMY AWAL
+    // FUNGSI PEMETAAN (MAPPING) DARI STRING KE ID DATABASE
+    // DIBUTUHKAN UNTUK OPERASI STORE/UPDATE
     // ====================================================================
 
-    private function getInitialMenuData()
+    private function getRoleId(string $roleName): int
     {
-         return [
-            ['id' => 1, 'nama' => 'Kopi Tubruk Robusta', 'kategori' => 'Kopi', 'harga' => 15000, 'stok' => 99, 'status' => 'Tersedia', 'image_path' => 'foto/KOPITUBRUKROBUSTA.jpg'],
-            ['id' => 2, 'nama' => 'Cappucino', 'kategori' => 'Kopi', 'harga' => 30000, 'stok' => 50, 'status' => 'Tersedia', 'image_path' => 'foto/CAPPUCINO.jpg'],
-            ['id' => 3, 'nama' => 'Matcha Premium', 'kategori' => 'Non-Kopi', 'harga' => 40000, 'stok' => 30, 'status' => 'Tersedia', 'image_path' => 'foto/red.jpg'],
-            ['id' => 4, 'nama' => 'Nasi Ayam Teriyaki', 'kategori' => 'Makanan', 'harga' => 35000, 'stok' => 15, 'status' => 'Tersedia', 'image_path' => 'foto/AyamTeriyaki.jpg'],
-            ['id' => 5, 'nama' => 'Tempe Mendoan', 'kategori' => 'Cemilan', 'harga' => 18000, 'stok' => 25, 'status' => 'Habis', 'image_path' => 'foto/tempeMendoan.jpg'],
-            ['id' => 6, 'nama' => 'Balabala', 'kategori' => 'Cemilan', 'harga' => 10000, 'stok' => 40, 'status' => 'Tersedia', 'image_path' => 'foto/balabala.jpg'],
-        ];
+        return match (strtolower($roleName)) {
+            'admin' => 1,
+            'kasir' => 2,
+            'customer' => 3,
+            'member' => 3,
+            default => 3,
+        };
     }
 
-    private function getInitialUserData()
+    private function getMenuTypeId(string $categoryName): int
     {
-        return [
-            ['id' => 1, 'nama' => 'Rina S.', 'email' => 'rina@example.com', 'role' => 'Customer', 'terdaftar' => '2024-09-01'],
-            ['id' => 2, 'nama' => 'Andi K.', 'email' => 'andi@example.com', 'role' => 'Customer', 'terdaftar' => '2024-09-15'],
-            ['id' => 3, 'nama' => 'Admin Utama', 'email' => 'admin@tapalkuda.com', 'role' => 'Admin', 'terdaftar' => '2024-08-01'],
-            ['id' => 4, 'nama' => 'Santi W.', 'email' => 'santi@example.com', 'role' => 'Customer', 'terdaftar' => '2024-10-05'],
-            ['id' => 5, 'nama' => 'Kasir Tapal', 'email' => 'kasir@tapalkuda.com', 'role' => 'Kasir', 'terdaftar' => '2024-10-01'],
-        ];
+        return match (strtolower($categoryName)) {
+            'kopi' => 1,
+            'non-kopi' => 2,
+            'makanan' => 3,
+            'cemilan' => 4,
+            default => 1,
+        };
+    }
+
+    private function getMenuStatusId(string $statusName): int
+    {
+        return match (strtolower($statusName)) {
+            'tersedia' => 1,
+            'habis' => 2,
+            default => 1,
+        };
+    }
+
+    private function getReservationStatusId(string $statusName): int
+    {
+        return match (strtolower($statusName)) {
+            'dikonfirmasi' => 2,
+            'menunggu konfirmasi' => 1,
+            'dibatalkan' => 3,
+            'selesai' => 2, // Asumsi 'Selesai' adalah Dikonfirmasi (2) untuk reservasi
+            default => 1,
+        };
     }
     
-    private function getInitialReservationData()
-    {
-        return [
-            [
-                'id' => 1, 'kode' => 'RSV2025101901', 'tanggal' => '2025-10-25', 'jam' => '19:00', 'orang' => 4, 'nama' => 'Dummy User', 'email' => 'dummy@mail.com', 'phone' => '081234567890', 'status' => 'Dikonfirmasi', 'note' => 'Butuh meja dekat jendela, ada anak kecil.',
-            ],
-            [
-                'id' => 2, 'kode' => 'RSV2025101902', 'tanggal' => '2025-10-20', 'jam' => '15:30', 'orang' => 2, 'nama' => 'Joko Susanto', 'email' => 'joko@mail.com', 'phone' => '085711223344', 'status' => 'Menunggu Konfirmasi', 'note' => 'Tidak ada catatan khusus.',
-            ],
-            [
-                'id' => 3, 'kode' => 'RSV2025101801', 'tanggal' => '2025-10-18', 'jam' => '18:00', 'orang' => 5, 'nama' => 'Ani Mardiana', 'email' => 'ani@mail.com', 'phone' => '081998877665', 'status' => 'Selesai', 'note' => 'Ulang tahun, mohon hiasan sederhana di meja.',
-            ],
-        ];
-    }
-
-    private function getInitialRatingData()
-    {
-        return [
-            ['id' => 1, 'menu' => 'Iced TapalKuda Latte', 'user' => 'Rina S.', 'rating' => 5, 'ulasan' => 'Kopi terbaik di kota! Rasa creamy-nya pas.', 'tanggal' => '2025-10-18'],
-            ['id' => 2, 'menu' => 'Nasi Ayam Teriyaki', 'user' => 'Andi K.', 'rating' => 4, 'ulasan' => 'Ayamnya enak, tapi porsinya sedikit kecil.', 'tanggal' => '2025-10-17'],
-            ['id' => 3, 'menu' => 'Filter Coffee (V60)', 'user' => 'Santi W.', 'rating' => 5, 'ulasan' => 'Perfect brew, aroma sangat kuat.', 'tanggal' => '2025-10-15'],
-        ];
-    }
-
-    // Fungsi utama untuk memuat data DARI Session JIKA ADA, atau menggunakan data dummy
-    private function loadDynamicData(string $key, callable $initializer, string $id_key = null)
-    {
-        // Jika data sudah dimodifikasi di Session, kembalikan data dari Session
-        if (Session::has($key)) {
-            return Session::get($key);
-        }
-        
-        // Jika belum ada modifikasi, set data awal ke Session dan kembalikan data tersebut
-        $initialData = $initializer();
-        Session::put($key, $initialData);
-        
-        if ($id_key) {
-            $lastId = collect($initialData)->max('id') ?? 0;
-            Session::put($id_key, $lastId + 1);
-        }
-
-        return $initialData;
-    }
-
     // ====================================================================
-    // HALAMAN ADMIN (MENAMPILKAN DATA)
+    // HALAMAN ADMIN (MENGAMBIL DATA DARI DB SECARA EKSKLUSIF)
     // ====================================================================
 
     public function dashboard()
     {
-        // Data Dummy untuk Dashboard
+        // Mendapatkan data secara dinamis dari database (TIDAK ADA DUMMY)
+        $pendapatanHariIni = pembayaran::whereDate('order_date', today())
+            ->join('detail_pembayaran', 'pembayaran.id', '=', 'detail_pembayaran.pembayaran_id')
+            ->sum(DB::raw('detail_pembayaran.quantity * detail_pembayaran.price_per_item * 1.1')); // Hitung Total (termasuk 10% pajak)
+
+        $menuTerjualHariIni = pembayaran::whereDate('order_date', today())
+            ->join('detail_pembayaran', 'pembayaran.id', '=', 'detail_pembayaran.pembayaran_id')
+            ->sum('detail_pembayaran.quantity');
+
+        $totalPendapatan = pembayaran::join('detail_pembayaran', 'pembayaran.id', '=', 'detail_pembayaran.pembayaran_id')
+            ->sum(DB::raw('detail_pembayaran.quantity * detail_pembayaran.price_per_item * 1.1'));
+
+        // Asumsi status 'Dikonfirmasi' (ID 2) dihitung sebagai terlaksana
+        $reservasiTerlaksana = reservasi::where('status_id', 2)->count(); 
+        
         $data = [
-            'pendapatanHariIni' => 450000,
-            'menuTerjualHariIni' => 35,
-            'totalPendapatan' => 98500000,
-            'reservasiTerlaksana' => 150,
+            'pendapatanHariIni' => $pendapatanHariIni,
+            'menuTerjualHariIni' => $menuTerjualHariIni,
+            'totalPendapatan' => $totalPendapatan,
+            'reservasiTerlaksana' => $reservasiTerlaksana,
         ];
 
         return view('admin.dashboard', compact('data'));
@@ -97,170 +94,230 @@ class AdminController extends Controller
 
     public function menu()
     {
-        // Load data menu: jika sudah ada di Session (setelah CRUD), gunakan itu. Jika belum, gunakan data dummy dan simpan di Session.
-        $menus = $this->loadDynamicData('admin_menus', fn() => $this->getInitialMenuData(), 'admin_menu_next_id');
+        // Mengambil data menu dari Database (TIDAK ADA DUMMY)
+        $menus = menu::with(['type', 'status'])->get()->map(fn($m) => [
+            'id' => $m->id,
+            'nama' => $m->nama,
+            'kategori' => $m->type->type_name ?? 'N/A',
+            'harga' => $m->price,
+            'stok' => $m->stok ?? 0, // Menggunakan 0 karena kolom 'stok' tidak ada di migrasi menu
+            'status' => ucwords($m->status->status_name ?? 'N/A'),
+            'image_path' => $m->url_foto,
+        ]);
+
         return view('admin.menu', compact('menus'));
     }
 
     public function users()
     {
-        $users = $this->loadDynamicData('admin_users', fn() => $this->getInitialUserData(), 'admin_user_next_id');
+        // Mengambil data user dari Database (TIDAK ADA DUMMY)
+        $users = User::with('role')->get()->map(fn($u) => [
+            'id' => $u->id,
+            'nama' => $u->nama,
+            'email' => $u->email,
+            'role' => ucwords($u->role->role_name ?? 'N/A'),
+            'terdaftar' => $u->created_at ? $u->created_at->format('Y-m-d') : 'N/A',
+        ]);
         return view('admin.users', compact('users'));
     }
 
     public function reservations()
     {
-        $reservations = $this->loadDynamicData('admin_reservations', fn() => $this->getInitialReservationData(), 'admin_res_next_id');
+        // Mengambil data reservasi dari Database (TIDAK ADA DUMMY)
+        $reservations = reservasi::with(['user', 'status'])
+            ->get()->map(function($r) {
+                return [
+                    'id' => $r->id, 
+                    'kode' => $r->kode_reservasi, 
+                    'tanggal' => $r->tanggal_reservasi ? (new \DateTime($r->tanggal_reservasi))->format('Y-m-d') : 'N/A',
+                    'jam' => $r->tanggal_reservasi ? (new \DateTime($r->tanggal_reservasi))->format('H:i') : 'N/A',
+                    'orang' => $r->jumlah_orang, 
+                    // Mengambil data dari relasi User
+                    'nama' => $r->user->nama ?? 'Unknown User', 
+                    'email' => $r->user->email ?? 'N/A', 
+                    'phone' => $r->user->no_telp ?? 'N/A', 
+                    'status' => ucwords($r->status->status_name ?? 'Menunggu'), 
+                    'note' => $r->message,
+                ];
+            });
+        
         return view('admin.reservations', compact('reservations'));
     }
     
     public function ratings()
     {
-        $ratings = $this->loadDynamicData('admin_ratings', fn() => $this->getInitialRatingData(), 'admin_rating_next_id');
+        // Mengambil data review dari Database (TIDAK ADA DUMMY)
+        $ratings = review::with(['user', 'menu_item'])
+            ->get()->map(fn($r) => [
+                'id' => $r->id,
+                'menu' => $r->menu_item->nama ?? 'Menu Dihapus',
+                'user' => $r->user->nama ?? 'User Dihapus',
+                'rating' => $r->rating,
+                'ulasan' => $r->comment,
+                'tanggal' => $r->created_at ? $r->created_at->format('Y-m-d') : 'N/A',
+            ]);
+        
         return view('admin.ratings', compact('ratings'));
     }
     
-    // --- RIWAYAT PENJUALAN (ORDERS) - READ ONLY ---
+    // --- RIWAYAT PENJUALAN (ORDERS) - MENGAMBIL DARI DB (TIDAK ADA DUMMY) ---
     public function orders()
     {
-        // Data Orders bersifat statis
-        $orders = [
-            [
-                'id' => 101, 
-                'tanggal' => '2025-10-18 14:00', 
-                'customer' => 'Rina S.', 
-                'status' => 'Selesai', 
-                'metode' => 'QRIS',
-                'subtotal' => 40000,
-                'tax' => 4000,
-                'total' => 44000,
-                'items' => [
-                    ['name' => 'Kopi Tubruk Robusta', 'qty' => 1, 'price' => 15000, 'image_path' => 'foto/KOPITUBRUKROBUSTA.jpg'],
-                    ['name' => 'Matcha Premium', 'qty' => 1, 'price' => 25000, 'image_path' => 'foto/red.jpg'],
-                ]
-            ],
-            // ... data dummy lainnya
-        ];
-        // Menggunakan data dummy bawaan untuk orders
+        // Mengambil semua pembayaran dan itemnya (Asumsi 10% tax)
+        $orders = pembayaran::with(['user', 'payment_method', 'status', 'order_type'])
+            ->orderBy('order_date', 'desc')
+            ->get()->map(function ($order) {
+                // Mengambil rincian item
+                $items = detailPembayaran::with('menu')
+                    ->where('pembayaran_id', $order->id)
+                    ->get()->map(function ($detail) {
+                        $menuName = $detail->menu->nama ?? 'Menu Dihapus';
+                        $subtotalItem = $detail->quantity * $detail->price_per_item;
+                        $imagePath = $detail->menu->url_foto ?? 'assets/placeholder.jpg';
+                        
+                        return [
+                            'name' => $menuName,
+                            'qty' => $detail->quantity,
+                            'price' => $detail->price_per_item,
+                            'image_path' => 'foto/' . $imagePath, // Sesuaikan path dengan folder public/foto/
+                            'subtotal_item' => $subtotalItem,
+                        ];
+                    })->toArray();
+
+                $subtotal = collect($items)->sum('subtotal_item');
+                $tax = $subtotal * 0.10;
+                $total = $subtotal + $tax;
+                
+                return [
+                    'id' => $order->id, 
+                    'tanggal' => $order->order_date ? $order->order_date : 'N/A', 
+                    'customer' => $order->user->nama ?? 'Guest/Unknown', 
+                    'status' => ucwords($order->status->status_name ?? 'N/A'),
+                    'metode' => ucwords($order->payment_method->method_name ?? 'N/A'),
+                    'subtotal' => $subtotal,
+                    'tax' => $tax,
+                    'total' => $total,
+                    'items' => $items
+                ];
+            });
+            
         return view('admin.orders', compact('orders'));
     }
 
     // ====================================================================
-    // FUNGSI CRUD (HANYA UNTUK MENGUBAH DATA DI SESSION SEMENTARA)
+    // FUNGSI CRUD MENGGUNAKAN ELOQUENT
     // ====================================================================
 
-    // --- CRUD MENU ---
     public function storeMenu(Request $request)
     {
-        $menus = Session::get('admin_menus');
-        $nextId = Session::get('admin_menu_next_id');
-
-        $newMenu = [
-            'id' => $nextId,
+        // Mapping UI Input ke DB Schema
+        $menuData = [
             'nama' => $request->nama,
-            'kategori' => $request->kategori,
-            'harga' => (int) $request->harga,
-            'stok' => (int) $request->stok,
-            'status' => $request->status,
-            'image_path' => $request->image_path,
+            'url_foto' => $request->image_path,
+            'type_id' => $this->getMenuTypeId($request->kategori),
+            'price' => (int) $request->harga,
+            'deskripsi' => 'Deskripsi default untuk ' . $request->nama,
+            'status_id' => $this->getMenuStatusId($request->status),
         ];
-        $menus[] = $newMenu;
         
-        Session::put('admin_menus', $menus);
-        Session::put('admin_menu_next_id', $nextId + 1);
-        return response()->json(['success' => true, 'message' => 'Berhasil ditambahkan.']);
+        menu::create($menuData);
+
+        return response()->json(['success' => true, 'message' => 'Berhasil ditambahkan ke Database.']);
     }
 
     public function updateMenu(Request $request, $id)
     {
-        $menus = Session::get('admin_menus');
-        $menuId = (int) $id;
+        $menu = menu::find($id);
 
-        foreach ($menus as $key => $menu) {
-            if ($menu['id'] === $menuId) {
-                $menus[$key] = [
-                    'id' => $menuId,
-                    'nama' => $request->nama,
-                    'kategori' => $request->kategori,
-                    'harga' => (int) $request->harga,
-                    'stok' => (int) $request->stok,
-                    'status' => $request->status,
-                    'image_path' => $request->image_path,
-                ];
-                Session::put('admin_menus', $menus);
-                return response()->json(['success' => true, 'message' => 'Berhasil diperbarui.']);
-            }
+        if (!$menu) {
+            return response()->json(['success' => false, 'message' => 'Menu tidak ditemukan.'], 404);
         }
-        return response()->json(['success' => false, 'message' => 'Gagal diperbarui.'], 404);
+
+        // Mapping UI Input ke DB Schema
+        $menuData = [
+            'nama' => $request->nama,
+            'url_foto' => $request->image_path,
+            'type_id' => $this->getMenuTypeId($request->kategori),
+            'price' => (int) $request->harga,
+            'status_id' => $this->getMenuStatusId($request->status),
+        ];
+
+        $menu->update($menuData);
+        
+        return response()->json(['success' => true, 'message' => 'Berhasil diperbarui di Database.']);
     }
 
     public function destroyMenu($id)
     {
-        $menuId = (int) $id;
-        $menus = Session::get('admin_menus');
-        $menus = array_values(array_filter($menus, fn($menu) => $menu['id'] !== $menuId));
-        Session::put('admin_menus', $menus);
-        return response()->json(['success' => true, 'message' => 'Berhasil dihapus.']);
+        $deleted = menu::destroy($id);
+        
+        if ($deleted) {
+            return response()->json(['success' => true, 'message' => 'Berhasil dihapus dari Database.']);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Gagal menghapus menu.'], 404);
     }
 
-    // --- CRUD USERS ---
     public function updateUserRole(Request $request, $id)
     {
-        $users = Session::get('admin_users');
-        $userId = (int) $id;
-        $newRole = $request->input('role');
-        foreach ($users as $key => $user) {
-            if ($user['id'] === $userId) {
-                $users[$key]['role'] = $newRole;
-                Session::put('admin_users', $users);
-                return response()->json(['success' => true, 'message' => 'Peran pengguna berhasil diperbarui.']);
-            }
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Pengguna tidak ditemukan.'], 404);
         }
-        return response()->json(['success' => false, 'message' => 'Gagal diperbarui.'], 404);
+
+        $newRoleId = $this->getRoleId($request->input('role'));
+        
+        $user->update(['role_id' => $newRoleId]);
+        
+        return response()->json(['success' => true, 'message' => 'Peran pengguna berhasil diperbarui di Database.']);
     }
 
     public function destroyUser($id)
     {
-        $userId = (int) $id;
-        $users = Session::get('admin_users');
-        $users = array_values(array_filter($users, fn($user) => $user['id'] !== $userId));
-        Session::put('admin_users', $users);
-        return response()->json(['success' => true, 'message' => 'Berhasil dihapus.']);
+        $deleted = User::destroy($id);
+        
+        if ($deleted) {
+            return response()->json(['success' => true, 'message' => 'Berhasil dihapus dari Database.']);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Gagal menghapus pengguna.'], 404);
     }
 
-    // --- CRUD RESERVATIONS ---
     public function updateReservationStatus(Request $request, $id)
     {
-        $reservations = Session::get('admin_reservations');
-        $resId = (int) $id;
-        $newStatus = $request->input('status');
+        $reservation = reservasi::find($id);
 
-        foreach ($reservations as $key => $res) {
-            if ($res['id'] === $resId) {
-                $reservations[$key]['status'] = $newStatus;
-                Session::put('admin_reservations', $reservations);
-                return response()->json(['success' => true, 'message' => 'Status berhasil diperbarui.']);
-            }
+        if (!$reservation) {
+            return response()->json(['success' => false, 'message' => 'Reservasi tidak ditemukan.'], 404);
         }
-        return response()->json(['success' => false, 'message' => 'Gagal diperbarui.'], 404);
+
+        $newStatusId = $this->getReservationStatusId($request->input('status'));
+        
+        $reservation->update(['status_id' => $newStatusId]);
+        
+        return response()->json(['success' => true, 'message' => 'Status berhasil diperbarui di Database.']);
     }
 
     public function destroyReservation($id)
     {
-        $resId = (int) $id;
-        $reservations = Session::get('admin_reservations');
-        $reservations = array_values(array_filter($reservations, fn($res) => $res['id'] !== $resId));
-        Session::put('admin_reservations', $reservations);
-        return response()->json(['success' => true, 'message' => 'Berhasil dihapus.']);
+        $deleted = reservasi::destroy($id);
+        
+        if ($deleted) {
+            return response()->json(['success' => true, 'message' => 'Berhasil dihapus dari Database.']);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Gagal menghapus reservasi.'], 404);
     }
 
-    // --- CRUD RATINGS ---
     public function destroyRating($id)
     {
-        $ratingId = (int) $id;
-        $ratings = Session::get('admin_ratings');
-        $ratings = array_values(array_filter($ratings, fn($rating) => $rating['id'] !== $ratingId));
-        Session::put('admin_ratings', $ratings);
-        return response()->json(['success' => true, 'message' => 'Berhasil dihapus.']);
+        $deleted = review::destroy($id);
+        
+        if ($deleted) {
+            return response()->json(['success' => true, 'message' => 'Berhasil dihapus dari Database.']);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Gagal menghapus ulasan.'], 404);
     }
 }

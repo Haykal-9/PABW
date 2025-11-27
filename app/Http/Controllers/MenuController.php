@@ -3,58 +3,67 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\menu; // Model Menu utama
+use App\Models\menuType; // Model Tipe Menu
+
 
 class MenuController extends Controller
 {
-    public function index()
+    // Fungsi pembantu untuk memetakan nama kategori DB ke slug JS Filter
+    private function mapTypeToSlug(string $typeName): string
     {
-        // Data dummy terstruktur untuk ditampilkan dinamis di view
-        $menus = [
-            ['id' => 1, 'name' => 'Kopi Tubruk Robusta', 'image_url' => 'foto/KOPITUBRUKROBUSTA.jpg', 'price' => 15000, 'category' => 'coffee', 'description_short' => 'Espresso, Fresh Milk, Sirup Vanila.'],
-            ['id' => 2, 'name' => 'Kopi Tubruk Arabika', 'image_url' => 'foto/arabika.jpg', 'price' => 12000, 'category' => 'non-coffee', 'description_short' => 'Bubuk matcha Jepang dan susu segar.'],
-            ['id' => 3, 'name' => 'Classic Croissant', 'image_url' => 'foto/kentangSosis.jpg', 'price' => 25000, 'category' => 'cemilan', 'description_short' => 'Roti lapis mentega Prancis.'],
-            ['id' => 4, 'name' => 'Americano Dingin', 'image_url' => 'foto/AyamTeriyaki.jpg', 'price' => 20000, 'category' => 'makanan', 'description_short' => 'House blend TapalKuda dengan air dingin.'],
-            ['id' => 5, 'name' => 'Snack Balabala', 'image_url' => 'foto/balabala.jpg', 'price' => 20000, 'category' => 'cemilan', 'description_short' => 'Cemilan renyah.'],
-            ['id' => 6, 'name' => 'Cuanki', 'image_url' => 'foto/cuanki.png', 'price' => 20000, 'category' => 'makanan', 'description_short' => 'Cuanki gurih.'],
-            ['id' => 7, 'name' => 'Espresso', 'image_url' => 'foto/ESPRESSO.jpg', 'price' => 20000, 'category' => 'coffee', 'description_short' => 'Espresso pekat.'],
-            ['id' => 8, 'name' => 'Japan Special', 'image_url' => 'foto/JAPAN.jpg', 'price' => 20000, 'category' => 'coffee', 'description_short' => 'Varian Jepang.'],
-            ['id' => 9, 'name' => 'Taro', 'image_url' => 'foto/taro.jpg', 'price' => 20000, 'category' => 'non-coffee', 'description_short' => 'Minuman taro manis.'],
-            ['id' => 10, 'name' => 'Teh Manis', 'image_url' => 'foto/TehManis.jpg', 'price' => 20000, 'category' => 'non-coffee', 'description_short' => 'Teh manis tradisional.'],
-            ['id' => 11, 'name' => 'Wedang', 'image_url' => 'foto/wedang.jpg', 'price' => 20000, 'category' => 'non-coffee', 'description_short' => 'Minuman hangat tradisional.'],
-            ['id' => 12, 'name' => 'Nasi Tutug', 'image_url' => 'foto/nasiTutug.webp', 'price' => 20000, 'category' => 'makanan', 'description_short' => 'Nasi tutug enak.'],
-        ];
-
-        // Simple counts for sidebar (demo)
-        $menuCounts = [
-            'coffee' => 4,
-            'non-coffee' => 4,
-            'cemilan' => 2,
-            'makanan' => 2,
-        ];
-
-        $totalAllMenus = count($menus);
-
-        // Path view diubah ke 'customers.menu'
-        return view('customers.menu', compact('menus', 'menuCounts', 'totalAllMenus'));
+        return match (strtolower($typeName)) {
+            'kopi' => 'coffee',
+            // Asumsi 'minuman' di DB = 'non-coffee' di UI
+            'minuman' => 'non-coffee', 
+            // Asumsi 'makanan berat' di DB = 'makanan' di UI
+            'makanan berat' => 'makanan', 
+            'cemilan' => 'cemilan',
+            default => 'all', // Default atau kategori tidak dikenal
+        };
     }
 
-    public function show($id)
+    public function menu()
     {
-        // Data dummy untuk detail menu
-        $menus = [
-            ['id' => 1, 'name' => 'Kopi Tubruk Robusta', 'price' => 15000, 'description_long' => 'Kopi tubruk klasik dengan karakter robusta yang pekat.', 'image_url' => 'foto/KOPITUBRUKROBUSTA.jpg', 'category' => 'Kopi', 'slug' => 'kopi-tubruk-robusta'],
-            ['id' => 2, 'name' => 'Kopi Tubruk Arabika', 'price' => 12000, 'description_long' => 'Kopi tubruk klasik dengan karakter arabika yang lembut.', 'image_url' => 'foto/arabika.jpg', 'category' => 'Kopi', 'slug' => 'kopi-tubruk-arabika'],
-        ];
+        // 1. Ambil semua menu yang berstatus Tersedia (status_id 1)
+        // 2. Eager load relasi 'type' (menuType)
+        $rawMenus = menu::where('status_id', 1) 
+                        ->with('type')
+                        ->orderBy('type_id')
+                        ->get();
 
-        $product = collect($menus)->firstWhere('id', $id);
+        // 3. Transformasi (Map) data Eloquent ke struktur yang diharapkan oleh Blade dan JS Filter
+        $menus = $rawMenus->map(function ($item) {
+            // Ambil nama tipe menu dari relasi
+            $typeName = $item->type->type_name ?? 'Lain-lain'; 
+            $categorySlug = $this->mapTypeToSlug($typeName);
+            
+            return [
+                'id' => $item->id,
+                'name' => $item->nama,
+                'description_short' => $item->deskripsi ?? 'Tidak ada deskripsi.', 
+                'price' => (int) $item->price,
+                // Sesuaikan 'image_url' agar dapat dipanggil dengan asset() di Blade
+                'image_url' => 'foto/' . $item->url_foto, 
+                'category' => $categorySlug, // Slug yang cocok dengan data-category di HTML
+            ];
+        });
 
-        if (!$product) {
-            abort(404, 'Menu tidak ditemukan');
-        }
-
-        // Sesuaikan nama variabel agar view 'customers.detail' menerima $menu
-        $menu = (object) $product;
-
-        return view('customers.detail', compact('menu',));
+        // Kirim array datar (flat array) bernama '$menus' ke view
+        return view('customers.menu', [
+            'menus' => $menus,
+        ]);
+    }
+    
+    // Asumsi: Ini adalah fungsi untuk detail menu (Anda mungkin perlu mengubahnya nanti)
+    public function detailMenu($id)
+    {
+        $menu = menu::with(['type', 'status'])->findOrFail($id);
+        
+        // Anda mungkin perlu me-load review atau data terkait lainnya di sini
+        
+        return view('customers.detail', [
+            'menu' => $menu,
+        ]);
     }
 }

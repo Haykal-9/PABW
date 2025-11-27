@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\KasirController;
 
+
 // Route Halaman Utama
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/home', [HomeController::class, 'index']);
@@ -25,8 +26,12 @@ Route::get('/register', function () {
 
 
 // Routes untuk Pengguna (Customer)
-Route::get('/menu', [MenuController::class, 'index']);
-Route::get('/menu/{id}', [MenuController::class, 'show']);
+Route::get('/menu', [MenuController::class, 'menu']);
+Route::get('/menu/{id}', [MenuController::class, 'detailMenu']);
+Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
+
+// Rute untuk mengirim data form (POST)
+Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
 
 // Route untuk Keranjang (dummy)
 Route::get('/cart', [CartController::class, 'index']);
@@ -38,6 +43,7 @@ Route::get('/checkout', [CheckoutController::class, 'create']);
 Route::get('/profil', [ProfileController::class, 'show']);
 Route::get('/profil/pesanan', [ProfileController::class, 'orderHistory']);
 Route::get('/profil/reservasi', [ProfileController::class, 'reservationHistory']);
+
 
 // Routes untuk Admin
 Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');

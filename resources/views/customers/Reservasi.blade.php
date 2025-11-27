@@ -16,59 +16,75 @@
                 Nikmati seni menyeduh kami. Isi detail reservasi Anda di bawah ini untuk memastikan tempat Anda tersedia.
             </p>
 
-            <form method="POST" action="#">
-                @csrf
-                <div class="row g-4">
-                    
-                    {{-- Baris 1: Nama & Telepon (Pre-filled Data) --}}
-                    <div class="col-md-6">
-                        <label for="name" class="form-label fw-semibold small">NAMA LENGKAP</label>
-                        <input name="name" type="text" class="form-control form-control-lg rounded-0 border-dark" id="name" required value="{{ $user->nama ?? '' }}" placeholder="Nama Anda">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="phone" class="form-label fw-semibold small">TELEPON</label>
-                        <input name="phone" type="text" class="form-control form-control-lg rounded-0 border-dark" id="phone" required value="{{ $user->no_telp ?? '' }}" placeholder="+62...">
-                    </div>
-                    
-                    {{-- Baris 2: Email --}}
-                    <div class="col-12">
-                        <label for="email" class="form-label fw-semibold small">EMAIL</label>
-                        <input name="email" type="email" class="form-control form-control-lg rounded-0 border-dark" id="email" required value="{{ $user->email ?? '' }}" placeholder="email@contoh.com">
-                    </div>
-                    
-                    {{-- Baris 3: Jumlah Orang --}}
-                    <div class="col-md-4">
-                        <label for="number_of_people" class="form-label fw-semibold small">JUMLAH ORANG</label>
-                        <input name="number_of_people" type="number" class="form-control form-control-lg rounded-0 border-dark" id="number_of_people" min="1" required placeholder="Contoh: 4">
-                    </div>
-                    
-                    {{-- Baris 4: Tanggal --}}
-                    <div class="col-md-4">
-                        <label for="date" class="form-label fw-semibold small">TANGGAL</label>
-                        <input name="date" type="date" class="form-control form-control-lg rounded-0 border-dark" id="date" required>
-                    </div>
-                    
-                    {{-- Baris 5: Jam --}}
-                    <div class="col-md-4">
-                        <label for="hour" class="form-label fw-semibold small">JAM</label>
-                        <input name="hour" type="time" class="form-control form-control-lg rounded-0 border-dark" id="hour" required>
-                    </div>
-                    
-                    {{-- Baris 6: Pesan Tambahan --}}
-                    <div class="col-12">
-                        <label for="message" class="form-label fw-semibold small">PESAN (Opsional)</label>
-                        <textarea name="message" class="form-control form-control-lg rounded-0 border-dark" id="message" rows="3" placeholder="Contoh: Butuh meja di dekat jendela..."></textarea>
-                    </div>
-                    
-                    {{-- Tombol Submit --}}
-                    <div class="col-12 mt-4">
-                        {{-- Menggunakan warna tema Anda dan ukuran yang besar --}}
-                        <button type="submit" class="btn btn-primary-dark btn-lg w-100 px-5 py-3 fw-bold shadow-sm rounded-0">
-                            RESERVE A TABLE
-                        </button>
-                    </div>
-                </div>
-            </form>
+           
+
+<form method="POST" action="{{ route('reservasi.store') }}">
+    @csrf
+    <div class="row g-4">
+        
+        {{-- Baris 1: Nama & Telepon --}}
+        <div class="col-md-6">
+            <label for="name" class="form-label fw-semibold small">NAMA LENGKAP</label>
+            {{-- PERBAIKAN: name="nama_pemesan" --}}
+            <input name="nama_pemesan" type="text" class="form-control form-control-lg rounded-0 border-dark" id="name" required value="{{ old('nama_pemesan', $user->nama ?? '') }}" placeholder="Nama Anda">
+            @error('nama_pemesan') <div class="text-danger small">{{ $message }}</div> @enderror
+        </div>
+        <div class="col-md-6">
+            <label for="phone" class="form-label fw-semibold small">TELEPON</label>
+            {{-- PERBAIKAN: name="no_telp" --}}
+            <input name="no_telp" type="text" class="form-control form-control-lg rounded-0 border-dark" id="phone" required value="{{ old('no_telp', $user->no_telp ?? '') }}" placeholder="+62...">
+            @error('no_telp') <div class="text-danger small">{{ $message }}</div> @enderror
+        </div>
+        
+        {{-- Baris 2: Email --}}
+        <div class="col-12">
+            <label for="email" class="form-label fw-semibold small">EMAIL</label>
+            {{-- PERBAIKAN: name="email_pemesan" --}}
+            <input name="email_pemesan" type="email" class="form-control form-control-lg rounded-0 border-dark" id="email" required value="{{ old('email_pemesan', $user->email ?? '') }}" placeholder="email@contoh.com">
+            @error('email_pemesan') <div class="text-danger small">{{ $message }}</div> @enderror
+        </div>
+        
+        {{-- Baris 3: Jumlah Orang --}}
+        <div class="col-md-4">
+            <label for="number_of_people" class="form-label fw-semibold small">JUMLAH ORANG</label>
+            {{-- PERBAIKAN: name="jumlah_orang" --}}
+            <input name="jumlah_orang" type="number" class="form-control form-control-lg rounded-0 border-dark" id="number_of_people" min="1" required placeholder="Contoh: 4" value="{{ old('jumlah_orang') }}">
+            @error('jumlah_orang') <div class="text-danger small">{{ $message }}</div> @enderror
+        </div>
+        
+        {{-- Baris 4: Tanggal --}}
+        <div class="col-md-4">
+            <label for="date" class="form-label fw-semibold small">TANGGAL</label>
+            {{-- PERBAIKAN: name="tanggal_reservasi" --}}
+            <input name="tanggal_reservasi" type="date" class="form-control form-control-lg rounded-0 border-dark" id="date" required value="{{ old('tanggal_reservasi') }}">
+            @error('tanggal_reservasi') <div class="text-danger small">{{ $message }}</div> @enderror
+        </div>
+        
+        {{-- Baris 5: Jam --}}
+        <div class="col-md-4">
+            <label for="hour" class="form-label fw-semibold small">JAM</label>
+            {{-- PERBAIKAN: name="jam_reservasi" --}}
+            <input name="jam_reservasi" type="time" class="form-control form-control-lg rounded-0 border-dark" id="hour" required value="{{ old('jam_reservasi') }}">
+            @error('jam_reservasi') <div class="text-danger small">{{ $message }}</div> @enderror
+        </div>
+        
+        {{-- Baris 6: Pesan Tambahan --}}
+        <div class="col-12">
+            <label for="message" class="form-label fw-semibold small">PESAN (Opsional)</label>
+            <textarea name="message" class="form-control form-control-lg rounded-0 border-dark" id="message" rows="3" placeholder="Contoh: Butuh meja di dekat jendela...">{{ old('message') }}</textarea>
+            @error('message') <div class="text-danger small">{{ $message }}</div> @enderror
+        </div>
+        
+        {{-- Tombol Submit --}}
+        <div class="col-12 mt-4">
+            <button type="submit" class="btn btn-primary-dark btn-lg w-100 px-5 py-3 fw-bold shadow-sm rounded-0">
+                RESERVE A TABLE
+            </button>
+        </div>
+    </div>
+</form>
+
+{{-- ... (Bagian bawah file) --}}
         </div>
 
         {{-- KOLOM KANAN: VISUAL & INFORMASI TAMBAHAN --}}
