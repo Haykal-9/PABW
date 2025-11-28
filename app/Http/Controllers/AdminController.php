@@ -6,17 +6,17 @@ use App\Models\User;
 use App\Models\menu;
 use App\Models\reservasi;
 use App\Models\review;
-use App\Models\pembayaran; // Diperlukan untuk Orders
-use App\Models\detailPembayaran; // Diperlukan untuk Orders
+use App\Models\pembayaran; 
+use App\Models\detailPembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect; // Ditambahkan untuk Redirect yang lebih bersih
 
 class AdminController extends Controller
 {
     // ====================================================================
     // FUNGSI PEMETAAN (MAPPING) DARI STRING KE ID DATABASE
-    // DIBUTUHKAN UNTUK OPERASI STORE/UPDATE
     // ====================================================================
 
     private function getRoleId(string $roleName): int
@@ -56,31 +56,45 @@ class AdminController extends Controller
             'dikonfirmasi' => 2,
             'menunggu konfirmasi' => 1,
             'dibatalkan' => 3,
-            'selesai' => 2, // Asumsi 'Selesai' adalah Dikonfirmasi (2) untuk reservasi
+            'selesai' => 2,
             default => 1,
         };
     }
-    
+
     // ====================================================================
     // HALAMAN ADMIN (MENGAMBIL DATA DARI DB SECARA EKSKLUSIF)
     // ====================================================================
-
+    
     public function dashboard()
     {
-        // Mendapatkan data secara dinamis dari database (TIDAK ADA DUMMY)
-        $pendapatanHariIni = pembayaran::whereDate('order_date', today())
-            ->join('detail_pembayaran', 'pembayaran.id', '=', 'detail_pembayaran.pembayaran_id')
-            ->sum(DB::raw('detail_pembayaran.quantity * detail_pembayaran.price_per_item * 1.1')); // Hitung Total (termasuk 10% pajak)
+        // Mendapatkan ID pembayaran yang statusnya sudah Selesai (Asumsi status_id = 4)
+        $completedPaymentIds = pembayaran::where('status_id', 4)->pluck('id');
 
-        $menuTerjualHariIni = pembayaran::whereDate('order_date', today())
-            ->join('detail_pembayaran', 'pembayaran.id', '=', 'detail_pembayaran.pembayaran_id')
-            ->sum('detail_pembayaran.quantity');
+        // 1. Hitung Subtotal Pendapatan HARI INI
+        $subtotalHariIni = detailPembayaran::join('pembayaran', 'detail_pembayaran.pembayaran_id', '=', 'pembayaran.id')
+            ->whereIn('pembayaran.id', $completedPaymentIds)
+            ->whereDate('pembayaran.order_date', today())
+            // Menghitung SUM(quantity * price_per_item)
+            ->sum(DB::raw('detail_pembayaran.quantity * detail_pembayaran.price_per_item'));
+                                    
+        // 2. Total Subtotal Pendapatan KESELURUHAN (Semua waktu)
+        $totalSubtotal = detailPembayaran::join('pembayaran', 'detail_pembayaran.pembayaran_id', '=', 'pembayaran.id')
+            ->whereIn('pembayaran.id', $completedPaymentIds)
+            ->sum(DB::raw('detail_pembayaran.quantity * detail_pembayaran.price_per_item'));
 
-        $totalPendapatan = pembayaran::join('detail_pembayaran', 'pembayaran.id', '=', 'detail_pembayaran.pembayaran_id')
-            ->sum(DB::raw('detail_pembayaran.quantity * detail_pembayaran.price_per_item * 1.1'));
-
-        // Asumsi status 'Dikonfirmasi' (ID 2) dihitung sebagai terlaksana
-        $reservasiTerlaksana = reservasi::where('status_id', 2)->count(); 
+        // 3. Menghitung Menu Terjual HARI INI (QUERY DIPERBAIKI MENGGUNAKAN JOIN KE order_date)
+        $menuTerjualHariIni = detailPembayaran::join('pembayaran', 'detail_pembayaran.pembayaran_id', '=', 'pembayaran.id')
+            ->whereIn('pembayaran.id', $completedPaymentIds)
+            ->whereDate('pembayaran.order_date', today())
+            ->sum('detail_pembayaran.quantity'); // Menggunakan kolom quantity dari detail_pembayaran
+        
+        // 4. Reservasi Terlaksana (Asumsi status_id = 2)
+        $reservasiTerlaksana = reservasi::where('status_id', 2)
+                                    ->count(); 
+        
+        // 5. Menghitung Total Akhir (Subtotal + PPN 10%)
+        $pendapatanHariIni = $subtotalHariIni * 1.10;
+        $totalPendapatan = $totalSubtotal * 1.10;
         
         $data = [
             'pendapatanHariIni' => $pendapatanHariIni,
@@ -88,7 +102,7 @@ class AdminController extends Controller
             'totalPendapatan' => $totalPendapatan,
             'reservasiTerlaksana' => $reservasiTerlaksana,
         ];
-
+        
         return view('admin.dashboard', compact('data'));
     }
 
@@ -103,6 +117,7 @@ class AdminController extends Controller
             'stok' => $m->stok ?? 0, // Menggunakan 0 karena kolom 'stok' tidak ada di migrasi menu
             'status' => ucwords($m->status->status_name ?? 'N/A'),
             'image_path' => $m->url_foto,
+            'deskripsi' => $m->deskripsi, // Ambil kolom deskripsi
         ]);
 
         return view('admin.menu', compact('menus'));
@@ -205,8 +220,10 @@ class AdminController extends Controller
     }
 
     // ====================================================================
-    // FUNGSI CRUD MENGGUNAKAN ELOQUENT
+    // FUNGSI CRUD MENGGUNAKAN ELOQUENT (TANPA JSON RESPONSE DENGAN REDIRECT)
     // ====================================================================
+    // Disesuaikan untuk menggunakan Redirect::route() alih-alih response()->json()
+    // agar sesuai dengan kebutuhan CRUD Admin yang lebih sederhana/non-AJAX.
 
     public function storeMenu(Request $request)
     {
@@ -216,13 +233,13 @@ class AdminController extends Controller
             'url_foto' => $request->image_path,
             'type_id' => $this->getMenuTypeId($request->kategori),
             'price' => (int) $request->harga,
-            'deskripsi' => 'Deskripsi default untuk ' . $request->nama,
+            'deskripsi' => $request->deskripsi, 
             'status_id' => $this->getMenuStatusId($request->status),
         ];
         
         menu::create($menuData);
 
-        return response()->json(['success' => true, 'message' => 'Berhasil ditambahkan ke Database.']);
+        return Redirect::route('admin.menu')->with('success', 'Menu ' . $request->nama . ' berhasil ditambahkan.');
     }
 
     public function updateMenu(Request $request, $id)
@@ -230,7 +247,7 @@ class AdminController extends Controller
         $menu = menu::find($id);
 
         if (!$menu) {
-            return response()->json(['success' => false, 'message' => 'Menu tidak ditemukan.'], 404);
+            return Redirect::route('admin.menu')->with('error', 'Menu tidak ditemukan.');
         }
 
         // Mapping UI Input ke DB Schema
@@ -239,12 +256,13 @@ class AdminController extends Controller
             'url_foto' => $request->image_path,
             'type_id' => $this->getMenuTypeId($request->kategori),
             'price' => (int) $request->harga,
+            'deskripsi' => $request->deskripsi,
             'status_id' => $this->getMenuStatusId($request->status),
         ];
 
         $menu->update($menuData);
         
-        return response()->json(['success' => true, 'message' => 'Berhasil diperbarui di Database.']);
+        return Redirect::route('admin.menu')->with('success', 'Menu ' . $request->nama . ' berhasil diperbarui.');
     }
 
     public function destroyMenu($id)
@@ -252,10 +270,10 @@ class AdminController extends Controller
         $deleted = menu::destroy($id);
         
         if ($deleted) {
-            return response()->json(['success' => true, 'message' => 'Berhasil dihapus dari Database.']);
+            return response()->noContent(); 
         }
         
-        return response()->json(['success' => false, 'message' => 'Gagal menghapus menu.'], 404);
+        return response('Gagal menghapus menu.', 404);
     }
 
     public function updateUserRole(Request $request, $id)
@@ -263,14 +281,14 @@ class AdminController extends Controller
         $user = User::find($id);
 
         if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Pengguna tidak ditemukan.'], 404);
+            return response('Pengguna tidak ditemukan.', 404);
         }
 
         $newRoleId = $this->getRoleId($request->input('role'));
         
         $user->update(['role_id' => $newRoleId]);
         
-        return response()->json(['success' => true, 'message' => 'Peran pengguna berhasil diperbarui di Database.']);
+        return response()->noContent(); 
     }
 
     public function destroyUser($id)
@@ -278,10 +296,10 @@ class AdminController extends Controller
         $deleted = User::destroy($id);
         
         if ($deleted) {
-            return response()->json(['success' => true, 'message' => 'Berhasil dihapus dari Database.']);
+            return response()->noContent();
         }
         
-        return response()->json(['success' => false, 'message' => 'Gagal menghapus pengguna.'], 404);
+        return response('Gagal menghapus pengguna.', 404);
     }
 
     public function updateReservationStatus(Request $request, $id)
@@ -289,14 +307,14 @@ class AdminController extends Controller
         $reservation = reservasi::find($id);
 
         if (!$reservation) {
-            return response()->json(['success' => false, 'message' => 'Reservasi tidak ditemukan.'], 404);
+            return response('Reservasi tidak ditemukan.', 404);
         }
 
         $newStatusId = $this->getReservationStatusId($request->input('status'));
         
         $reservation->update(['status_id' => $newStatusId]);
         
-        return response()->json(['success' => true, 'message' => 'Status berhasil diperbarui di Database.']);
+        return response()->noContent();
     }
 
     public function destroyReservation($id)
@@ -304,10 +322,10 @@ class AdminController extends Controller
         $deleted = reservasi::destroy($id);
         
         if ($deleted) {
-            return response()->json(['success' => true, 'message' => 'Berhasil dihapus dari Database.']);
+            return response()->noContent();
         }
         
-        return response()->json(['success' => false, 'message' => 'Gagal menghapus reservasi.'], 404);
+        return response('Gagal menghapus reservasi.', 404);
     }
 
     public function destroyRating($id)
@@ -315,9 +333,9 @@ class AdminController extends Controller
         $deleted = review::destroy($id);
         
         if ($deleted) {
-            return response()->json(['success' => true, 'message' => 'Berhasil dihapus dari Database.']);
+            return response()->noContent();
         }
         
-        return response()->json(['success' => false, 'message' => 'Gagal menghapus ulasan.'], 404);
+        return response('Gagal menghapus ulasan.', 404);
     }
 }

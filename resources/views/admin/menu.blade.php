@@ -4,6 +4,21 @@
 
 @section('admin_content')
 
+{{-- Tambahkan notifikasi flash message di atas tabel --}}
+@if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+@if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+
 {{-- Tombol Tambah Menu --}}
 <div class="d-flex justify-content-end mb-3">
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#menuModal" id="btn-create-menu">
@@ -25,6 +40,7 @@
                         <th>Nama Menu</th>
                         <th>Kategori</th>
                         <th>Harga</th>
+                        <th>Deskripsi</th> {{-- <<< BARU: KOLOM DESKRIPSI --}}
                         <th>Stok</th>
                         <th>Status</th>
                         <th>Aksi</th>
@@ -39,7 +55,8 @@
                         data-harga="{{ $menu['harga'] }}" 
                         data-stok="{{ $menu['stok'] }}" 
                         data-status="{{ $menu['status'] }}" 
-                        data-image-path="{{ $menu['image_path'] }}">
+                        data-image-path="{{ $menu['image_path'] }}"
+                        data-deskripsi="{{ $menu['deskripsi'] }}"> {{-- <<< BARU: DATA DESKRIPSI --}}
                         <td>{{ $menu['id'] }}</td>
                         <td>
                             <img src="{{ asset($menu['image_path']) }}" 
@@ -49,6 +66,7 @@
                         <td>{{ $menu['nama'] }}</td>
                         <td>{{ $menu['kategori'] }}</td>
                         <td>Rp {{ number_format($menu['harga'], 0, ',', '.') }}</td>
+                        <td><small>{{ Str::limit($menu['deskripsi'], 30) }}</small></td> {{-- <<< BARU: TAMPILKAN DESKRIPSI --}}
                         <td>{{ $menu['stok'] }}</td>
                         <td>
                             <span class="badge bg-{{ $menu['status'] == 'Tersedia' ? 'success' : 'danger' }}">
@@ -79,7 +97,7 @@
                 <h5 class="modal-title" id="menuModalLabel">Tambah/Edit Menu</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="menuForm" method="POST">
+            <form id="menuForm" method="POST" action="{{ route('admin.menu.store') }}">
                 <div class="modal-body">
                     <input type="hidden" id="menu-id" name="id">
                     
@@ -97,6 +115,11 @@
                             <option value="Makanan">Makanan</option>
                             <option value="Cemilan">Cemilan</option>
                         </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="menu-deskripsi" class="form-label">Deskripsi</label> {{-- <<< BARU: LABEL DESKRIPSI --}}
+                        <textarea class="form-control" id="menu-deskripsi" name="deskripsi" rows="3"></textarea> {{-- <<< BARU: INPUT DESKRIPSI --}}
                     </div>
 
                     <div class="mb-3">
@@ -146,10 +169,17 @@
         document.getElementById('btn-create-menu').addEventListener('click', function() {
             modalTitle.textContent = 'Tambah Menu Baru';
             form.reset(); 
+            // Atur default value dan action
+            form.action = '{{ route('admin.menu.store') }}';
             document.getElementById('menu-id').value = '';
             document.getElementById('menu-kategori').value = '';
             document.getElementById('menu-status').value = 'Tersedia';
             document.getElementById('menu-gambar').value = 'foto/'; 
+            // Hapus field _method PUT jika ada
+            const methodField = document.querySelector('#menuForm input[name="_method"][value="PUT"]');
+            if (methodField) {
+                methodField.remove();
+            }
         });
 
         // Event listener untuk tombol 'Edit'
@@ -158,6 +188,9 @@
                 modalTitle.textContent = 'Edit Menu';
                 
                 const row = this.closest('tr');
+                // Set action untuk update (akan di override oleh JS submit handler)
+                form.action = '{{ url("/admin/menu") }}/' + row.dataset.id;
+                
                 document.getElementById('menu-id').value = row.dataset.id;
                 document.getElementById('menu-nama').value = row.dataset.nama;
                 document.getElementById('menu-kategori').value = row.dataset.kategori;
@@ -165,14 +198,24 @@
                 document.getElementById('menu-stok').value = row.dataset.stok;
                 document.getElementById('menu-status').value = row.dataset.status;
                 document.getElementById('menu-gambar').value = row.dataset.imagePath;
+                document.getElementById('menu-deskripsi').value = row.dataset.deskripsi; // <<< BARU: Isi deskripsi saat edit
+                
+                // Tambahkan field tersembunyi untuk method PUT
+                let methodField = document.querySelector('#menuForm input[name="_method"][value="PUT"]');
+                if (!methodField) {
+                    methodField = document.createElement('input');
+                    methodField.setAttribute('type', 'hidden');
+                    methodField.setAttribute('name', '_method');
+                    methodField.setAttribute('value', 'PUT');
+                    form.appendChild(methodField);
+                }
             });
         });
 
-        // Fungsionalitas DELETE (menggunakan fetch dengan method DELETE)
+        // Fungsionalitas DELETE (tetap menggunakan fetch untuk kemudahan)
         document.querySelectorAll('.btn-delete').forEach(button => {
             button.addEventListener('click', async function() {
                 const menuId = this.dataset.id;
-                // Hanya gunakan konfirmasi, tanpa alert setelahnya
                 if (!confirm(`Hapus Menu ID ${menuId}?`)) {
                     return;
                 }
@@ -183,17 +226,14 @@
                     const response = await fetch(url, {
                         method: 'DELETE', 
                         headers: {
-                            'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}' 
                         }
                     });
 
-                    // Cek status response saja, tidak perlu memproses data.json jika tidak diperlukan
+                    // Cek status response saja (204 No Content adalah sukses)
                     if (response.ok) {
-                        // HANYA RELOAD SETELAH SUKSES
                         window.location.reload(); 
                     } else {
-                        // Jika gagal, tampilkan pesan error minimal
                         alert('Gagal menghapus.');
                     }
                 } catch (error) {
@@ -202,62 +242,47 @@
                 }
             });
         });
-
-        // Fungsionalitas CREATE/UPDATE (menggunakan fetch)
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const menuId = document.getElementById('menu-id').value;
-            const isEdit = menuId !== '';
+        
+        // Fungsionalitas CREATE/UPDATE (Menggunakan form submit standar)
+        // Kita hanya perlu memastikan form disubmit, laravel akan menangani redirect.
+        form.addEventListener('submit', function(e) {
+            // Jika kita menggunakan method PUT, kita perlu mencegah submit normal
+            // dan menggunakan fetch, karena browser tidak mendukung PUT/DELETE secara langsung
+            const isEdit = document.getElementById('menu-id').value !== '';
             
-            let url;
-            let method;
-
             if (isEdit) {
-                url = `{{ url('/admin/menu') }}/${menuId}`;
-                method = 'PUT'; 
-            } else {
-                url = '{{ route('admin.menu.store') }}';
-                method = 'POST';
-            }
-            
-            const formData = new FormData(form);
-            
-            // Konversi FormData ke objek JSON
-            const body = {};
-            formData.forEach((value, key) => {
-                if (key !== '_method') { 
-                    body[key] = value;
-                }
-            });
+                e.preventDefault(); // Cegah form submit normal jika edit
+                
+                const menuId = document.getElementById('menu-id').value;
+                const url = `{{ url('/admin/menu') }}/${menuId}`;
 
-            body._token = '{{ csrf_token() }}';
-            if (isEdit) {
-                body.id = parseInt(menuId);
-            }
+                const bodyParams = new URLSearchParams(new FormData(form));
 
-            try {
-                const response = await fetch(url, {
-                    method: method, 
+                // Eksekusi PUT menggunakan Fetch API
+                fetch(url, {
+                    method: 'POST', // Kirim sebagai POST, tapi _method=PUT sudah ada di form data
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify(body)
+                    body: bodyParams.toString()
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Jika sukses (redirect/204), reload halaman
+                        modal.hide();
+                        window.location.reload(); 
+                    } else {
+                        alert('Gagal memproses menu. Pastikan semua field terisi.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat memproses menu.');
                 });
-                
-                // Cek status response saja
-                if (response.ok) {
-                    modal.hide();
-                    // HANYA RELOAD SETELAH SUKSES
-                    window.location.reload(); 
-                } else {
-                    // Jika gagal, tampilkan pesan error minimal
-                    alert('Gagal memproses menu.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat memproses menu.');
-            }
+            } 
+            // Jika tidak edit (Create), biarkan form submit secara normal (POST)
+            // Controller akan menangani redirect dengan pesan sukses.
         });
     });
 </script>

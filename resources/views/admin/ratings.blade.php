@@ -54,7 +54,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Delete Button Handler
+        // Delete Button Handler (Hanya memverifikasi status, tanpa JSON)
         document.querySelectorAll('.btn-delete-rating').forEach(button => {
             button.addEventListener('click', async function() {
                 const ratingId = this.dataset.id;
@@ -68,7 +68,6 @@
                     const response = await fetch(url, {
                         method: 'DELETE',
                         headers: {
-                            'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}' 
                         }
                     });

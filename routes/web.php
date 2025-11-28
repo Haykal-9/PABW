@@ -9,6 +9,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\KasirController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AuthController;
 
 
 // Route Halaman Utama
@@ -29,6 +31,14 @@ Route::get('/register', function () {
 Route::get('/menu', [MenuController::class, 'menu']);
 Route::get('/menu/{id}', [MenuController::class, 'detailMenu']);
 Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
+// ... di dalam routes/web.php
+Route::get('/menu/{id}', [MenuController::class, 'detailMenu'])->name('menu.detail');
+Route::post('/review', [ReviewController::class, 'store'])->name('review.store');
+
+// BARU: Rute POST untuk menyimpan ulasan (review)
+Route::post('/menu/{menuId}/review', [MenuController::class, 'storeReview'])->name('menu.review.store');
+
+// ...
 
 // Rute untuk mengirim data form (POST)
 Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
