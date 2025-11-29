@@ -3,45 +3,74 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
+use App\Models\User;
+use App\Models\GenderType;
 
 class ProfileController extends Controller
 {
-    // Menampilkan halaman profil; jika belum ada session/auth, tampilkan data dummy
-    public function show()
+    // 1. READ-ONLY: Halaman Lihat Profil
+    public function show($id)
     {
-        // Cek apakah user terautentikasi
-        if (auth()->check()) {
-            $user = auth()->user();
-        } else {
-            // Data dummy sementara
-            $user = (object) [
-                'name' => 'Pengguna Demo',
-                'email' => 'demo@example.com',
-                'phone' => '081234567890',
-                'address' => 'Jl. Contoh No.123, Kota'
-            ];
-        }
+        $user = User::find($id);
+        if (!$user)
+            return redirect('/')->with('error', 'User tidak ditemukan');
 
+        // Kita tidak butuh data gender di sini karena cuma menampilkan teks
         return view('customers.profile', compact('user'));
     }
 
-    public function orderHistory()
+    // 2. FORM: Halaman Edit Profil
+    public function edit($id)
     {
-        // Data dummy untuk riwayat pesanan
-        $orders = [
-            (object) ['id' => 1, 'order_date' => '2024-10-26 10:00', 'total_amount' => 33000, 'order_status_name' => 'Completed', 'order_type_name' => 'Dine In', 'payment_method_name' => 'Cash'],
-            (object) ['id' => 2, 'order_date' => '2024-10-25 15:30', 'total_amount' => 20000, 'order_status_name' => 'Completed', 'order_type_name' => 'Take Away', 'payment_method_name' => 'QRIS']
-        ];
-    return view('customers.history.orders', compact('orders'));
+        $user = User::find($id);
+        if (!$user)
+            return redirect('/')->with('error', 'User tidak ditemukan');
+
+        // Kita butuh data gender untuk dropdown
+        $genders = GenderType::all();
+
+        return view('customers.edit_profile', compact('user', 'genders'));
     }
 
-    public function reservationHistory()
+    // 3. ACTION: Proses Update
+    public function update(Request $request, $id)
     {
-        // Data dummy untuk riwayat reservasi
-        $reservations = [
-            (object) ['kode_reservasi' => 'RSV20241026001', 'tanggal_reservasi' => '2024-11-01 19:00', 'jumlah_orang' => 4, 'reservation_status_name' => 'Dikonfirmasi'],
-            (object) ['kode_reservasi' => 'RSV20241020001', 'tanggal_reservasi' => '2024-10-22 18:00', 'jumlah_orang' => 2, 'reservation_status_name' => 'Dibatalkan']
-        ];
-    return view('customers.history.reservations', compact('reservations'));
+        $user = User::find($id);
+
+        $request->validate([
+            'nama' => 'required',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'no_telp' => 'required',
+            'alamat' => 'required',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($request->hasFile('profile_picture')) {
+            $pathLama = public_path('uploads/profile/' . $user->profile_picture);
+            if ($user->profile_picture && File::exists($pathLama)) {
+                File::delete($pathLama);
+            }
+            $file = $request->file('profile_picture');
+            $namaFile = time() . "_" . $file->getClientOriginalName();
+            $file->move(public_path('uploads/profile'), $namaFile);
+            $user->profile_picture = $namaFile;
+        }
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->nama = $request->nama;
+        $user->email = $request->email;
+        $user->no_telp = $request->no_telp;
+        $user->gender_id = $request->gender_id; // Pastikan ini tersimpan
+        $user->alamat = $request->alamat;
+        $user->save();
+
+        // Redirect KEMBALI KE HALAMAN PROFIL (Read Only)
+        return redirect()->route('profile.show', ['id' => $user->id])
+            ->with('success', 'Profil berhasil diperbarui!');
     }
 }
