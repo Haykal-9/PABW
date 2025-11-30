@@ -13,9 +13,6 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AuthController;
 
 
-
-
-
 // Route Halaman Utama
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/home', [HomeController::class, 'index']);
@@ -30,11 +27,12 @@ Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'processRegister']);
 
 // Routes untuk Pengguna (Customer)
-Route::get('/menu', [MenuController::class, 'menu']);
-Route::get('/menu/{id}', [MenuController::class, 'detailMenu']);
+Route::get('/menu', [MenuController::class, 'menu'])->name('menu');
+Route::post('/menu/{id}/favorite', [MenuController::class, 'favorite'])->name('menu.favorite');
 Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
 // ... di dalam routes/web.php
 Route::get('/menu/{id}', [MenuController::class, 'detailMenu'])->name('menu.detail');
+
 Route::post('/review', [ReviewController::class, 'store'])->name('review.store');
 
 // BARU: Rute POST untuk menyimpan ulasan (review)

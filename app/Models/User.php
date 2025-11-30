@@ -24,7 +24,7 @@ class User extends Authenticatable
         'no_telp',
         'gender_id',
         'alamat',
-        'profile_picture', 
+        'profile_picture',
     ];
 
     /**
@@ -54,5 +54,17 @@ class User extends Authenticatable
     public function role(): BelongsTo
     {
         return $this->belongsTo(userRole::class, 'role_id');
+    }
+
+    // Relasi ke Reservasi
+    public function reservasi()
+    {
+        return $this->hasMany(Reservasi::class, 'user_id', 'id');
+    }
+
+    // Relasi ke Pembayaran (Pesanan)
+    public function pembayaran()
+    {
+        return $this->hasMany(Pembayaran::class, 'user_id', 'id');
     }
 }

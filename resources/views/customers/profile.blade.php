@@ -3,64 +3,200 @@
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-10">
             
-            {{-- Alert Sukses --}}
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center pt-5 pb-4">
-                    
-                    {{-- Foto Profil --}}
-                    <div class="mb-4 position-relative d-inline-block">
+            {{-- Header Profil Singkat --}}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body d-flex align-items-center p-4">
+                    <div class="me-4">
                         @if($user->profile_picture)
                             <img src="{{ asset('uploads/profile/' . $user->profile_picture) }}" 
-                                 class="rounded-circle shadow-sm" 
-                                 style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #fff;">
+                                 class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
                         @else
-                            <img src="https://via.placeholder.com/150" 
-                                 class="rounded-circle shadow-sm"
-                                 style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #fff;">
+                            <img src="https://via.placeholder.com/80" class="rounded-circle">
                         @endif
                     </div>
+                    <div>
+                        <h4 class="mb-1 fw-bold">{{ $user->nama }}</h4>
+                        <p class="text-muted mb-0">{{ $user->email }}</p>
+                    </div>
+                    <div class="ms-auto">
+                        <a href="{{ route('profile.edit', ['id' => $user->id]) }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i> Edit Profil
+                        </a>
+                        <a href="/logout" class="btn btn-outline-danger btn-sm ms-2">Logout</a>
+                    </div>
+                </div>
+            </div>
 
-                    <h3 class="fw-bold mb-1">{{ $user->nama }}</h3>
-                    <p class="text-muted mb-4">{{ $user->email }}</p>
+            {{-- Navigasi Tabs --}}
+            <ul class="nav nav-tabs nav-fill mb-4" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold" id="detail-tab" data-bs-toggle="tab" data-bs-target="#detail" type="button" role="tab">
+                        <i class="fas fa-user me-2"></i>Detail Profil
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">
+                        <i class="fas fa-shopping-bag me-2"></i>Riwayat Pesanan
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="reservations-tab" data-bs-toggle="tab" data-bs-target="#reservations" type="button" role="tab">
+                        <i class="fas fa-calendar-alt me-2"></i>Reservasi
+                    </button>
+                </li>
+            </ul>
 
-                    <div class="row text-start px-md-5">
-                        <div class="col-12 mb-3">
-                            <label class="small text-muted fw-bold text-uppercase">No. Telepon</label>
-                            <div class="fs-6">{{ $user->no_telp }}</div>
+            {{-- Isi Tabs --}}
+            <div class="tab-content" id="profileTabsContent">
+                
+                {{-- TAB 1: Detail Profil --}}
+                <div class="tab-pane fade show active" id="detail" role="tabpanel">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Informasi Pribadi</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="text-muted small fw-bold">Username</label>
+                                    <p class="fs-5">{{ $user->username }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="text-muted small fw-bold">No. Telepon</label>
+                                    <p class="fs-5">{{ $user->no_telp }}</p>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="text-muted small fw-bold">Alamat</label>
+                                    <p class="fs-5">{{ $user->alamat }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="text-muted small fw-bold">Bergabung Sejak</label>
+                                    <p class="fs-5">{{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}</p>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <div class="col-12 mb-3">
-                            <label class="small text-muted fw-bold text-uppercase">Alamat</label>
-                            <div class="fs-6">{{ $user->alamat }}</div>
-                        </div>
+                    </div>
+                </div>
 
-                        <div class="col-12 mb-4">
-                            <label class="small text-muted fw-bold text-uppercase">Bergabung Sejak</label>
-                            <div class="fs-6">{{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}</div>
+                {{-- TAB 2: Riwayat Pesanan --}}
+                <div class="tab-pane fade" id="orders" role="tabpanel">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            @if($riwayatPesanan->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>ID Order</th>
+                                                <th>Tanggal</th>
+                                                <th>Status</th>
+                                                <th>Metode</th>
+                                                {{-- <th>Aksi</th> --}}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($riwayatPesanan as $order)
+                                            <tr>
+                                                <td>#{{ $order->id }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d M Y H:i') }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ $order->status_id == 1 ? 'success' : ($order->status_id == 2 ? 'warning' : 'danger') }}">
+                                                        {{ $order->status->status_name ?? '-' }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ $order->payment_method_id == 1 ? 'Cash' : ($order->payment_method_id == 2 ? 'E-Wallet' : 'QRIS') }}</td>
+                                                {{-- <td><a href="#" class="btn btn-sm btn-outline-primary">Detail</a></td> --}}
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="text-center py-5">
+                                    <p class="text-muted">Belum ada riwayat pesanan.</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- TAB 3: Reservasi (Split: Ongoing & History) --}}
+                <div class="tab-pane fade" id="reservations" role="tabpanel">
+                    
+                    {{-- Section 1: Reservasi Akan Datang (Ongoing) --}}
+                    <div class="card shadow-sm border-0 mb-4 bg-primary-subtle">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Reservasi Akan Datang (Ongoing)</h6>
+                        </div>
+                        <div class="card-body">
+                            @if($reservasiOngoing->count() > 0)
+                                <div class="row">
+                                    @foreach($reservasiOngoing as $res)
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card border-primary h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span class="badge bg-primary">{{ $res->kode_reservasi }}</span>
+                                                    <span class="badge bg-warning text-dark">{{ $res->status->status_name ?? 'Pending' }}</span>
+                                                </div>
+                                                <h5 class="card-title text-primary">
+                                                    {{ \Carbon\Carbon::parse($res->tanggal_reservasi)->format('d M Y, H:i') }} WIB
+                                                </h5>
+                                                <p class="card-text mb-1"><i class="fas fa-users me-2"></i> {{ $res->jumlah_orang }} Orang</p>
+                                                <p class="card-text small text-muted">Note: {{ $res->message }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-muted mb-0">Tidak ada reservasi yang sedang berjalan.</p>
+                            @endif
                         </div>
                     </div>
 
-                    {{-- Tombol Menuju Edit --}}
-                    <div class="d-grid gap-2 col-md-8 mx-auto">
-                        <a href="{{ route('profile.edit', ['id' => $user->id]) }}" class="btn btn-outline-primary">
-                            <i class="fas fa-edit me-2"></i> Edit Profil
-                        </a>
-                        <a href="/logout" class="btn btn-outline-danger mt-2">
-                            Logout
-                        </a>
+                    {{-- Section 2: Riwayat Reservasi (Selesai/Batal) --}}
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-white">
+                            <h6 class="mb-0">Riwayat Reservasi Sebelumnya</h6>
+                        </div>
+                        <div class="card-body">
+                            @if($reservasiRiwayat->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Kode</th>
+                                                <th>Tanggal</th>
+                                                <th>Jml Orang</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($reservasiRiwayat as $res)
+                                            <tr>
+                                                <td>{{ $res->kode_reservasi }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($res->tanggal_reservasi)->format('d M Y') }}</td>
+                                                <td>{{ $res->jumlah_orang }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ $res->status_id == 2 ? 'success' : 'secondary' }}">
+                                                        {{ $res->status->status_name ?? '-' }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <p class="text-muted text-center py-3">Belum ada riwayat reservasi.</p>
+                            @endif
+                        </div>
                     </div>
 
                 </div>
             </div>
+
         </div>
     </div>
 </div>
