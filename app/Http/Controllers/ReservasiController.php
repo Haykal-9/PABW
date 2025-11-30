@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\reservasi;
+use App\Models\User; // Ditambahkan untuk mengambil data user di create
 use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Redirect; // <-- Ditambahkan
+use Illuminate\Support\Str; // <-- Ditambahkan
 
 class ReservasiController extends Controller
 {
@@ -14,8 +17,6 @@ class ReservasiController extends Controller
         // 1. Ambil data user yang sedang login untuk pre-fill
         $user = Auth::user(); 
         
-        // Asumsi kolom no_telp ada di model User
-        
         // 2. Kirim data user ke view
         return view('customers.Reservasi', compact('user'));
     }
@@ -23,26 +24,35 @@ class ReservasiController extends Controller
     // Method untuk memproses dan menyimpan data reservasi
     public function store(Request $request)
     {
-        // 1. VALIDASI DATA (Menggunakan nama field dari form yang sudah dikoreksi)
+        // 1. VALIDASI DATA
         $request->validate([
-            'nama_pemesan' => 'required|string|max:100', // Dari name="nama_pemesan"
-            'email_pemesan' => 'required|email|max:100', // Dari name="email_pemesan"
-            'no_telp' => 'required|string|max:15',       // Dari name="no_telp"
+            'nama_pemesan' => 'required|string|max:100',
+            'email_pemesan' => 'required|email|max:100',
+            'no_telp' => 'required|string|max:15',
             
-            'tanggal_reservasi' => 'required|date_format:Y-m-d', // Dari name="tanggal_reservasi"
-            'jam_reservasi' => 'required|date_format:H:i',       // Dari name="jam_reservasi"
-            'jumlah_orang' => 'required|integer|min:1|max:20',    // Dari name="jumlah_orang"
+            'tanggal_reservasi' => 'required|date_format:Y-m-d', // Validasi format date
+            'jam_reservasi' => 'required|date_format:H:i',       // Validasi format time
+            'jumlah_orang' => 'required|integer|min:1|max:20',
             'message' => 'nullable|string|max:500',
         ]);
         
-        // Gabungkan tanggal dan jam menjadi format datetime (kolom di DB: tanggal_reservasi)
+        // Gabungkan tanggal dan jam
         $dateTimeReservasi = $request->tanggal_reservasi . ' ' . $request->jam_reservasi . ':00';
+        
+        // 2. Cek Manual Waktu (harus di masa depan)
+        if (strtotime($dateTimeReservasi) <= time()) {
+             // *** PENTING: MENGGUNAKAN KEY UNIK 'reservasi_waktu_error' UNTUK MENGHINDARI BUG ***
+             return Redirect::back()->withInput()->withErrors([
+                 'reservasi_waktu_error' => 'Tanggal dan waktu reservasi harus di masa depan.'
+             ]);
+        }
         
         // Tentukan USER_ID
         $userId = Auth::check() ? Auth::id() : null; 
 
         // GENERATE KODE RESERVASI UNIK
-        $kodeReservasi = 'RSV' . date('Ymd') . strtoupper(bin2hex(random_bytes(3)));
+        // Menggunakan Str::random() untuk keamanan yang lebih baik
+        $kodeReservasi = 'RSV-' . Str::upper(Str::random(6));
 
         // SIAPKAN DATA UNTUK DISIMPAN
         $dataReservasi = [
@@ -55,13 +65,13 @@ class ReservasiController extends Controller
             'message' => $request->message,
         ];
         
-        // Cek dan simpan detail pemesan jika user tidak login (PENTING: kolom ini harus ada di tabel reservasi)
-        // Karena kita tidak bisa menambahkan kolom ke tabel reservasi saat ini, 
-        // kita berasumsi admin akan melihat detail dari kolom users jika user_id ada.
-        // Jika Anda ingin menyimpan detail nama/email pemesan anonim, Anda HARUS menambah kolom di tabel reservasi.
-        
-        // SIMPAN KE DATABASE
-        reservasi::create($dataReservasi);
+        try {
+            // SIMPAN KE DATABASE
+            reservasi::create($dataReservasi);
+        } catch (\Exception $e) {
+            \Log::error('Reservasi gagal: ' . $e->getMessage());
+            return Redirect::back()->withInput()->with('error', 'Gagal menyimpan reservasi. Silakan coba lagi.');
+        }
 
         // REDIRECT DAN PESAN SUKSES
         return redirect()->route('home')->with('success', 'Reservasi Anda dengan kode ' . $kodeReservasi . ' berhasil dikirim. Menunggu konfirmasi Admin.');

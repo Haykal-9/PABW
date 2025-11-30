@@ -9,6 +9,11 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\KasirController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AuthController;
+
+
+
 
 
 // Route Halaman Utama
@@ -20,15 +25,22 @@ Route::get('/login', function () {
     return view('login');
 });
 
-Route::get('/register', function () {
-    return view('register');
-});
-
+// Route untuk Registrasi
+Route::get('/register', [AuthController::class, 'showRegister']);
+Route::post('/register', [AuthController::class, 'processRegister']);
 
 // Routes untuk Pengguna (Customer)
 Route::get('/menu', [MenuController::class, 'menu']);
 Route::get('/menu/{id}', [MenuController::class, 'detailMenu']);
 Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
+// ... di dalam routes/web.php
+Route::get('/menu/{id}', [MenuController::class, 'detailMenu'])->name('menu.detail');
+Route::post('/review', [ReviewController::class, 'store'])->name('review.store');
+
+// BARU: Rute POST untuk menyimpan ulasan (review)
+Route::post('/menu/{menuId}/review', [MenuController::class, 'storeReview'])->name('menu.review.store');
+
+// ...
 
 // Rute untuk mengirim data form (POST)
 Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
@@ -40,9 +52,14 @@ Route::get('/reservasi', [ReservasiController::class, 'create']);
 
 Route::get('/checkout', [CheckoutController::class, 'create']);
 
-Route::get('/profil', [ProfileController::class, 'show']);
-Route::get('/profil/pesanan', [ProfileController::class, 'orderHistory']);
-Route::get('/profil/reservasi', [ProfileController::class, 'reservationHistory']);
+// 1. Tampilkan Profil (Read Only)
+Route::get('/profil/{id}', [ProfileController::class, 'show'])->name('profile.show');
+
+// 2. Tampilkan Form Edit
+Route::get('/profil/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+
+// 3. Proses Update (Action)
+Route::put('/profil/{id}', [ProfileController::class, 'update'])->name('profile.update');
 
 
 // Routes untuk Admin

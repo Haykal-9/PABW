@@ -3,38 +3,32 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\menu; // Model Menu utama
-use App\Models\menuType; // Model Tipe Menu
-
+use App\Models\menu;
+use App\Models\review; 
+use App\Models\menuType;
+use Illuminate\Support\Facades\Auth; // HANYA PERLU INI UNTUK OTENTIKASI
 
 class MenuController extends Controller
 {
-    // Fungsi pembantu untuk memetakan nama kategori DB ke slug JS Filter
     private function mapTypeToSlug(string $typeName): string
     {
         return match (strtolower($typeName)) {
             'kopi' => 'coffee',
-            // Asumsi 'minuman' di DB = 'non-coffee' di UI
             'minuman' => 'non-coffee', 
-            // Asumsi 'makanan berat' di DB = 'makanan' di UI
             'makanan berat' => 'makanan', 
             'cemilan' => 'cemilan',
-            default => 'all', // Default atau kategori tidak dikenal
+            default => 'all',
         };
     }
 
     public function menu()
     {
-        // 1. Ambil semua menu yang berstatus Tersedia (status_id 1)
-        // 2. Eager load relasi 'type' (menuType)
         $rawMenus = menu::where('status_id', 1) 
                         ->with('type')
                         ->orderBy('type_id')
                         ->get();
 
-        // 3. Transformasi (Map) data Eloquent ke struktur yang diharapkan oleh Blade dan JS Filter
         $menus = $rawMenus->map(function ($item) {
-            // Ambil nama tipe menu dari relasi
             $typeName = $item->type->type_name ?? 'Lain-lain'; 
             $categorySlug = $this->mapTypeToSlug($typeName);
             
@@ -43,27 +37,48 @@ class MenuController extends Controller
                 'name' => $item->nama,
                 'description_short' => $item->deskripsi ?? 'Tidak ada deskripsi.', 
                 'price' => (int) $item->price,
-                // Sesuaikan 'image_url' agar dapat dipanggil dengan asset() di Blade
                 'image_url' => 'foto/' . $item->url_foto, 
-                'category' => $categorySlug, // Slug yang cocok dengan data-category di HTML
+                'category' => $categorySlug,
             ];
         });
 
-        // Kirim array datar (flat array) bernama '$menus' ke view
         return view('customers.menu', [
             'menus' => $menus,
         ]);
     }
     
-    // Asumsi: Ini adalah fungsi untuk detail menu (Anda mungkin perlu mengubahnya nanti)
+    // Method untuk menampilkan detail menu berdasarkan ID
     public function detailMenu($id)
     {
+        // Temukan menu atau lempar error 404
         $menu = menu::with(['type', 'status'])->findOrFail($id);
         
-        // Anda mungkin perlu me-load review atau data terkait lainnya di sini
+        // Cek apakah pengguna sedang login untuk mengambil ulasan mereka
+        $userReview = null;
+        if (Auth::check()) {
+            // Mengambil ulasan yang sudah dibuat user ini (jika ada)
+            $userReview = review::where('menu_id', $id)
+                                ->where('user_id', Auth::id()) 
+                                ->first();
+        }
         
+        // Hitung rating rata-rata
+        $averageRating = review::where('menu_id', $id)->avg('rating');
+        
+        // Ambil semua ulasan, urutkan dari terbaru
+        $reviews = review::where('menu_id', $id)
+            ->with('user') 
+            ->latest()
+            ->get();
+        
+        // Kembalikan ke view
         return view('customers.detail', [
             'menu' => $menu,
+            'averageRating' => $averageRating,
+            'reviews' => $reviews, 
+            'userReview' => $userReview,
         ]);
     }
+    
+    // Method storeReview yang lama telah dihapus dan dipindahkan ke ReviewController
 }

@@ -15,6 +15,17 @@ class User extends Authenticatable
 
     protected $table = 'users';
     protected $guarded = ['id']; // Memungkinkan mass assignment untuk AdminController
+    protected $fillable = [
+        'role_id',
+        'username',
+        'password',
+        'nama',
+        'email',
+        'no_telp',
+        'gender_id',
+        'alamat',
+        'profile_picture', 
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -38,7 +49,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
+
     // Relasi untuk role
     public function role(): BelongsTo
     {
