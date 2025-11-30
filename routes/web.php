@@ -17,7 +17,7 @@ Route::get('/home', [HomeController::class, 'index']);
 
 // Routes untuk Autentikasi (jika belum ada controller khusus)
 Route::get('/login', function () {
-    return view('login'); 
+    return view('login');
 });
 
 Route::get('/register', function () {
@@ -72,11 +72,12 @@ Route::delete('/admin/ratings/{id}', [AdminController::class, 'destroyRating'])-
 Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
 
 // --- KASIR ROUTES ---
-Route::get('/kasir/kasir',      [KasirController::class, 'index'])->name('kasir.index');
+Route::get('/kasir/kasir', [KasirController::class, 'index'])->name('kasir.index');
+Route::post('/kasir/process-payment', [KasirController::class, 'processPayment'])->name('kasir.processPayment');
 Route::get('/kasir/reservasi', [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
 Route::get('/kasir/riwayat', [KasirController::class, 'riwayat'])->name('kasir.riwayat');
 Route::get('/kasir/notifikasi', [KasirController::class, 'notif'])->name('kasir.notif');
 Route::get('/kasir/profile', [KasirController::class, 'profile'])->name('kasir.profile');
-Route::get('/kasir/logout', function() {
+Route::get('/kasir/logout', function () {
     return redirect()->route('kasir');
 })->name('logout');
