@@ -41,7 +41,6 @@
                         <th>Kategori</th>
                         <th>Harga</th>
                         <th>Deskripsi</th>
-                        <th>Stok</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -53,7 +52,6 @@
                         data-nama="{{ $menu['nama'] }}" 
                         data-kategori="{{ $menu['kategori'] }}" 
                         data-harga="{{ $menu['harga'] }}" 
-                        data-stok="{{ $menu['stok'] }}" 
                         data-status="{{ $menu['status'] }}" 
                         data-image-path="{{ $menu['image_path'] }}"
                         data-deskripsi="{{ $menu['deskripsi'] }}">
@@ -67,7 +65,6 @@
                         <td>{{ $menu['kategori'] }}</td>
                         <td>Rp {{ number_format($menu['harga'], 0, ',', '.') }}</td>
                         <td><small>{{ Str::limit($menu['deskripsi'], 30) }}</small></td>
-                        <td>{{ $menu['stok'] }}</td>
                         <td>
                             <span class="badge bg-{{ $menu['status'] == 'Tersedia' ? 'success' : 'danger' }}">
                                 {{ $menu['status'] }}
@@ -129,10 +126,7 @@
                         <input type="number" class="form-control" id="menu-harga" name="harga" required min="0">
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="menu-stok" class="form-label">Stok</label>
-                        <input type="number" class="form-control" id="menu-stok" name="stok" required min="0">
-                    </div>
+                    {{-- Blok input Stok telah dihapus --}}
                     
                     <div class="mb-3">
                         <label for="menu-status" class="form-label">Status</label>
@@ -235,7 +229,7 @@
                 // Untuk kesederhanaan, kita asumsikan urutan di select sama dengan data.
                 document.getElementById('menu-kategori').value = row.dataset.kategori; 
                 document.getElementById('menu-harga').value = row.dataset.harga;
-                document.getElementById('menu-stok').value = row.dataset.stok;
+                // document.getElementById('menu-stok').value = row.dataset.stok; // Baris untuk stok telah dihapus
                 document.getElementById('menu-status').value = row.dataset.status === 'Tersedia' ? 1 : 2; // Map status string ke ID 1/2
                 document.getElementById('menu-deskripsi').value = row.dataset.deskripsi;
                 

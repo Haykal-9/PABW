@@ -25,8 +25,8 @@ class UserSeeder extends Seeder
                 'gender_id' => 1,
                 'alamat' => 'jl. sumedang',
                 'profile_picture' => 'null',
-                'created_at' => null,
-                'updated_at' => null
+                'created_at' => '2025-06-15 17:35:03',
+                'updated_at' => '2025-06-15 17:35:03'
             ],
             [
                 'id' => 2,
@@ -39,8 +39,8 @@ class UserSeeder extends Seeder
                 'gender_id' => 2,
                 'alamat' => 'jl. kebon jeruk 04',
                 'profile_picture' => 'null',
-                'created_at' => null,
-                'updated_at' => null
+                'created_at' => '2025-06-15 17:35:03',
+                'updated_at' => '2025-06-15 17:35:03'
             ],
             [
                 'id' => 7,

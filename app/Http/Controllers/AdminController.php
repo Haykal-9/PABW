@@ -221,19 +221,19 @@ class AdminController extends Controller
     // FUNGSI CRUD LAIN (LOGIKA PALING SEDERHANA)
     // ====================================================================
 
-    public function updateUserRole(Request $request, $id)
-    {
-        $user = User::find($id);
+    // public function updateUserRole(Request $request, $id) // FUNGSI INI DIHAPUS
+    // {
+    //     $user = User::find($id);
 
-        if (!$user) {
-            return response('Pengguna tidak ditemukan.', 404);
-        }
+    //     if (!$user) {
+    //         return response('Pengguna tidak ditemukan.', 404);
+    //     }
 
-        // LOGIKA PALING SEDERHANA: Langsung mengambil nilai dari request dalam array update
-        $user->update(['role_id' => $request->input('role')]);
+    //     // LOGIKA PALING SEDERHANA: Langsung mengambil nilai dari request dalam array update
+    //     $user->update(['role_id' => $request->input('role')]);
         
-        return response()->noContent(); 
-    }
+    //     return response()->noContent(); 
+    // }
 
     public function destroyUser($id)
     {
