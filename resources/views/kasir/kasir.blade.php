@@ -19,7 +19,6 @@
             margin-top: 2rem;
         }
 
-        /* ... (semua style lain dari file HTML kasir) ... */
         .menu-card {
             background-color: var(--card-bg);
             border: none;
@@ -578,12 +577,12 @@
 
                         // Fill items
                         const itemsHtml = result.data.items.map(item => `
-                                        <div style="display: flex; justify-content: space-between; margin: 3px 0;">
-                                            <div style="flex: 1;">${item.name}</div>
-                                            <div style="width: 80px; text-align: right;">${item.quantity} x ${formatRupiah(item.price)}</div>
-                                            <div style="width: 100px; text-align: right; font-weight: bold;">${formatRupiah(item.price * item.quantity)}</div>
-                                        </div>
-                                    `).join('');
+                                            <div style="display: flex; justify-content: space-between; margin: 3px 0;">
+                                                <div style="flex: 1;">${item.name}</div>
+                                                <div style="width: 80px; text-align: right;">${item.quantity} x ${formatRupiah(item.price)}</div>
+                                                <div style="width: 100px; text-align: right; font-weight: bold;">${formatRupiah(item.price * item.quantity)}</div>
+                                            </div>
+                                        `).join('');
                         document.getElementById('receipt-items').innerHTML = itemsHtml;
 
                         // Generate PNG using html2canvas (but don't download yet)
@@ -640,4 +639,3 @@
     {{-- html2canvas Library for PNG generation --}}
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 @endpush
-```

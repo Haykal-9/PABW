@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\menu;
 use App\Models\pembayaran;
 use App\Models\detailPembayaran;
+use App\Models\reservasi;
 
 class KasirController extends Controller
 {
@@ -27,7 +28,7 @@ class KasirController extends Controller
                 'nama' => $item->nama,
                 'harga' => $item->price,
                 'img' => $item->url_foto
-                    ? asset('storage/menu/' . $item->url_foto)
+                    ? asset('foto/' . $item->url_foto)
                     : 'https://placehold.co/250x160/3b2e26/ffffff?text=' . urlencode($item->nama)
             ];
         })->toArray();
@@ -66,11 +67,80 @@ class KasirController extends Controller
      */
     public function notif()
     {
-        $notifikasi = [
-            ['judul' => 'Pesanan #INV-1023 selesai', 'waktu' => 'Baru saja', 'isi' => 'Pesanan meja 5 sudah dibayar.'],
-            ['judul' => 'Stok hampir habis', 'waktu' => '10 menit lalu', 'isi' => 'Kopi robusta tinggal 2 pack.'],
-            ['judul' => 'Reservasi baru', 'waktu' => '1 jam lalu', 'isi' => 'RSV-003 untuk 3 orang pada 23 Okt.'],
-        ];
+        $notifikasi = [];
+        $now = now();
+
+        // 1. Notifikasi Pesanan Selesai (24 jam terakhir)
+        $completedOrders = pembayaran::with('user')
+            ->where('status_id', 1) // completed
+            ->where('order_date', '>=', $now->copy()->subHours(24))
+            ->orderBy('order_date', 'desc')
+            ->get();
+
+        foreach ($completedOrders as $order) {
+            $notifikasi[] = [
+                'judul' => 'Pesanan #INV-' . str_pad($order->id, 4, '0', STR_PAD_LEFT) . ' selesai',
+                'waktu' => $this->getRelativeTime($order->order_date),
+                'isi' => 'Pesanan dari ' . ($order->user->nama ?? 'Guest') . ' telah diselesaikan.',
+                'type' => 'completed',
+                'timestamp' => strtotime($order->order_date),
+            ];
+        }
+
+        // 2. Notifikasi Pesanan Dibatalkan (24 jam terakhir)
+        $cancelledOrders = pembayaran::with('user')
+            ->where('status_id', 3) // cancelled
+            ->where('order_date', '>=', $now->copy()->subHours(24))
+            ->orderBy('order_date', 'desc')
+            ->get();
+
+        foreach ($cancelledOrders as $order) {
+            $notifikasi[] = [
+                'judul' => 'Pesanan #INV-' . str_pad($order->id, 4, '0', STR_PAD_LEFT) . ' dibatalkan',
+                'waktu' => $this->getRelativeTime($order->order_date),
+                'isi' => 'Pesanan dari ' . ($order->user->nama ?? 'Guest') . ' telah dibatalkan.',
+                'type' => 'cancelled',
+                'timestamp' => strtotime($order->order_date),
+            ];
+        }
+
+        // 3. Notifikasi Reservasi Baru (status pending atau dibuat dalam 24 jam terakhir)
+        $newReservations = reservasi::with('user')
+            ->where(function ($query) use ($now) {
+                $query->where('status_id', 1) // pending
+                    ->orWhere('created_at', '>=', $now->copy()->subHours(24));
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        foreach ($newReservations as $reservation) {
+            $notifikasi[] = [
+                'judul' => 'Reservasi baru - ' . $reservation->kode_reservasi,
+                'waktu' => $this->getRelativeTime($reservation->created_at),
+                'isi' => 'Reservasi dari ' . ($reservation->user->nama ?? 'Tamu') . ' untuk ' . $reservation->jumlah_orang . ' orang pada ' . date('d M Y', strtotime($reservation->tanggal_reservasi)) . '.',
+                'type' => 'reservation',
+                'timestamp' => strtotime($reservation->created_at),
+            ];
+        }
+
+        // 4. Notifikasi Stok Hampir Habis (menu dengan status habis)
+        $lowStockItems = menu::where('status_id', 2) // habis/out of stock
+            ->get();
+
+        foreach ($lowStockItems as $item) {
+            $notifikasi[] = [
+                'judul' => 'Stok habis - ' . $item->nama,
+                'waktu' => 'Sekarang',
+                'isi' => 'Menu "' . $item->nama . '" sudah habis dan perlu segera diisi ulang.',
+                'type' => 'low_stock',
+                'timestamp' => time(), // Current time for sorting
+            ];
+        }
+
+        // Sort semua notifikasi berdasarkan timestamp (terbaru di atas)
+        usort($notifikasi, function ($a, $b) {
+            return $b['timestamp'] - $a['timestamp'];
+        });
 
         return view('kasir.notif', [
             'title' => 'Tapal Kuda | Notifikasi',
@@ -80,23 +150,79 @@ class KasirController extends Controller
     }
 
     /**
+     * Helper function untuk mengkonversi waktu ke format relatif
+     */
+    private function getRelativeTime($datetime)
+    {
+        $now = time();
+        $time = strtotime($datetime);
+        $diff = $now - $time;
+
+        if ($diff < 60) {
+            return 'Baru saja';
+        } elseif ($diff < 3600) {
+            $minutes = floor($diff / 60);
+            return $minutes . ' menit lalu';
+        } elseif ($diff < 86400) {
+            $hours = floor($diff / 3600);
+            return $hours . ' jam lalu';
+        } else {
+            $days = floor($diff / 86400);
+            return $days . ' hari lalu';
+        }
+    }
+
+    /**
      * Menampilkan halaman riwayat pesanan.
      */
     public function riwayat()
     {
-        $riwayat = [
-            ['kode' => 'INV-1023', 'tanggal' => '2025-10-19', 'pelanggan' => 'Diki', 'total' => 54000, 'status' => 'Selesai'],
-            ['kode' => 'INV-1022', 'tanggal' => '2025-10-19', 'pelanggan' => 'Zahara', 'total' => 37000, 'status' => 'Selesai'],
-            ['kode' => 'INV-1021', 'tanggal' => '2025-10-18', 'pelanggan' => 'Aqila', 'total' => 18000, 'status' => 'Batal'],
-        ];
+        // Ambil data pembayaran dari database dengan relasi
+        $pembayaranData = pembayaran::with([
+            'user',
+            'details.menu',
+            'payment_method',
+            'order_type',
+            'status'
+        ])
+            ->orderBy('order_date', 'desc')
+            ->get();
 
-        // Data dummy untuk detail struk. Di aplikasi nyata, ini akan diambil dari database berdasarkan kode.
-        $detailStruk = [
-            'INV-1023' => ['kasir' => 'Kasir Tapal Kuda', 'items' => [['nama' => 'Latte', 'qty' => 1, 'harga' => 24000], ['nama' => 'Espresso', 'qty' => 2, 'harga' => 15000]], 'pajak' => 0.10, 'diskon' => 0],
-            'INV-1022' => ['kasir' => 'Kasir Tapal Kuda', 'items' => [['nama' => 'Cappuccino', 'qty' => 1, 'harga' => 22000], ['nama' => 'Americano', 'qty' => 1, 'harga' => 15000]], 'pajak' => 0.10, 'diskon' => 0],
-            'INV-1021' => ['kasir' => 'Kasir Tapal Kuda', 'items' => [['nama' => 'Americano', 'qty' => 1, 'harga' => 18000]], 'pajak' => 0.10, 'diskon' => 0],
-        ];
+        // Format data riwayat untuk tabel
+        $riwayat = $pembayaranData->map(function ($pembayaran) {
+            return [
+                'kode' => 'INV-' . str_pad($pembayaran->id, 4, '0', STR_PAD_LEFT),
+                'tanggal' => date('Y-m-d', strtotime($pembayaran->order_date)),
+                'pelanggan' => $pembayaran->user->nama ?? 'Guest',
+                'total' => $pembayaran->details->sum(function ($detail) {
+                    return $detail->quantity * $detail->price_per_item;
+                }),
+                'status' => $pembayaran->status->status_name === 'completed' ? 'Selesai' :
+                    ($pembayaran->status->status_name === 'cancelled' ? 'Batal' : 'Pending'),
+            ];
+        })->toArray();
 
+        // Format data detail struk untuk modal
+        $detailStruk = [];
+        foreach ($pembayaranData as $pembayaran) {
+            $kode = 'INV-' . str_pad($pembayaran->id, 4, '0', STR_PAD_LEFT);
+
+            // Hitung items untuk detail struk
+            $items = $pembayaran->details->map(function ($detail) {
+                return [
+                    'nama' => $detail->menu->nama ?? 'Unknown',
+                    'qty' => $detail->quantity,
+                    'harga' => $detail->price_per_item,
+                ];
+            })->toArray();
+
+            $detailStruk[$kode] = [
+                'kasir' => 'Kasir Tapal Kuda',
+                'items' => $items,
+                'pajak' => 0.10, // 10% pajak
+                'diskon' => 0,
+            ];
+        }
 
         return view('kasir.riwayat', [
             'title' => 'Tapal Kuda | Riwayat Pesanan',
@@ -108,11 +234,20 @@ class KasirController extends Controller
 
     public function profile()
     {
+        // Data dummy profil kasir
         $user = [
-            'nama' => 'Kasir Tapal Kuda',
-            'email' => 'kasir@tapalkuda.com',
+            'nama' => 'Budi Santoso',
+            'username' => 'budi.kasir',
+            'email' => 'budi.kasir@tapalkuda.com',
             'telepon' => '0812-3456-7890',
-            'foto' => 'https://placehold.co/140x140/54453d/ffffff?text=Kasir',
+            'role' => 'Kasir',
+            'foto' => 'https://ui-avatars.com/api/?name=Budi+Santoso&size=200&background=e87b3e&color=fff&bold=true',
+            'total_transaksi' => '156',
+            'hari_kerja' => '45 Hari',
+            'shift' => 'Pagi (08:00 - 16:00)',
+            'tanggal_bergabung' => '15 Oktober 2024',
+            'status' => 'Aktif',
+            'last_login' => date('d M Y, H:i'),
         ];
 
         return view('kasir.profile', [
@@ -120,6 +255,61 @@ class KasirController extends Controller
             'activePage' => 'profile',
             'user' => $user,
         ]);
+    }
+
+    /**
+     * Show edit profile form
+     */
+    public function editProfile()
+    {
+        // Data dummy profil kasir (sama dengan profile)
+        $user = [
+            'nama' => 'Budi Santoso',
+            'username' => 'budi.kasir',
+            'email' => 'budi.kasir@tapalkuda.com',
+            'telepon' => '0812-3456-7890',
+            'role' => 'Kasir',
+            'foto' => 'https://ui-avatars.com/api/?name=Budi+Santoso&size=200&background=e87b3e&color=fff&bold=true',
+        ];
+
+        return view('kasir.edit-profile', [
+            'title' => 'Tapal Kuda | Edit Profile',
+            'activePage' => 'profile',
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * Update profile
+     */
+    public function updateProfile(Request $request)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'nama' => 'required|string|max:100',
+                'username' => 'required|string|max:50',
+                'email' => 'required|email|max:100',
+                'telepon' => 'required|string|max:20',
+                'password' => 'nullable|min:6|confirmed',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            // Handle foto upload if provided
+            if ($request->hasFile('foto')) {
+                $file = $request->file('foto');
+                $namaFile = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/avatars'), $namaFile);
+                // In real app, save to database
+            }
+
+            // In real application, update database here
+            // For now, just redirect with success message
+
+            return redirect()->route('kasir.profile')->with('success', 'Profil berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal memperbarui profil: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -196,6 +386,165 @@ class KasirController extends Controller
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Menampilkan halaman manajemen menu untuk kasir
+     */
+    public function menuManagement()
+    {
+        // Fetch all menus from database with type and status relationships
+        $menuData = menu::with(['type', 'status'])
+            ->orderBy('type_id')
+            ->orderBy('nama')
+            ->get();
+
+        // Format data for view
+        $menus = $menuData->map(function ($m) {
+            return [
+                'id' => $m->id,
+                'nama' => $m->nama,
+                'kategori' => $m->type->type_name ?? 'N/A',
+                'type_id' => $m->type_id,
+                'harga' => $m->price,
+                'status' => ucfirst($m->status->status_name ?? 'N/A'),
+                'status_id' => $m->status_id,
+                'image_path' => $m->url_foto ? 'foto/' . $m->url_foto : null,
+                'deskripsi' => $m->deskripsi,
+            ];
+        })->toArray();
+
+        return view('kasir.menu', [
+            'title' => 'Tapal Kuda | Manajemen Menu',
+            'activePage' => 'menu',
+            'menus' => $menus,
+        ]);
+    }
+
+    /**
+     * Store new menu
+     */
+    public function storeMenu(Request $request)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'nama' => 'required|string|max:100',
+                'kategori' => 'required|integer',
+                'harga' => 'required|numeric|min:0',
+                'status' => 'required|integer|in:1,2',
+                'deskripsi' => 'nullable|string',
+                'foto_upload' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            // Handle file upload
+            $path_to_save = null;
+            if ($request->hasFile('foto_upload')) {
+                $file = $request->file('foto_upload');
+                $namaFile = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('foto'), $namaFile);
+                $path_to_save = $namaFile;
+            }
+
+            // Create menu
+            menu::create([
+                'nama' => $request->nama,
+                'url_foto' => $path_to_save,
+                'type_id' => $request->kategori,
+                'price' => $request->harga,
+                'deskripsi' => $request->deskripsi,
+                'status_id' => $request->status,
+            ]);
+
+            return redirect()->route('kasir.menu')->with('success', 'Menu "' . $request->nama . '" berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return redirect()->route('kasir.menu')->with('error', 'Gagal menambahkan menu: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update existing menu
+     */
+    public function updateMenu(Request $request, $id)
+    {
+        try {
+            $menu = menu::find($id);
+
+            if (!$menu) {
+                return redirect()->route('kasir.menu')->with('error', 'Menu tidak ditemukan.');
+            }
+
+            // Validate request
+            $request->validate([
+                'nama' => 'required|string|max:100',
+                'kategori' => 'required|integer',
+                'harga' => 'required|numeric|min:0',
+                'status' => 'required|integer|in:1,2',
+                'deskripsi' => 'nullable|string',
+                'foto_upload' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            // Handle file upload
+            $path_to_save = $menu->url_foto;
+
+            if ($request->hasFile('foto_upload')) {
+                // Delete old file if exists
+                if ($menu->url_foto) {
+                    $oldPath = public_path('foto/' . $menu->url_foto);
+                    if (\File::exists($oldPath)) {
+                        \File::delete($oldPath);
+                    }
+                }
+
+                // Upload new file
+                $file = $request->file('foto_upload');
+                $namaFile = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('foto'), $namaFile);
+                $path_to_save = $namaFile;
+            }
+
+            // Update menu
+            $menu->update([
+                'nama' => $request->nama,
+                'url_foto' => $path_to_save,
+                'type_id' => $request->kategori,
+                'price' => $request->harga,
+                'deskripsi' => $request->deskripsi,
+                'status_id' => $request->status,
+            ]);
+
+            return redirect()->route('kasir.menu')->with('success', 'Menu "' . $request->nama . '" berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->route('kasir.menu')->with('error', 'Gagal memperbarui menu: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete menu
+     */
+    public function destroyMenu($id)
+    {
+        try {
+            $menu = menu::find($id);
+
+            if (!$menu) {
+                return response('Menu tidak ditemukan.', 404);
+            }
+
+            // Delete file if exists
+            if ($menu->url_foto) {
+                $filePath = public_path('foto/' . $menu->url_foto);
+                if (\File::exists($filePath)) {
+                    \File::delete($filePath);
+                }
+            }
+
+            $menu->delete();
+
+            return response()->noContent();
+        } catch (\Exception $e) {
+            return response('Gagal menghapus menu: ' . $e->getMessage(), 500);
         }
     }
 }

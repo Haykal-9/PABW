@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo; // Tambahkan import ini
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class pembayaran extends Model
 {
@@ -12,9 +13,9 @@ class pembayaran extends Model
 
     // Menonaktifkan timestamps karena tabel tidak memilikinya
     public $timestamps = false;
-    
+
     protected $guarded = ['id'];
-    
+
     // Relasi untuk AdminController::orders()
     public function user(): BelongsTo
     {
@@ -25,14 +26,19 @@ class pembayaran extends Model
     {
         return $this->belongsTo(paymentMethods::class, 'payment_method_id');
     }
-    
+
     public function status(): BelongsTo
     {
         return $this->belongsTo(paymentStatus::class, 'status_id');
     }
-    
+
     public function order_type(): BelongsTo
     {
         return $this->belongsTo(orderType::class, 'order_type_id');
+    }
+
+    public function details(): HasMany
+    {
+        return $this->hasMany(detailPembayaran::class, 'pembayaran_id');
     }
 }

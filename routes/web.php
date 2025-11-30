@@ -95,6 +95,14 @@ Route::get('/kasir/reservasi', [KasirController::class, 'reservasikasir'])->name
 Route::get('/kasir/riwayat', [KasirController::class, 'riwayat'])->name('kasir.riwayat');
 Route::get('/kasir/notifikasi', [KasirController::class, 'notif'])->name('kasir.notif');
 Route::get('/kasir/profile', [KasirController::class, 'profile'])->name('kasir.profile');
+Route::get('/kasir/profile/edit', [KasirController::class, 'editProfile'])->name('kasir.profile.edit');
+Route::put('/kasir/profile', [KasirController::class, 'updateProfile'])->name('kasir.profile.update');
+
+// --- KASIR MENU MANAGEMENT ROUTES ---
+Route::get('/kasir/menu', [KasirController::class, 'menuManagement'])->name('kasir.menu');
+Route::post('/kasir/menu', [KasirController::class, 'storeMenu'])->name('kasir.menu.store');
+Route::put('/kasir/menu/{id}', [KasirController::class, 'updateMenu'])->name('kasir.menu.update');
+Route::delete('/kasir/menu/{id}', [KasirController::class, 'destroyMenu'])->name('kasir.menu.destroy');
 Route::get('/kasir/logout', function () {
     return redirect()->route('kasir');
 })->name('logout');
