@@ -89,9 +89,10 @@
                                             <tr>
                                                 <th>ID Order</th>
                                                 <th>Tanggal</th>
+                                                <th>Total</th>
                                                 <th>Status</th>
                                                 <th>Metode</th>
-                                                {{-- <th>Aksi</th> --}}
+                                                <th>Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -99,13 +100,24 @@
                                             <tr>
                                                 <td>#{{ $order->id }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d M Y H:i') }}</td>
+                                                <td class="fw-bold text-primary">
+                                                    Rp {{ number_format($order->details->sum(function($detail) {
+                                                        return $detail->price_per_item * $detail->quantity;
+                                                    }), 0, ',', '.') }}
+                                                </td>
                                                 <td>
                                                     <span class="badge bg-{{ $order->status_id == 1 ? 'success' : ($order->status_id == 2 ? 'warning' : 'danger') }}">
                                                         {{ $order->status->status_name ?? '-' }}
                                                     </span>
                                                 </td>
-                                                <td>{{ $order->payment_method_id == 1 ? 'Cash' : ($order->payment_method_id == 2 ? 'E-Wallet' : 'QRIS') }}</td>
-                                                {{-- <td><a href="#" class="btn btn-sm btn-outline-primary">Detail</a></td> --}}
+                                                <td>{{ $order->paymentMethod->method_name ?? 'Cash' }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#orderModal{{ $order->id }}">
+                                                        <i class="fas fa-eye me-1"></i> Detail
+                                                    </button>
+                                                </td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -200,4 +212,86 @@
         </div>
     </div>
 </div>
+
+{{-- Modal Detail Pesanan --}}
+@foreach($riwayatPesanan as $order)
+<div class="modal fade" id="orderModal{{ $order->id }}" tabindex="-1" aria-labelledby="orderModalLabel{{ $order->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderModalLabel{{ $order->id }}">
+                    <i class="fas fa-receipt me-2"></i>Detail Pesanan #{{ $order->id }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{-- Info Pesanan --}}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Tanggal Pesanan:</strong></p>
+                        <p>{{ \Carbon\Carbon::parse($order->order_date)->format('d M Y, H:i') }} WIB</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Status:</strong></p>
+                        <span class="badge bg-{{ $order->status_id == 1 ? 'success' : ($order->status_id == 2 ? 'warning' : 'danger') }}">
+                            {{ $order->status->status_name ?? '-' }}
+                        </span>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <p class="mb-1"><strong>Metode Pembayaran:</strong></p>
+                        <p>{{ $order->paymentMethod->method_name ?? 'Cash' }}</p>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <p class="mb-1"><strong>Tipe Order:</strong></p>
+                        <p>{{ $order->orderType->type_name ?? 'Dine In' }}</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                {{-- Daftar Menu yang Dibeli --}}
+                <h6 class="fw-bold mb-3">Menu yang Dibeli:</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Menu</th>
+                                <th>Harga</th>
+                                <th>Qty</th>
+                                <th>Catatan</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($order->details as $detail)
+                            <tr>
+                                <td>{{ $detail->menu->nama ?? 'Menu Tidak Tersedia' }}</td>
+                                <td>Rp {{ number_format($detail->price_per_item, 0, ',', '.') }}</td>
+                                <td>{{ $detail->quantity }}</td>
+                                <td><small class="text-muted">{{ $detail->item_notes ?? '-' }}</small></td>
+                                <td class="fw-bold">Rp {{ number_format($detail->price_per_item * $detail->quantity, 0, ',', '.') }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold">Total:</td>
+                                <td class="fw-bold text-primary fs-5">
+                                    Rp {{ number_format($order->details->sum(function($detail) {
+                                        return $detail->price_per_item * $detail->quantity;
+                                    }), 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach
+
 @endsection

@@ -14,7 +14,13 @@ class ProfileController extends Controller
     public function show($id)
     {
         // 1. Ambil User beserta data relasinya (Eager Loading biar cepat)
-        $user = User::with(['reservasi.status', 'pembayaran.status'])->find($id);
+        $user = User::with([
+            'reservasi.status', 
+            'pembayaran.status',
+            'pembayaran.details.menu',
+            'pembayaran.paymentMethod',
+            'pembayaran.orderType'
+        ])->find($id);
 
         if (!$user) {
             return redirect('/')->with('error', 'User tidak ditemukan');

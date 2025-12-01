@@ -29,35 +29,22 @@ Route::post('/register', [AuthController::class, 'processRegister']);
 // Routes untuk Pengguna (Customer)
 Route::get('/menu', [MenuController::class, 'menu'])->name('menu');
 Route::post('/menu/{id}/favorite', [MenuController::class, 'favorite'])->name('menu.favorite');
-Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
-// ... di dalam routes/web.php
-Route::get('/menu/{id}', [MenuController::class, 'detailMenu'])->name('menu.detail');
-
-Route::post('/review', [ReviewController::class, 'store'])->name('review.store');
-
-// BARU: Rute POST untuk menyimpan ulasan (review)
-Route::post('/menu/{menuId}/review', [MenuController::class, 'storeReview'])->name('menu.review.store');
-
-// ...
-
-// Rute untuk mengirim data form (POST)
+Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.detail');
+Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
-
-// Route untuk Keranjang (dummy)
-Route::get('/cart', [CartController::class, 'index']);
-
-Route::get('/reservasi', [ReservasiController::class, 'create']);
-
+Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+Route::patch('/cart/update', [CartController::class, 'updateCart'])->name('cart.update'); 
+Route::patch('/cart/update-note', [CartController::class, 'updateNote'])->name('cart.update.note');
+Route::delete('/cart/remove', [CartController::class, 'removeCart'])->name('cart.remove'); 
 Route::get('/checkout', [CheckoutController::class, 'create']);
-
-// 1. Tampilkan Profil (Read Only)
 Route::get('/profil/{id}', [ProfileController::class, 'show'])->name('profile.show');
-
-// 2. Tampilkan Form Edit
 Route::get('/profil/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-
-// 3. Proses Update (Action)
 Route::put('/profil/{id}', [ProfileController::class, 'update'])->name('profile.update');
+Route::post('/menu/{id}/review', [ReviewController::class, 'store'])->name('menu.review.store');
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
 
 // Routes untuk Admin
@@ -101,6 +88,16 @@ Route::get('/kasir/menu', [KasirController::class, 'menuManagement'])->name('kas
 Route::post('/kasir/menu', [KasirController::class, 'storeMenu'])->name('kasir.menu.store');
 Route::put('/kasir/menu/{id}', [KasirController::class, 'updateMenu'])->name('kasir.menu.update');
 Route::delete('/kasir/menu/{id}', [KasirController::class, 'destroyMenu'])->name('kasir.menu.destroy');
+Route::get('/reservasi', [ReservasiController::class, 'index'])->name('reservasi.index');
+Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
+Route::prefix('kasir')->group(function () {
+    Route::get('/reservasi', [KasirController::class, 'index'])->name('kasir.reservasi');
+    
+    // Action Terima & Tolak
+    Route::patch('/reservasi/{id}/approve', [KasirController::class, 'approve'])->name('kasir.reservasi.approve');
+    Route::post('/reservasi/{id}/reject', [KasirController::class, 'reject'])->name('kasir.reservasi.reject');
+});
+
 Route::get('/kasir/logout', function () {
     return redirect()->route('kasir');
 })->name('logout');

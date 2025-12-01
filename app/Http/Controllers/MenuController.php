@@ -13,30 +13,34 @@ class MenuController extends Controller
     {
         $userId = Auth::id() ?? 7;
 
-        // 1. Mulai Query (Belum dieksekusi / get)
-        $query = Menu::with('type');
+        // 1. Mulai Query
+        $query = Menu::with('type')->withAvg('reviews', 'rating');
 
-        // 2. Logika Filter Server-Side
-        // Jika ada parameter 'category' di URL dan isinya bukan 'all'
+        // 2. Logika Filter Kategori (Server-Side)
         if ($request->has('category') && $request->category != 'all') {
             if ($request->category == 'favorite') {
-                // Filter menu favorit - ambil ID menu yang difavoritkan user
                 $favoriteMenuIds = Favorite::where('user_id', $userId)
                     ->pluck('menu_id')
                     ->toArray();
                 $query->whereIn('id', $favoriteMenuIds);
             } else {
-                // Filter berdasarkan tipe menu
                 $query->whereHas('type', function ($q) use ($request) {
                     $q->where('type_name', $request->category);
                 });
             }
         }
 
-        // 3. Eksekusi Query
+        // --- 3. LOGIKA BARU: SEARCH BAR ---
+        if ($request->has('search') && $request->search != null) {
+            $searchTerm = $request->search;
+            // Cari berdasarkan nama menu yang mengandung kata kunci (Case Insensitive)
+            $query->where('nama', 'like', "%{$searchTerm}%");
+        }
+
+        // 4. Eksekusi Query
         $menus = $query->get();
 
-        // 4. Cek Favorit (Sama seperti sebelumnya)
+        // 5. Cek Favorit
         foreach ($menus as $menu) {
             $menu->is_favorited = Favorite::where('user_id', $userId)
                 ->where('menu_id', $menu->id)
@@ -45,9 +49,6 @@ class MenuController extends Controller
 
         return view('customers.menu', compact('menus'));
     }
-
-    // --- LOGIKA UTAMA: TAMBAH / HAPUS FAVORIT ---
-// --- FUNGSI FAVORIT (FIXED) ---
     public function favorite($id)
     {
         $userId = auth()->id() ?? 7; // Hybrid Auth
@@ -79,29 +80,49 @@ class MenuController extends Controller
 
     public function show($id)
     {
-        $product = Menu::with('type')->find($id);
+        // 1. Ambil data menu berdasarkan ID, sekalian load relasi type dan rating
+        // Gunakan findOrFail agar jika ID ngawur (misal /menu/999) otomatis 404 Not Found
+        $menu = Menu::with('type')->withAvg('reviews', 'rating')->findOrFail($id);
 
-        if (!$product) {
-            abort(404, 'Menu tidak ditemukan');
-        }
-
-        // Cek status favorit juga untuk halaman detail
-        $userId = Auth::id() ?? 7;
-        $isFavorited = Favorite::where('user_id', $userId)
+        // 2. Cek status favorit user terhadap menu ini
+        $userId = Auth::id() ?? 7; // Hybrid Auth
+        $menu->is_favorited = Favorite::where('user_id', $userId)
             ->where('menu_id', $id)
             ->exists();
 
-        // Format data object standard
-        $menu = (object) [
-            'id' => $product->id,
-            'name' => $product->nama,
-            'price' => $product->price,
-            'description_long' => $product->deskripsi,
-            'image_url' => 'foto/' . $product->url_foto,
-            'category' => $product->type->type_name ?? 'Umum',
-            'is_favorited' => $isFavorited // Kirim status ke view detail
-        ];
-
+        // 3. Kirim data ke view
         return view('customers.detail', compact('menu'));
+    }
+
+    public function addToCart($id)
+    {
+        // 1. Cari menu berdasarkan ID
+        $menu = Menu::find($id);
+
+        if (!$menu) {
+            return redirect()->back()->with('error', 'Menu tidak ditemukan');
+        }
+
+        // 2. Ambil keranjang yang sudah ada di session (atau array kosong jika belum ada)
+        $cart = session()->get('cart', []);
+
+        // 3. Cek apakah menu ini sudah ada di keranjang?
+        if (isset($cart[$id])) {
+            // Jika sudah ada, tambahkan jumlahnya (Quantity + 1)
+            $cart[$id]['quantity']++;
+        } else {
+            // Jika belum ada, masukkan data baru
+            $cart[$id] = [
+                "name" => $menu->nama,
+                "quantity" => 1,
+                "price" => $menu->price,
+                "photo" => $menu->url_foto
+            ];
+        }
+
+        // 4. Simpan kembali keranjang ke session
+        session()->put('cart', $cart);
+
+        return redirect()->back()->with('success', 'Menu berhasil ditambahkan ke keranjang!');
     }
 }

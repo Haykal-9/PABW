@@ -9,6 +9,7 @@ class review extends Model
 {
     protected $table = 'reviews';
     protected $guarded = ['id'];
+    const UPDATED_AT = null;
     
     public function user(): BelongsTo
     {

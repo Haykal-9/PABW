@@ -27,12 +27,22 @@ class pembayaran extends Model
         return $this->belongsTo(paymentMethods::class, 'payment_method_id');
     }
 
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(paymentMethods::class, 'payment_method_id');
+    }
+
     public function status(): BelongsTo
     {
         return $this->belongsTo(paymentStatus::class, 'status_id');
     }
 
     public function order_type(): BelongsTo
+    {
+        return $this->belongsTo(orderType::class, 'order_type_id');
+    }
+
+    public function orderType(): BelongsTo
     {
         return $this->belongsTo(orderType::class, 'order_type_id');
     }

@@ -36,8 +36,15 @@
                     <a class="nav-link position-relative text-dark" href="{{ url('/cart') }}">
                         <i class="fas fa-shopping-cart"></i>
                         <span class="ms-2">Keranjang</span>
-                        <span
-                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">2</span>
+
+                        {{-- LOGIKA BADGE DINAMIS --}}
+                        {{-- Cek apakah session cart ada DAN jumlahnya lebih dari 0 --}}
+                        @if(session('cart') && count(session('cart')) > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ count(session('cart')) }}
+                                <span class="visually-hidden">item di keranjang</span>
+                            </span>
+                        @endif
                     </a>
                 </li>
 
