@@ -4,7 +4,6 @@
 
 @section('content')
 
-{{-- Alert Pesan Sukses --}}
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show container mt-4" role="alert">
         <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
@@ -15,27 +14,23 @@
 <section class="detail-section py-5">
     <div class="container">
         
-        {{-- Tombol Kembali --}}
         <div class="mb-4">
             <a href="{{ route('menu') }}" class="text-decoration-none text-muted fw-bold">
                 <i class="fas fa-arrow-left me-2"></i> Kembali ke Menu
             </a>
         </div>
 
-        {{-- KARTU DETAIL PRODUK --}}
         <div class="card border-0 shadow-sm overflow-hidden mb-5">
             <div class="row g-0">
                 
-                {{-- KOLOM KIRI: GAMBAR --}}
                 <div class="col-md-5 bg-light d-flex align-items-center justify-content-center" style="min-height: 400px;">
                     <img src="{{ asset('foto/' . $menu->url_foto) }}" 
                          class="img-fluid" 
                          style="max-height: 400px; width: 100%; object-fit: cover;" 
-                         alt="{{ $menu->nama }}"
-                         onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=No+Image';">
+                         alt="{{ $menu->nama }}">
                 </div>
 
-                {{-- KOLOM KANAN: INFO PRODUK --}}
+
                 <div class="col-md-7">
                     <div class="card-body p-4 p-lg-5 d-flex flex-column h-100">
                         

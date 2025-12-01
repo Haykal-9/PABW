@@ -6,11 +6,9 @@
         <div class="col-md-8">
             <h4 class="mb-3">Detail Pengiriman</h4>
             
-            {{-- FORM CHECKOUT --}}
             <form action="{{ route('checkout.store') }}" method="POST">
                 @csrf
                 
-                {{-- Data Diri (Read Only) --}}
                 <div class="mb-3">
                     <label class="form-label">Nama Pemesan</label>
                     <input type="text" class="form-control" value="{{ $user->nama }}" readonly>
@@ -19,7 +17,6 @@
 
                 <h4 class="mb-3">Metode Pemesanan</h4>
 
-                {{-- Pilihan Tipe Pesanan --}}
                 <div class="my-3">
                     <div class="form-check">
                         <input id="dinein" name="order_type_id" type="radio" class="form-check-input" value="1" checked required>
@@ -33,7 +30,6 @@
 
                 <h4 class="mb-3">Metode Pembayaran</h4>
 
-                {{-- Pilihan Pembayaran --}}
                 <div class="my-3">
                     <div class="form-check">
                         <input id="cash" name="payment_method_id" type="radio" class="form-check-input" value="1" checked required>
@@ -55,7 +51,6 @@
             </form>
         </div>
 
-        {{-- RINGKASAN BELANJA --}}
         <div class="col-md-4">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white">

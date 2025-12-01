@@ -4,7 +4,6 @@
 
 @section('content')
 
-    {{-- Alert --}}
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show container mt-3" role="alert">
             {{ session('success') }}
@@ -19,7 +18,7 @@
             @if(session('cart') && count(session('cart')) > 0)
                 <div class="row">
 
-                    {{-- KOLOM KIRI: DAFTAR ITEM --}}
+                    <!-- KOLOM KIRI: DAFTAR ITEM -->
                     <div class="col-lg-8">
                         <div class="card shadow-sm border-0 mb-4">
                             <div class="card-body p-0">
@@ -50,10 +49,8 @@
                                                     </td>
                                                     <td>Rp {{ number_format($details['price'], 0, ',', '.') }}</td>
                                                     <td style="width: 150px;">
-                                                        {{-- FORM UPDATE QUANTITY --}}
                                                         <div class="input-group input-group-sm">
 
-                                                            {{-- Tombol Kurang --}}
                                                             <form action="{{ route('cart.update') }}" method="POST"
                                                                 class="d-inline">
                                                                 @csrf
@@ -67,7 +64,6 @@
                                                             <input type="text" class="form-control text-center bg-white"
                                                                 value="{{ $details['quantity'] }}" readonly>
 
-                                                            {{-- Tombol Tambah --}}
                                                             <form action="{{ route('cart.update') }}" method="POST"
                                                                 class="d-inline">
                                                                 @csrf
@@ -101,7 +97,6 @@
                                                         </form>
                                                     </td>
                                                     <td class="text-end pe-4">
-                                                        {{-- TOMBOL DELETE --}}
                                                         <form action="{{ route('cart.remove') }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
@@ -120,13 +115,12 @@
                             </div>
                         </div>
 
-                        {{-- Tombol Lanjut Belanja --}}
                         <a href="{{ url('/menu') }}" class="btn btn-outline-dark">
                             <i class="fas fa-arrow-left me-2"></i> Lanjut Belanja
                         </a>
                     </div>
 
-                    {{-- KOLOM KANAN: RINGKASAN BELANJA --}}
+                    <!-- KOLOM KANAN: RINGKASAN BELANJA -->
                     <div class="col-lg-4">
                         <div class="card shadow-sm border-0">
                             <div class="card-header bg-white py-3">
@@ -152,7 +146,6 @@
 
                 </div>
             @else
-                {{-- TAMPILAN JIKA KERANJANG KOSONG --}}
                 <div class="text-center py-5">
                     <div class="mb-4">
                         <i class="fas fa-shopping-basket fa-5x text-muted opacity-25"></i>

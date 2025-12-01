@@ -21,16 +21,13 @@ class menu extends Model
         return $this->belongsTo(menuStatus::class, 'status_id');
     }
 
-    // Relasi ke Reviews
     public function reviews(): HasMany
     {
         return $this->hasMany(review::class, 'menu_id');
     }
     
-    // Fungsi untuk mendapatkan rating rata-rata
     public function getAverageRatingAttribute()
     {
-        // Hitung rata-rata rating, bulatkan ke 1 angka di belakang koma
         return $this->reviews()->avg('rating');
     }
 }

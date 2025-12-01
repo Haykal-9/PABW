@@ -6,7 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // Diperlukan untuk relasi
+use Illuminate\Database\Eloquent\Relations\BelongsTo; 
 
 class User extends Authenticatable
 {
@@ -14,7 +14,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $table = 'users';
-    protected $guarded = ['id']; // Memungkinkan mass assignment untuk AdminController
+    protected $guarded = ['id'];
     protected $fillable = [
         'role_id',
         'username',
@@ -50,19 +50,16 @@ class User extends Authenticatable
         ];
     }
 
-    // Relasi untuk role
     public function role(): BelongsTo
     {
         return $this->belongsTo(userRole::class, 'role_id');
     }
 
-    // Relasi ke Reservasi
     public function reservasi()
     {
         return $this->hasMany(Reservasi::class, 'user_id', 'id');
     }
 
-    // Relasi ke Pembayaran (Pesanan)
     public function pembayaran()
     {
         return $this->hasMany(Pembayaran::class, 'user_id', 'id');

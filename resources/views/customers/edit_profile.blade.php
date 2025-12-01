@@ -17,10 +17,9 @@
                         <form action="{{ route('profile.update', ['id' => $user->id]) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
-                            @method('PUT') {{-- Menggunakan method PUT untuk update --}}
+                            @method('PUT')
 
                             <div class="text-center mb-4">
-                                {{-- Tampilkan Foto Saat Ini --}}
                                 @if($user->profile_picture)
                                     <img src="{{ asset('uploads/profile/' . $user->profile_picture) }}"
                                         class="rounded-circle img-thumbnail"

@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class menuStatus extends Model
 {
     protected $table = 'menu_status';
-    public $timestamps = false; // Karena tabel ini tidak memiliki kolom created_at/updated_at
+    public $timestamps = false; 
 }

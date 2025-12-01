@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             
-            {{-- Header Profil Singkat --}}
+            {{-- Header Profil --}}
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body d-flex align-items-center p-4">
                     <div class="me-4">
@@ -135,7 +135,7 @@
                 {{-- TAB 3: Reservasi (Split: Ongoing & History) --}}
                 <div class="tab-pane fade" id="reservations" role="tabpanel">
                     
-                    {{-- Section 1: Reservasi Akan Datang (Ongoing) --}}
+                    {{-- Section 1: Reservasi Akan Datang  --}}
                     <div class="card shadow-sm border-0 mb-4 bg-primary-subtle">
                         <div class="card-header bg-primary text-white">
                             <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Reservasi Akan Datang (Ongoing)</h6>
@@ -167,7 +167,7 @@
                         </div>
                     </div>
 
-                    {{-- Section 2: Riwayat Reservasi (Selesai/Batal) --}}
+                    {{-- Section 2: Riwayat Reservasi --}}
                     <div class="card shadow-sm border-0">
                         <div class="card-header bg-white">
                             <h6 class="mb-0">Riwayat Reservasi Sebelumnya</h6>

@@ -30,7 +30,7 @@
             </div>
 
             <div class="row g-4">
-                {{-- Item Menu 1: Single Origin Filter --}}
+                {{-- Item Menu 1 --}}
                 <div class="col-md-6 col-lg-3" data-aos="zoom-in">
                     <a href="{{ url('/menu/single-origin') }}" class="card-link text-decoration-none text-dark">
                         <div class="card border-0 shadow-sm h-100">
@@ -44,7 +44,7 @@
                     </a>
                 </div>
 
-                {{-- Item Menu 2: Signature Espresso Based --}}
+                {{-- Item Menu 2 --}}
                 <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="100">
                     <a href="{{ url('/menu/signature') }}" class="card-link text-decoration-none text-dark">
                         <div class="card border-0 shadow-sm h-100">
@@ -58,7 +58,7 @@
                     </a>
                 </div>
 
-                {{-- Item Menu 3: Pastry/Sweet Treat --}}
+                {{-- Item Menu 3 --}}
                 <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="200">
                     <a href="{{ url('/menu/pastry') }}" class="card-link text-decoration-none text-dark">
                         <div class="card border-0 shadow-sm h-100">
@@ -72,7 +72,7 @@
                     </a>
                 </div>
 
-                {{-- Item Menu 4: Light Bites/Sandwich --}}
+                {{-- Item Menu 4 --}}
                 <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="300">
                     <a href="{{ url('/menu#lightbites') }}" class="card-link text-decoration-none text-dark">
                         <div class="card border-0 shadow-sm h-100">
@@ -121,7 +121,7 @@
         </div>
     </section>
 
-    {{-- REKOMENDASI PENAMBAHAN: SECTION 4 - Testimoni Ringkas --}}
+    {{-- SECTION 4 - Testimoni Ringkas --}}
     <section class="testimonial-minimalist py-5 bg-white">
         <div class="container">
             <div class="text-center mb-5" data-aos="fade-down">
@@ -163,51 +163,9 @@
         </div>
     </section>
 
-    {{-- SECTION GALERI FOTO GRID (10 Foto dalam 5 + 5) --}}
-    <section class="gallery-grid py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5" data-aos="fade-down">
-                <h2 class="display-6 fw-bold text-primary-dark">Jelajahi Suasana Kedai Kami</h2>
-                <p class="lead text-muted">Tempat yang sempurna untuk bekerja, berkreasi, atau menikmati kopi berkualitas.
-                </p>
-            </div>
-
-            <div class="row g-3 justify-content-center mb-3">
-
-                @for ($i = 1; $i <= 5; $i++)
-                    <div class="col-6 col-md-4 col-lg-2" data-aos="zoom-in" data-aos-delay="{{ $i * 100 }}">
-                        {{-- Tambahkan gallery-item-btn untuk targeting JS --}}
-                        <a href="{{ url('/gallery') }}"
-                            class="d-block card rounded-3 overflow-hidden bg-transparent border-0 gallery-item-btn">
-                            <div class="ratio ratio-1x1 bg-white">
-                                <img src="{{ asset('foto/seblak.jpg') }}" class="img-fluid w-100 h-100 shadow-sm"
-                                    style="object-fit: cover;" alt="Foto Galeri {{ $i }}">
-                            </div>
-                        </a>
-                    </div>
-                @endfor
-
-            </div>
-
-            <div class="row g-3 justify-content-center">
-
-                @for ($i = 6; $i <= 10; $i++)
-                    <div class="col-6 col-md-4 col-lg-2" data-aos="zoom-in" data-aos-delay="{{ ($i - 5) * 100 }}">
-                        <a href="{{ url('/gallery') }}"
-                            class="d-block card rounded-3 overflow-hidden bg-transparent border-0 gallery-item-btn">
-                            <div class="ratio ratio-1x1 bg-white">
-                                <img src="{{ asset('foto/seblak.jpg') }}" class="img-fluid w-100 h-100 shadow-sm"
-                                    style="object-fit: cover;" alt="Foto Galeri {{ $i }}">
-                            </div>
-                        </a>
-                    </div>
-                @endfor
-
-            </div>
-    </section>
 
 
-    {{-- PENAMBAHAN BARU: SECTION LOKASI & JAM OPERASIONAL --}}
+    {{-- SECTION LOKASI & JAM OPERASIONAL --}}
     <section class="location-info py-5 bg-light">
         <div class="container">
             <div class="row align-items-center">
@@ -219,7 +177,6 @@
                         <i class="fas fa-map-marker-alt fa-2x text-primary-dark me-3 mt-1"></i>
                         <div>
                             <h5 class="fw-bold mb-0">Lokasi Utama</h5>
-                            {{-- Ganti dengan alamat aktual Anda --}}
                             <p class="mb-0">Margalaksana sumedang</p>
                             <a href="https://maps.app.goo.gl/ContohLinkGoogleMaps" target="_blank"
                                 class="text-decoration-none small text-primary-dark">Lihat di Google Maps <i
@@ -236,7 +193,6 @@
                     </div>
                 </div>
                 <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
-                    {{-- Anda bisa meletakkan kode embed peta (iframe) di sini --}}
                     <div class="ratio ratio-16x9 rounded-3 shadow">
                         <iframe
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.1687459860623!2d107.88790757573882!3d-6.87037396722298!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68d1b8e9ca8793%3A0x786b963c3e8cf075!2sKedai%20Kopi%20Tapal%20Kuda%20Sumedang!5e0!3m2!1sid!2sid!4v1760723900800!5m2!1sid!2sid"

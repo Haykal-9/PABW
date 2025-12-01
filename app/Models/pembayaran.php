@@ -8,15 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class pembayaran extends Model
 {
-    // FIX: Tentukan nama tabel secara eksplisit
     protected $table = 'pembayaran';
 
-    // Menonaktifkan timestamps karena tabel tidak memilikinya
     public $timestamps = false;
 
     protected $guarded = ['id'];
 
-    // Relasi untuk AdminController::orders()
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

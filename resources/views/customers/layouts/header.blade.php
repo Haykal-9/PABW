@@ -37,18 +37,14 @@
                         <i class="fas fa-shopping-cart"></i>
                         <span class="ms-2">Keranjang</span>
 
-                        {{-- LOGIKA BADGE DINAMIS --}}
-                        {{-- Cek apakah session cart ada DAN jumlahnya lebih dari 0 --}}
                         @if(session('cart') && count(session('cart')) > 0)
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 {{ count(session('cart')) }}
-                                <span class="visually-hidden">item di keranjang</span>
                             </span>
                         @endif
                     </a>
                 </li>
 
-                {{-- Tombol Login yang menonjol --}}
                 <li class="nav-item ms-lg-2">
                     <a class="btn btn-login" href="{{ url('/login') }}">
                         Login

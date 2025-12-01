@@ -30,7 +30,6 @@
                 {{-- SEARCH BAR --}}
                 <h5 class="fw-bold text-uppercase text-primary-dark mb-3">Pencarian</h5>
                 <form action="{{ route('menu') }}" method="GET" class="mb-4">
-                    {{-- Pertahankan kategori saat mencari --}}
                     @if(request('category'))
                         <input type="hidden" name="category" value="{{ request('category') }}">
                     @endif
@@ -106,8 +105,7 @@
                                 <div class="image-wrap bg-light d-flex align-items-center justify-content-center" style="height: 200px; overflow: hidden;">
                                     <img src="{{ asset('foto/' . $menu->url_foto) }}" 
                                          class="card-img-top w-100 h-100" style="object-fit: cover;" 
-                                         alt="{{ $menu->nama }}"
-                                         onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=No+Image';">
+                                         alt="{{ $menu->nama }}"">
                                 </div>
 
                                 <div class="card-body d-flex flex-column">
