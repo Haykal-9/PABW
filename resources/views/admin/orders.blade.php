@@ -22,18 +22,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($orders as $order)
+                    @forelse ($orders as $order) {{-- PERBAIKAN: Menggunakan @forelse --}}
                     
                     {{-- Baris Utama Pesanan --}}
                     <tr class="align-middle">
                         <td>#{{ $order['id'] }}</td>
                         <td>{{ $order['tanggal'] }}</td>
                         <td>{{ $order['customer'] }}</td>
+                        {{-- Menggunakan $order['total'] dari perhitungan Controller --}}
                         <td class="fw-bold">Rp {{ number_format($order['total'], 0, ',', '.') }}</td>
                         <td>
-                             <span class="badge bg-{{ $order['status'] == 'Selesai' ? 'success' : ($order['status'] == 'Batal' ? 'danger' : 'secondary') }}">
-                                {{ $order['status'] }}
-                            </span>
+                             <span class="badge bg-{{ $order['status'] == 'Completed' ? 'success' : ($order['status'] == 'Cancelled' ? 'danger' : 'secondary') }}">
+                                 {{ $order['status'] }}
+                             </span>
                         </td>
                         <td>{{ $order['metode'] }}</td>
                         <td class="text-center">
@@ -64,14 +65,16 @@
                                         </thead>
                                         <tbody>
                                             @php $subtotal_items = 0; @endphp
-                                            @foreach ($order['items'] as $item)
+                                            {{-- PERBAIKAN: Menggunakan $order['items'] (aman jika null) --}}
+                                            @foreach ($order['items'] ?? [] as $item)
                                                 @php
                                                     $subtotal_item = $item['qty'] * $item['price'];
                                                     $subtotal_items += $subtotal_item;
                                                 @endphp
                                                 <tr>
                                                     <td>
-                                                        <img src="{{ asset($item['image_path']) }}" alt="{{ $item['name'] }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                                        {{-- Perlu penyesuaian path gambar (asumsi sudah diperbaiki di Controller) --}}
+                                                        <img src="{{ asset($item['image_path'] ?? 'images/default.png') }}" alt="{{ $item['name'] }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
                                                     </td>
                                                     <td>{{ $item['name'] }}</td>
                                                     <td class="text-center">{{ $item['qty'] }}</td>
@@ -79,6 +82,11 @@
                                                     <td class="text-end">Rp {{ number_format($subtotal_item, 0, ',', '.') }}</td>
                                                 </tr>
                                             @endforeach
+                                            @if(empty($order['items'] ?? []))
+                                                <tr>
+                                                    <td colspan="5" class="text-center text-muted py-3">Tidak ada item pada pesanan ini.</td>
+                                                </tr>
+                                            @endif
                                         </tbody>
                                     </table>
                                     
@@ -86,12 +94,15 @@
                                     <div class="row justify-content-end">
                                         <div class="col-md-5">
                                             <dl class="row small">
+                                                {{-- PERBAIKAN: Menggunakan $order['subtotal'] dari Controller --}}
                                                 <dt class="col-6 text-end">Subtotal Pesanan:</dt>
                                                 <dd class="col-6 text-end">Rp {{ number_format($order['subtotal'], 0, ',', '.') }}</dd>
                                                 
+                                                {{-- PERBAIKAN: Menggunakan $order['tax'] dari Controller --}}
                                                 <dt class="col-6 text-end border-top pt-1">Pajak (10%):</dt>
                                                 <dd class="col-6 text-end border-top pt-1">Rp {{ number_format($order['tax'], 0, ',', '.') }}</dd>
                                                 
+                                                {{-- Menggunakan $order['total'] dari Controller --}}
                                                 <dt class="col-6 text-end border-top pt-1 text-danger">TOTAL AKHIR:</dt>
                                                 <dd class="col-6 text-end border-top pt-1 fw-bold text-danger">Rp {{ number_format($order['total'], 0, ',', '.') }}</dd>
                                             </dl>
@@ -103,7 +114,11 @@
                         </td>
                     </tr>
                     
-                    @endforeach
+                    @empty {{-- KETIKA DATA $orders KOSONG --}}
+                    <tr>
+                        <td colspan="7" class="text-center">Tidak ada riwayat penjualan yang ditemukan.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

@@ -44,6 +44,7 @@ class pembayaran extends Model
         return $this->belongsTo(orderType::class, 'order_type_id');
     }
 
+    // app/Models/pembayaran.php
     public function details(): HasMany
     {
         return $this->hasMany(detailPembayaran::class, 'pembayaran_id');
