@@ -8,16 +8,12 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-   public function up(): void
+    public function up(): void
     {
         Schema::create('pembayaran', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->dateTime('order_date')->useCurrent();
-            
-            // <<< TAMBAHKAN BARIS INI UNTUK TOTAL HARGA
-            $table->decimal('total_price', 10, 2)->nullable(); 
-            
             $table->foreignId('status_id')->constrained('payment_status')->onUpdate('cascade');
             $table->foreignId('payment_method_id')->constrained('payment_methods')->onUpdate('cascade');
             $table->foreignId('order_type_id')->constrained('order_types')->onUpdate('cascade');
