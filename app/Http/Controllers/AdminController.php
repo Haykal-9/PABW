@@ -40,6 +40,7 @@ class AdminController extends Controller
             'id' => $m->id,
             'nama' => $m->nama,
             'kategori' => $m->type->type_name ?? 'N/A',
+            'kategori_id' => $m->type_id ?? null,
             'harga' => $m->price,
             'stok' => $m->stok ?? 0, 
             'status' => ucwords($m->status->status_name ?? 'N/A'),
@@ -140,13 +141,15 @@ class AdminController extends Controller
             'type_id' => $request->kategori, 
             'price' => $request->harga, 
             'deskripsi' => $request->deskripsi, 
-            'status_id' => 2, // DEFAULT: Habis (ID 2)
+            'status_id' => $request->status, // <<< PERBAIKAN: Mengambil nilai status dari form
         ];
         
         // CRUD Sederhana: CREATE
         menu::create($menuData);
         
-        return Redirect::route('admin.menu')->with('success', 'Menu ' . $request->nama . ' berhasil ditambahkan. Status default: Habis.');
+        $statusMessage = $request->status == 1 ? 'Tersedia' : 'Habis';
+       return Redirect::route('admin.menu')->with('success', 'Menu ' . $request->nama . ' berhasil ditambahkan. Status: ' . $statusMessage . '.');
+    
     }
 
     public function updateMenu(Request $request, $id)

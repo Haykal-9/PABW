@@ -51,6 +51,7 @@
                         data-id="{{ $menu['id'] }}" 
                         data-nama="{{ $menu['nama'] }}" 
                         data-kategori="{{ $menu['kategori'] }}" 
+                        data-kategori-id="{{ $menu['kategori_id'] }}" {{-- BARIS TAMBAHAN --}}
                         data-harga="{{ $menu['harga'] }}" 
                         data-status="{{ $menu['status'] }}" 
                         data-image-path="{{ $menu['image_path'] }}"
@@ -110,7 +111,7 @@
                         <select class="form-control" id="menu-kategori" name="kategori" required>
                             <option value="">Pilih Kategori</option>
                             <option value="1">Kopi</option>
-                            <option value="2">Non-Kopi</option>
+                            <option value="2">Minuman</option>
                             <option value="3">Makanan</option>
                             <option value="4">Cemilan</option>
                         </select>
@@ -227,7 +228,8 @@
                 // Perlu memetakan kembali nama kategori ke ID (jika form kategori menggunakan ID 1, 2, 3...)
                 // Karena kita menggunakan ID di Controller, kita butuh nilai ID-nya di sini
                 // Untuk kesederhanaan, kita asumsikan urutan di select sama dengan data.
-                document.getElementById('menu-kategori').value = row.dataset.kategori; 
+                document.getElementById('menu-kategori').value = row.dataset.kategoriId; 
+                
                 document.getElementById('menu-harga').value = row.dataset.harga;
                 // document.getElementById('menu-stok').value = row.dataset.stok; // Baris untuk stok telah dihapus
                 document.getElementById('menu-status').value = row.dataset.status === 'Tersedia' ? 1 : 2; // Map status string ke ID 1/2
