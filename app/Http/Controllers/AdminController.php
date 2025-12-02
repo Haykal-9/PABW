@@ -17,32 +17,23 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-    // ====================================================================
-    // HALAMAN ADMIN (VIEW DATA)
-    // ====================================================================
-
     public function dashboard()
     {
-        $today = Carbon::today(); // Ambil tanggal hari ini
+        $today = Carbon::today();
 
-        // 1. Total Pendapatan - Dihitung dari detail pembayaran
         $totalPendapatan = detailPembayaran::selectRaw('SUM(quantity * price_per_item) as total')
             ->value('total') ?? 0;
 
-        // 2. Pendapatan Hari Ini - Dihitung dari detail pembayaran dengan filter tanggal
         $pendapatanHariIni = detailPembayaran::whereHas('pembayaran', function ($query) use ($today) {
             $query->whereDate('order_date', $today);
         })
             ->selectRaw('SUM(quantity * price_per_item) as total')
             ->value('total') ?? 0;
 
-        // 3. Menu Terjual Hari Ini (Menghitung kuantitas item yang dibayar hari ini)
-        // Kode Baru (Memperbaiki Error)
         $menuTerjualHariIni = detailPembayaran::whereHas('pembayaran', function ($query) use ($today) {
-            $query->whereDate('order_date', $today); // Ganti created_at ke order_date
+            $query->whereDate('order_date', $today);
         })->sum('quantity') ?? 0;
 
-        // 4. Reservasi Terlaksana (Mengambil status ID 2, sesuai asumsi sistem)
         $reservasiTerlaksana = reservasi::where('status_id', 2)->count() ?? 0;
 
         $data = [
@@ -57,7 +48,6 @@ class AdminController extends Controller
 
     public function menu()
     {
-        // CRUD Sederhana: READ data menu dari Database
         $menus = menu::with(['type', 'status'])->get()->map(fn($m) => [
             'id' => $m->id,
             'nama' => $m->nama,
@@ -66,7 +56,6 @@ class AdminController extends Controller
             'harga' => $m->price,
             'stok' => $m->stok ?? 0,
             'status' => ucwords($m->status->status_name ?? 'N/A'),
-            // FIX: Tambahkan prefix 'foto/' agar gambar muncul di view
             'image_path' => $m->url_foto ? 'foto/' . $m->url_foto : null,
             'deskripsi' => $m->deskripsi,
         ]);
@@ -76,7 +65,6 @@ class AdminController extends Controller
 
     public function users()
     {
-        // Mengambil data user dari Database (Khusus Admin)
         $users = User::with('role')->get()->map(fn($u) => [
             'id' => $u->id,
             'nama' => $u->nama,
@@ -89,7 +77,6 @@ class AdminController extends Controller
 
     public function reservations()
     {
-        // Mengambil data reservasi dari Database (Khusus Admin)
         $reservations = reservasi::with(['user', 'status'])
             ->get()->map(function ($r) {
                 return [
@@ -111,7 +98,6 @@ class AdminController extends Controller
 
     public function ratings()
     {
-        // Mengambil data review dari Database (Khusus Admin)
         $ratings = review::with(['user', 'menu_item'])
             ->get()->map(fn($r) => [
                 'id' => $r->id,
@@ -125,11 +111,8 @@ class AdminController extends Controller
         return view('admin.ratings', compact('ratings'));
     }
 
-    // haykal-9/pabw/PABW-7e82df8ad72ef023c77f1eeca076f5349ec77851/app/Http/Controllers/AdminController.php
-
     public function orders()
     {
-        // Simpler normalized orders for the view
         $orders = pembayaran::with(['details.menu', 'orderType', 'user', 'status', 'paymentMethod'])
             ->orderBy('order_date', 'desc')
             ->get()
@@ -160,62 +143,44 @@ class AdminController extends Controller
 
         return view('admin.orders', compact('orders'));
     }
-    // ====================================================================
-    // FUNGSI CRUD MENU (DENGAN LOGIKA UPLOAD FOTO SEDERHANA)
-    // ====================================================================
 
     public function storeMenu(Request $request)
     {
-        // --- LOGIKA UPLOAD FOTO SEDERHANA (CREATE) ---
-        $path_to_save = null; // Mulai dengan null
+        $path_to_save = null;
 
-        // Asumsi input file bernama 'foto_upload'
         if ($request->hasFile('foto_upload')) {
             $file = $request->file('foto_upload');
-            // Membuat nama file unik
             $namaFile = time() . '_' . $file->getClientOriginalName();
-
-            // Menyimpan file ke folder public/foto
             $file->move(public_path('foto'), $namaFile);
-
-            $path_to_save = $namaFile; // Simpan hanya nama file di DB
+            $path_to_save = $namaFile;
         }
-        // --- AKHIR LOGIKA UPLOAD FOTO ---
 
-        // LOGIKA PALING SEDERHANA: Langsung mengambil nilai dari request di dalam array
-
-        // Mencegah Sinkronisasi Instan ke Customer: Default Status ID = 2 (Habis)
         $menuData = [
             'nama' => $request->nama,
-            'url_foto' => $path_to_save, // <-- Menggunakan nama file
+            'url_foto' => $path_to_save,
             'type_id' => $request->kategori,
             'price' => $request->harga,
             'deskripsi' => $request->deskripsi,
-            'status_id' => $request->status, // <<< PERBAIKAN: Mengambil nilai status dari form
+            'status_id' => $request->status,
         ];
 
-        // CRUD Sederhana: CREATE
         menu::create($menuData);
 
         $statusMessage = $request->status == 1 ? 'Tersedia' : 'Habis';
         return Redirect::route('admin.menu')->with('success', 'Menu ' . $request->nama . ' berhasil ditambahkan. Status: ' . $statusMessage . '.');
-
     }
 
     public function updateMenu(Request $request, $id)
     {
-        // CRUD Sederhana: FIND
         $menu = menu::find($id);
 
         if (!$menu) {
             return Redirect::route('admin.menu')->with('error', 'Menu tidak ditemukan.');
         }
 
-        // --- LOGIKA UPLOAD FOTO SEDERHANA (UPDATE) ---
-        $path_to_save = $menu->url_foto; // Pertahankan nama file lama sebagai default
+        $path_to_save = $menu->url_foto;
 
         if ($request->hasFile('foto_upload')) {
-            // 1. Hapus file lama jika ada
             if ($menu->url_foto) {
                 $oldPath = public_path('foto/' . $menu->url_foto);
                 if (File::exists($oldPath)) {
@@ -223,27 +188,21 @@ class AdminController extends Controller
                 }
             }
 
-            // 2. Simpan file baru
             $file = $request->file('foto_upload');
             $namaFile = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('foto'), $namaFile);
-
-            $path_to_save = $namaFile; // Simpan nama file baru di DB
+            $path_to_save = $namaFile;
         }
-        // --- AKHIR LOGIKA UPLOAD FOTO ---
 
-
-        // LOGIKA PALING SEDERHANA: Langsung mengambil nilai dari request di dalam array
         $menuData = [
             'nama' => $request->nama,
-            'url_foto' => $path_to_save, // <-- Menggunakan nama file baru/lama
+            'url_foto' => $path_to_save,
             'type_id' => $request->kategori,
             'price' => $request->harga,
             'deskripsi' => $request->deskripsi,
             'status_id' => $request->status,
         ];
 
-        // CRUD Sederhana: UPDATE
         $menu->update($menuData);
 
         return Redirect::route('admin.menu')->with('success', 'Menu ' . $request->nama . ' berhasil diperbarui.');
@@ -251,7 +210,6 @@ class AdminController extends Controller
 
     public function destroyMenu($id)
     {
-        // Tambahkan logika hapus file fisik saat menu dihapus
         $menu = menu::find($id);
         if ($menu && $menu->url_foto) {
             $filePath = public_path('foto/' . $menu->url_foto);
@@ -260,7 +218,6 @@ class AdminController extends Controller
             }
         }
 
-        // CRUD Sederhana: DELETE
         $deleted = menu::destroy($id);
 
         if ($deleted) {
@@ -269,24 +226,6 @@ class AdminController extends Controller
 
         return response('Gagal menghapus menu.', 404);
     }
-
-    // ====================================================================
-    // FUNGSI CRUD LAIN (LOGIKA PALING SEDERHANA)
-    // ====================================================================
-
-    // public function updateUserRole(Request $request, $id) // FUNGSI INI DIHAPUS
-    // {
-    //     $user = User::find($id);
-
-    //     if (!$user) {
-    //         return response('Pengguna tidak ditemukan.', 404);
-    //     }
-
-    //     // LOGIKA PALING SEDERHANA: Langsung mengambil nilai dari request dalam array update
-    //     $user->update(['role_id' => $request->input('role')]);
-
-    //     return response()->noContent(); 
-    // }
 
     public function destroyUser($id)
     {
@@ -301,7 +240,6 @@ class AdminController extends Controller
 
     public function destroyReservation($id)
     {
-        // CRUD Sederhana: DELETE
         $deleted = reservasi::destroy($id);
 
         if ($deleted) {
