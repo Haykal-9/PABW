@@ -51,7 +51,7 @@ class AuthController extends Controller
         if ($user && Hash::check($request->password, $user->password)) {
             return redirect('/')->with('success', 'Login berhasil! Selamat datang, ' . $user->nama);
         }
-        return redirect('/login')->with('error', 'Username atau password salah!');
+        return redirect('/login')->with('error', 'Userna    me atau password salah!');
     }
 
     public function processLogout()
