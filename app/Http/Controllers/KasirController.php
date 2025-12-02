@@ -49,17 +49,82 @@ class KasirController extends Controller
      */
     public function reservasikasir()
     {
-        $reservasi = [
-            ['kode' => 'RSV-001', 'nama' => 'Aqila', 'email' => 'aqila@example.com', 'no_telp' => '0812-1111-2222', 'jumlah_orang' => 2, 'tanggal' => '2025-10-21', 'pesan' => 'Non-smoking, dekat jendela'],
-            ['kode' => 'RSV-002', 'nama' => 'Haykal', 'email' => 'haykal@example.com', 'no_telp' => '0813-3333-4444', 'jumlah_orang' => 4, 'tanggal' => '2025-10-22', 'pesan' => 'Butuh stop kontak'],
-            ['kode' => 'RSV-003', 'nama' => 'Ega', 'email' => 'ega@example.com', 'no_telp' => '0815-5555-6666', 'jumlah_orang' => 3, 'tanggal' => '2025-10-23', 'pesan' => 'Kursi sofa'],
-        ];
+        // Ambil semua reservasi dengan status pending (status_id = 1)
+        $reservasiData = reservasi::with('user', 'status')
+            ->where('status_id', 1) // 1 = pending
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Format data untuk view
+        $reservasi = $reservasiData->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'kode' => $item->kode_reservasi,
+                'nama' => $item->user->nama ?? 'N/A',
+                'email' => $item->user->email ?? 'N/A',
+                'no_telp' => $item->user->no_telp ?? 'N/A',
+                'jumlah_orang' => $item->jumlah_orang,
+                'tanggal' => \Carbon\Carbon::parse($item->tanggal_reservasi)->format('d M Y H:i'),
+                'pesan' => $item->message ?? '-',
+                'status' => $item->status->status_name ?? 'pending',
+            ];
+        });
 
         return view('kasir.reservasi', [
             'title' => 'Tapal Kuda | Reservasi',
             'activePage' => 'reservasi',
             'reservasi' => $reservasi,
         ]);
+    }
+
+    /**
+     * Menerima/approve reservasi
+     */
+    public function approve($id)
+    {
+        try {
+            $reservasi = reservasi::findOrFail($id);
+
+            // Update status menjadi dikonfirmasi (status_id = 2)
+            $reservasi->status_id = 2;
+            $reservasi->save();
+
+            return redirect()->route('kasir.reservasi')
+                ->with('success', 'Reservasi berhasil dikonfirmasi!');
+        } catch (\Exception $e) {
+            return redirect()->route('kasir.reservasi')
+                ->with('error', 'Gagal mengkonfirmasi reservasi: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Menolak reservasi
+     */
+    public function reject(Request $request, $id)
+    {
+        try {
+            $reservasi = reservasi::findOrFail($id);
+
+            // Update status menjadi dibatalkan (status_id = 3)
+            $reservasi->status_id = 3;
+            $reservasi->save();
+
+            // Simpan alasan penolakan jika ada tabel reservasi_ditolak
+            if ($request->has('alasan')) {
+                \DB::table('reservasi_ditolak')->insert([
+                    'reservation_id' => $id,
+                    'alasan_ditolak' => $request->alasan,
+                    'ditolak_oleh' => 'kasir',
+                    'cancelled_at' => now(),
+                ]);
+            }
+
+            return redirect()->route('kasir.reservasi')
+                ->with('success', 'Reservasi berhasil ditolak!');
+        } catch (\Exception $e) {
+            return redirect()->route('kasir.reservasi')
+                ->with('error', 'Gagal menolak reservasi: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -234,18 +299,33 @@ class KasirController extends Controller
 
     public function profile()
     {
-        // Data dummy profil kasir
+        // Ambil data user dengan ID 7 (hardcoded untuk sementara)
+        $userData = \App\Models\User::with('role', 'gender')->find(7);
+
+        if (!$userData) {
+            return redirect()->route('kasir.index')->with('error', 'User tidak ditemukan.');
+        }
+
+        // Hitung statistik (contoh: total transaksi dari tabel pembayaran)
+        $totalTransaksi = \App\Models\pembayaran::where('user_id', 7)->count();
+
+        // Format data untuk view
         $user = [
-            'nama' => 'Budi Santoso',
-            'username' => 'budi.kasir',
-            'email' => 'budi.kasir@tapalkuda.com',
-            'telepon' => '0812-3456-7890',
-            'role' => 'Kasir',
-            'foto' => 'https://ui-avatars.com/api/?name=Budi+Santoso&size=200&background=e87b3e&color=fff&bold=true',
-            'total_transaksi' => '156',
-            'hari_kerja' => '45 Hari',
-            'shift' => 'Pagi (08:00 - 16:00)',
-            'tanggal_bergabung' => '15 Oktober 2024',
+            'id' => $userData->id,
+            'nama' => $userData->nama,
+            'username' => $userData->username,
+            'email' => $userData->email,
+            'telepon' => $userData->no_telp ?? '-',
+            'role' => $userData->role->role_name ?? 'Member',
+            'gender' => $userData->gender->gender_name ?? '-',
+            'alamat' => $userData->alamat ?? '-',
+            'foto' => $userData->profile_picture
+                ? asset('uploads/avatars/' . $userData->profile_picture)
+                : 'https://ui-avatars.com/api/?name=' . urlencode($userData->nama) . '&size=200&background=e87b3e&color=fff&bold=true',
+            'total_transaksi' => $totalTransaksi,
+            'hari_kerja' => '-',
+            'shift' => '-',
+            'tanggal_bergabung' => \Carbon\Carbon::parse($userData->created_at)->format('d F Y'),
             'status' => 'Aktif',
             'last_login' => date('d M Y, H:i'),
         ];
@@ -262,14 +342,26 @@ class KasirController extends Controller
      */
     public function editProfile()
     {
-        // Data dummy profil kasir (sama dengan profile)
+        // Ambil data user dengan ID 7 (hardcoded untuk sementara)
+        $userData = \App\Models\User::with('role', 'gender')->find(7);
+
+        if (!$userData) {
+            return redirect()->route('kasir.index')->with('error', 'User tidak ditemukan.');
+        }
+
+        // Format data untuk view
         $user = [
-            'nama' => 'Budi Santoso',
-            'username' => 'budi.kasir',
-            'email' => 'budi.kasir@tapalkuda.com',
-            'telepon' => '0812-3456-7890',
-            'role' => 'Kasir',
-            'foto' => 'https://ui-avatars.com/api/?name=Budi+Santoso&size=200&background=e87b3e&color=fff&bold=true',
+            'id' => $userData->id,
+            'nama' => $userData->nama,
+            'username' => $userData->username,
+            'email' => $userData->email,
+            'telepon' => $userData->no_telp ?? '',
+            'alamat' => $userData->alamat ?? '',
+            'gender_id' => $userData->gender_id,
+            'role' => $userData->role->role_name ?? 'Member',
+            'foto' => $userData->profile_picture
+                ? asset('uploads/avatars/' . $userData->profile_picture)
+                : 'https://ui-avatars.com/api/?name=' . urlencode($userData->nama) . '&size=200&background=e87b3e&color=fff&bold=true',
         ];
 
         return view('kasir.edit-profile', [
@@ -285,26 +377,51 @@ class KasirController extends Controller
     public function updateProfile(Request $request)
     {
         try {
+            // Hardcode user ID 7 untuk sementara
+            $userId = 7;
+            $user = \App\Models\User::findOrFail($userId);
+
             // Validate request
             $request->validate([
                 'nama' => 'required|string|max:100',
-                'username' => 'required|string|max:50',
-                'email' => 'required|email|max:100',
-                'telepon' => 'required|string|max:20',
+                'username' => 'required|string|max:50|unique:users,username,' . $userId,
+                'email' => 'required|email|max:100|unique:users,email,' . $userId,
+                'no_telp' => 'nullable|string|max:20',
+                'alamat' => 'nullable|string',
                 'password' => 'nullable|min:6|confirmed',
                 'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
+            // Update data user
+            $user->nama = $request->nama;
+            $user->username = $request->username;
+            $user->email = $request->email;
+            $user->no_telp = $request->no_telp;
+            $user->alamat = $request->alamat;
+
+            // Update password jika diisi
+            if ($request->filled('password')) {
+                $user->password = bcrypt($request->password);
+            }
+
             // Handle foto upload if provided
             if ($request->hasFile('foto')) {
                 $file = $request->file('foto');
-                $namaFile = time() . '_' . $file->getClientOriginalName();
+                $namaFile = 'profile_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $file->move(public_path('uploads/avatars'), $namaFile);
-                // In real app, save to database
+
+                // Hapus foto lama jika ada (kecuali default)
+                if ($user->profile_picture && $user->profile_picture !== 'default-avatar.png') {
+                    $oldFile = public_path('uploads/avatars/' . $user->profile_picture);
+                    if (file_exists($oldFile)) {
+                        unlink($oldFile);
+                    }
+                }
+
+                $user->profile_picture = $namaFile;
             }
 
-            // In real application, update database here
-            // For now, just redirect with success message
+            $user->save();
 
             return redirect()->route('kasir.profile')->with('success', 'Profil berhasil diperbarui!');
         } catch (\Exception $e) {
@@ -548,3 +665,4 @@ class KasirController extends Controller
         }
     }
 }
+

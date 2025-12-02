@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
@@ -88,10 +88,13 @@ Route::get('/kasir/menu', [KasirController::class, 'menuManagement'])->name('kas
 Route::post('/kasir/menu', [KasirController::class, 'storeMenu'])->name('kasir.menu.store');
 Route::put('/kasir/menu/{id}', [KasirController::class, 'updateMenu'])->name('kasir.menu.update');
 Route::delete('/kasir/menu/{id}', [KasirController::class, 'destroyMenu'])->name('kasir.menu.destroy');
+Route::prefix('kasir')->group(function () {
+    Route::get('/reservasi', [KasirController::class, 'index'])->name('kasir.reservasi');
 
-// --- KASIR RESERVASI ACTION ROUTES ---
-Route::patch('/kasir/reservasi/{id}/approve', [KasirController::class, 'approve'])->name('kasir.reservasi.approve');
-Route::post('/kasir/reservasi/{id}/reject', [KasirController::class, 'reject'])->name('kasir.reservasi.reject');
+    // Action Terima & Tolak
+    Route::patch('/reservasi/{id}/approve', [KasirController::class, 'approve'])->name('kasir.reservasi.approve');
+    Route::post('/reservasi/{id}/reject', [KasirController::class, 'reject'])->name('kasir.reservasi.reject');
+});
 
 Route::get('/kasir/logout', function () {
     return redirect()->route('kasir');

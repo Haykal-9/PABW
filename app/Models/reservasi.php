@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class reservasi extends Model
+class Reservasi extends Model
 {
     protected $table = 'reservasi';
     protected $guarded = ['id'];
