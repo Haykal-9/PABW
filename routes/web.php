@@ -17,10 +17,10 @@ use App\Http\Controllers\AuthController;
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/home', [HomeController::class, 'index']);
 
-// Routes untuk Autentikasi (jika belum ada controller khusus)
-Route::get('/login', function () {
-    return view('login');
-});
+// Routes untuk Autentikasi
+Route::get('/login', [AuthController::class, 'showLogin']);
+Route::post('/login', [AuthController::class, 'processLogin']);
+Route::get('/logout', [AuthController::class, 'processLogout']);
 
 // Route untuk Registrasi
 Route::get('/register', [AuthController::class, 'showRegister']);
@@ -88,10 +88,15 @@ Route::get('/kasir/menu', [KasirController::class, 'menuManagement'])->name('kas
 Route::post('/kasir/menu', [KasirController::class, 'storeMenu'])->name('kasir.menu.store');
 Route::put('/kasir/menu/{id}', [KasirController::class, 'updateMenu'])->name('kasir.menu.update');
 Route::delete('/kasir/menu/{id}', [KasirController::class, 'destroyMenu'])->name('kasir.menu.destroy');
-
-// --- KASIR RESERVASI ACTION ROUTES ---
-Route::patch('/kasir/reservasi/{id}/approve', [KasirController::class, 'approve'])->name('kasir.reservasi.approve');
-Route::post('/kasir/reservasi/{id}/reject', [KasirController::class, 'reject'])->name('kasir.reservasi.reject');
+Route::get('/reservasi', [ReservasiController::class, 'index'])->name('reservasi.index');
+Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
+Route::prefix('kasir')->group(function () {
+    Route::get('/reservasi', [KasirController::class, 'index'])->name('kasir.reservasi');
+    
+    // Action Terima & Tolak
+    Route::patch('/reservasi/{id}/approve', [KasirController::class, 'approve'])->name('kasir.reservasi.approve');
+    Route::post('/reservasi/{id}/reject', [KasirController::class, 'reject'])->name('kasir.reservasi.reject');
+});
 
 Route::get('/kasir/logout', function () {
     return redirect()->route('kasir');

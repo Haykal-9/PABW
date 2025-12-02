@@ -4,41 +4,115 @@
 
 @section('content')
 
-    <section class="hero-minimalist d-flex align-items-center text-white vh-100" id="hero-minimalist"
-        style="background-image: url('{{ asset('logo/biji.jpg') }}'); background-size: cover; background-position: center;">
-        <div class="hero-overlay top-0 start-0 w-300 h-100"></div>
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 text-start" data-aos="fade-right">
-                    <h1 class="display-3 fw-light mb-2">TapalKuda</h1>
-                    <h2 class="display-1 fw-bold mb-4 text-white">Seni Menyeduh</h2>
-                    <p class="lead mb-4">
-                        Kami memperlakukan kopi sebagai seni dan sains. Eksplorasi rasa terbaru dari biji lokal yang
-                        dikurasi khusus untuk Anda.
+    {{-- HERO SECTION - Vintage Modern --}}
+    <section class="vintage-hero d-flex align-items-center text-white vh-100 position-relative overflow-hidden"
+        id="hero-section"
+        style="background-image: url('{{ asset('logo/biji.jpg') }}'); background-size: cover; background-position: center; background-attachment: fixed;">
+
+        {{-- Vintage Overlay with Gradient --}}
+        <div class="vintage-hero-overlay"></div>
+
+        {{-- Decorative Top Border --}}
+        <div class="hero-ornament-top">
+            <div class="ornament-line-hero"></div>
+            <div class="ornament-diamond">◆</div>
+            <div class="ornament-line-hero"></div>
+        </div>
+
+        {{-- Main Content --}}
+        <div class="container position-relative" style="z-index: 10;">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-lg-8 text-center" data-aos="fade-up">
+
+
+                    {{-- Main Heading --}}
+                    <h1 class="hero-title display-2 fw-bold mb-3" data-aos="fade-up" data-aos-delay="100">
+                        TapalKuda
+                    </h1>
+
+                    {{-- Decorative Divider --}}
+                    <div class="hero-divider mx-auto" data-aos="zoom-in" data-aos-delay="200">
+                        <span class="divider-ornament"></span>
+                    </div>
+
+                    {{-- Tagline --}}
+                    <h2 class="hero-subtitle display-4 fw-light mb-4" data-aos="fade-up" data-aos-delay="300">
+                        Seni Menyeduh, Inovasi Rasa
+                    </h2>
+
+                    {{-- Description --}}
+                    <p class="hero-description lead mb-5 mx-auto" data-aos="fade-up" data-aos-delay="400">
+                        Kami memperlakukan kopi sebagai seni dan sains. Eksplorasi rasa terbaru <br
+                            class="d-none d-md-block">
+                        dari biji lokal yang dikurasi khusus untuk Anda.
                     </p>
-                    <a href="{{ url('/menu') }}" class="btn btn-dark btn-lg px-5 py-3 shadow-lg">Pesan Sekarang</a>
+
+                    {{-- CTA Buttons --}}
+                    <div class="hero-cta-group" data-aos="fade-up" data-aos-delay="500">
+                        <a href="{{ url('/menu') }}" class="btn btn-vintage-gold btn-lg px-5 py-3 me-3 mb-3">
+                            <i class="fas fa-coffee me-2"></i>Pesan Sekarang
+                        </a>
+                        <a href="{{ url('/reservasi') }}" class="btn btn-vintage-outline btn-lg px-5 py-3 mb-3">
+                            <i class="fas fa-calendar-alt me-2"></i>Reservasi Tempat
+                        </a>
+                    </div>
+
+                    {{-- Scroll Indicator --}}
+                    <div class="scroll-indicator mt-5" data-aos="fade-up" data-aos-delay="600">
+                        <div class="scroll-mouse">
+                            <div class="scroll-wheel"></div>
+                        </div>
+                        <p class="scroll-text mt-2">Scroll untuk Jelajahi</p>
+                    </div>
+
                 </div>
             </div>
         </div>
+
+        {{-- Decorative Bottom Border --}}
+        <div class="hero-ornament-bottom">
+            <div class="ornament-line-hero"></div>
+        </div>
+
+        {{-- Floating Coffee Beans Decoration --}}
+        <div class="hero-floating-beans">
+            <span class="floating-bean bean-hero-1">☕</span>
+            <span class="floating-bean bean-hero-2">☕</span>
+            <span class="floating-bean bean-hero-3">☕</span>
+            <span class="floating-bean bean-hero-4">☕</span>
+        </div>
+
     </section>
 
-    <section class="menu-featured py-5 bg-light">
+    {{-- FEATURED MENU SECTION - Vintage Modern --}}
+    <section class="vintage-menu-section py-5 bg-light position-relative">
         <div class="container">
+            {{-- Section Header with Ornaments --}}
             <div class="text-center mb-5" data-aos="fade-down">
-                <h2 class="display-6 fw-bold text-primary-dark">Pilihan Favorit Kami</h2>
-                <p class="lead text-muted">Lihat empat menu andalan yang wajib Anda coba saat berkunjung.</p>
+                <div class="vintage-section-ornament mb-3">
+                    <span class="ornament-left">◆</span>
+                    <span class="ornament-coffee">☕</span>
+                    <span class="ornament-right">◆</span>
+                </div>
+                <h2 class="vintage-section-title display-5 fw-bold text-primary-dark mb-3">Pilihan Favorit Kami</h2>
+                <div class="vintage-divider-small mx-auto mb-3"></div>
+                <p class="lead text-muted">Lihat empat menu andalan yang wajib Anda coba saat berkunjung</p>
             </div>
 
             <div class="row g-4">
                 {{-- Item Menu 1 --}}
                 <div class="col-md-6 col-lg-3" data-aos="zoom-in">
-                    <a href="{{ url('/menu/single-origin') }}" class="card-link text-decoration-none text-dark">
-                        <div class="card border-0 shadow-sm h-100">
-                            <img src="{{ asset('foto/CAPPUCINO.jpg') }}" class="card-img-top"
-                                style="height: 250px; object-fit: cover;" alt="Kopi saring V60 disajikan di gelas bening">
-                            <div class="card-body text-center">
-                                <h5 class="card-title fw-bold">Filter Coffee (V60)</h5>
-                                <p class="card-text text-muted small">Seasonal Single Origin</p>
+                    <a href="{{ url('/menu/single-origin') }}" class="text-decoration-none">
+                        <div class="vintage-menu-card h-100">
+                            <div class="vintage-card-image-wrapper">
+                                <img src="{{ asset('foto/CAPPUCINO.jpg') }}" class="vintage-card-image"
+                                    alt="Kopi saring V60 disajikan di gelas bening">
+                                <div class="vintage-card-overlay"></div>
+                            </div>
+                            <div class="vintage-card-body text-center">
+                                <div class="card-ornament-top">◆</div>
+                                <h5 class="vintage-card-title fw-bold">Filter Coffee (V60)</h5>
+                                <p class="vintage-card-subtitle">Seasonal Single Origin</p>
                             </div>
                         </div>
                     </a>
@@ -46,13 +120,17 @@
 
                 {{-- Item Menu 2 --}}
                 <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="100">
-                    <a href="{{ url('/menu/signature') }}" class="card-link text-decoration-none text-dark">
-                        <div class="card border-0 shadow-sm h-100">
-                            <img src="{{ asset('foto/KOPITUBRUKROBUSTA.jpg') }}" class="card-img-top"
-                                style="height: 250px; object-fit: cover;" alt="Iced Latte dengan lapisan susu dan espresso">
-                            <div class="card-body text-center">
-                                <h5 class="card-title fw-bold">Iced TapalKuda Latte</h5>
-                                <p class="card-text text-muted small">Signature Blend & Creamy</p>
+                    <a href="{{ url('/menu/signature') }}" class="text-decoration-none">
+                        <div class="vintage-menu-card h-100">
+                            <div class="vintage-card-image-wrapper">
+                                <img src="{{ asset('foto/KOPITUBRUKROBUSTA.jpg') }}" class="vintage-card-image"
+                                    alt="Iced Latte dengan lapisan susu dan espresso">
+                                <div class="vintage-card-overlay"></div>
+                            </div>
+                            <div class="vintage-card-body text-center">
+                                <div class="card-ornament-top">◆</div>
+                                <h5 class="vintage-card-title fw-bold">Iced TapalKuda Latte</h5>
+                                <p class="vintage-card-subtitle">Signature Blend & Creamy</p>
                             </div>
                         </div>
                     </a>
@@ -60,13 +138,17 @@
 
                 {{-- Item Menu 3 --}}
                 <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="200">
-                    <a href="{{ url('/menu/pastry') }}" class="card-link text-decoration-none text-dark">
-                        <div class="card border-0 shadow-sm h-100">
-                            <img src="{{ asset('foto/Latte.jpg') }}" class="card-img-top"
-                                style="height: 250px; object-fit: cover;" alt="Slice of Matcha Cake dengan garnish">
-                            <div class="card-body text-center">
-                                <h5 class="card-title fw-bold">Matcha Opera Cake</h5>
-                                <p class="card-text text-muted small">Pairing terbaik dengan Dark Roast</p>
+                    <a href="{{ url('/menu/pastry') }}" class="text-decoration-none">
+                        <div class="vintage-menu-card h-100">
+                            <div class="vintage-card-image-wrapper">
+                                <img src="{{ asset('foto/Latte.jpg') }}" class="vintage-card-image"
+                                    alt="Slice of Matcha Cake dengan garnish">
+                                <div class="vintage-card-overlay"></div>
+                            </div>
+                            <div class="vintage-card-body text-center">
+                                <div class="card-ornament-top">◆</div>
+                                <h5 class="vintage-card-title fw-bold">Matcha Opera Cake</h5>
+                                <p class="vintage-card-subtitle">Pairing terbaik dengan Dark Roast</p>
                             </div>
                         </div>
                     </a>
@@ -74,13 +156,17 @@
 
                 {{-- Item Menu 4 --}}
                 <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="300">
-                    <a href="{{ url('/menu#lightbites') }}" class="card-link text-decoration-none text-dark">
-                        <div class="card border-0 shadow-sm h-100">
-                            <img src="{{ asset('foto/kosu.jpg') }}" class="card-img-top"
-                                style="height: 250px; object-fit: cover;" alt="Avocado Toast dengan telur dan biji-bijian">
-                            <div class="card-body text-center">
-                                <h5 class="card-title fw-bold">Smashed Avocado Toast</h5>
-                                <p class="card-text text-muted small">Pilihan sarapan dan brunch</p>
+                    <a href="{{ url('/menu#lightbites') }}" class="text-decoration-none">
+                        <div class="vintage-menu-card h-100">
+                            <div class="vintage-card-image-wrapper">
+                                <img src="{{ asset('foto/kosu.jpg') }}" class="vintage-card-image"
+                                    alt="Avocado Toast dengan telur dan biji-bijian">
+                                <div class="vintage-card-overlay"></div>
+                            </div>
+                            <div class="vintage-card-body text-center">
+                                <div class="card-ornament-top">◆</div>
+                                <h5 class="vintage-card-title fw-bold">Smashed Avocado Toast</h5>
+                                <p class="vintage-card-subtitle">Pilihan sarapan dan brunch</p>
                             </div>
                         </div>
                     </a>
@@ -88,7 +174,9 @@
             </div>
 
             <div class="text-center mt-5" data-aos="fade-up">
-                <a href="{{ url('/menu') }}" class="btn btn-outline-primary-dark btn-lg px-5 py-3">Lihat Semua Menu</a>
+                <a href="{{ url('/menu') }}" class="btn btn-vintage-outline btn-lg px-5 py-3">
+                    <i class="fas fa-book-open me-2"></i>Lihat Semua Menu
+                </a>
             </div>
         </div>
     </section>
@@ -121,42 +209,61 @@
         </div>
     </section>
 
-    {{-- SECTION 4 - Testimoni Ringkas --}}
-    <section class="testimonial-minimalist py-5 bg-white">
+    {{-- TESTIMONIALS SECTION - Vintage Modern --}}
+    <section class="vintage-testimonials py-5 bg-white position-relative">
         <div class="container">
+            {{-- Section Header --}}
             <div class="text-center mb-5" data-aos="fade-down">
-                <h2 class="display-6 fw-bold text-primary-dark">Apa Kata Mereka?</h2>
+                <div class="vintage-section-ornament mb-3">
+                    <span class="ornament-left">◆</span>
+                    <span class="ornament-quote">❝</span>
+                    <span class="ornament-right">◆</span>
+                </div>
+                <h2 class="vintage-section-title display-5 fw-bold text-primary-dark mb-3">Apa Kata Mereka?</h2>
+                <div class="vintage-divider-small mx-auto mb-3"></div>
             </div>
 
             <div class="row g-4">
                 {{-- Testimoni 1 --}}
                 <div class="col-md-6 col-lg-4" data-aos="flip-up">
-                    <div class="p-4 border rounded-3 h-100">
-                        <i class="fas fa-quote-left text-muted mb-3"></i>
-                        <p class="fst-italic">"Rasa kopi yang berani, tapi tetap lembut. Pilihan Single Origin-nya selalu
+                    <div class="vintage-testimonial-card h-100">
+                        <div class="testimonial-quote-mark">❝</div>
+                        <p class="testimonial-text fst-italic">"Rasa kopi yang berani, tapi tetap lembut. Pilihan Single
+                            Origin-nya selalu
                             mengejutkan dengan kualitas yang premium. Favorit saya!"</p>
-                        <p class="fw-bold mt-3 mb-0">Rina S.</p>
-                        <small class="text-muted">Desainer Grafis</small>
+                        <div class="testimonial-author mt-4">
+                            <div class="author-ornament mb-2"></div>
+                            <p class="author-name fw-bold mb-0">Rina S.</p>
+                            <small class="author-title">Desainer Grafis</small>
+                        </div>
                     </div>
                 </div>
                 {{-- Testimoni 2 --}}
                 <div class="col-md-6 col-lg-4" data-aos="flip-up" data-aos-delay="150">
-                    <div class="p-4 border rounded-3 h-100">
-                        <i class="fas fa-quote-left text-muted mb-3"></i>
-                        <p class="fst-italic">"Tempat yang sempurna untuk bekerja. Kopi dan sandwich-nya ringan, tidak
+                    <div class="vintage-testimonial-card h-100">
+                        <div class="testimonial-quote-mark">❝</div>
+                        <p class="testimonial-text fst-italic">"Tempat yang sempurna untuk bekerja. Kopi dan sandwich-nya
+                            ringan, tidak
                             mengganggu fokus. Pelayanannya sangat ramah."</p>
-                        <p class="fw-bold mt-3 mb-0">Andi K.</p>
-                        <small class="text-muted">Entrepreneur Digital</small>
+                        <div class="testimonial-author mt-4">
+                            <div class="author-ornament mb-2"></div>
+                            <p class="author-name fw-bold mb-0">Andi K.</p>
+                            <small class="author-title">Entrepreneur Digital</small>
+                        </div>
                     </div>
                 </div>
-                {{-- Testimoni 3 (Optional) --}}
+                {{-- Testimoni 3 --}}
                 <div class="col-md-6 col-lg-4 mx-auto d-none d-lg-block" data-aos="flip-up" data-aos-delay="300">
-                    <div class="p-4 border rounded-3 h-100">
-                        <i class="fas fa-quote-left text-muted mb-3"></i>
-                        <p class="fst-italic">"Konsepnya minimalis dan nyaman. Mereka benar-benar ahli dalam menyajikan
+                    <div class="vintage-testimonial-card h-100">
+                        <div class="testimonial-quote-mark">❝</div>
+                        <p class="testimonial-text fst-italic">"Konsepnya minimalis dan nyaman. Mereka benar-benar ahli
+                            dalam menyajikan
                             setiap detail biji kopi. Benar-benar seni menyeduh."</p>
-                        <p class="fw-bold mt-3 mb-0">Santi W.</p>
-                        <small class="text-muted">Food Blogger</small>
+                        <div class="testimonial-author mt-4">
+                            <div class="author-ornament mb-2"></div>
+                            <p class="author-name fw-bold mb-0">Santi W.</p>
+                            <small class="author-title">Food Blogger</small>
+                        </div>
                     </div>
                 </div>
             </div>

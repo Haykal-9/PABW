@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tapal Kuda - @yield('title', 'Selamat Datang')</title>
+    <title>TapalKuda | @yield('title', 'Seni Menyeduh Kopi')</title>
+    <meta name="theme-color" content="#5C4033">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@400;700;900&display=swap"
         rel="stylesheet">
-    <link href="{{ asset('css/home.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/theme-cozy.css') }}" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="{{ asset('css/vintage-modern.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
 

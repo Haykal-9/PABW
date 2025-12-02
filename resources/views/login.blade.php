@@ -23,9 +23,24 @@
                     <div class="card-body">
                         <h2 class="text-center fw-bold mb-4 text-primary-dark">Masuk ke Akun Anda</h2>
                         
+                        {{-- Alert Error --}}
+                        @if(session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
+                        {{-- Alert Success --}}
+                        @if(session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
 
                         {{-- Form Login --}}
-                        <form id="loginForm">
+                        <form action="{{ url('/login') }}" method="POST">
                             @csrf
                             
                             {{-- Input Username --}}
@@ -35,7 +50,8 @@
                                        class="form-control" 
                                        id="username" 
                                        name="username" 
-                                       placeholder="Masukkan username Anda">
+                                       placeholder="Masukkan username Anda"
+                                       required>
                             </div>
                             
                             {{-- Input Password --}}
@@ -45,11 +61,9 @@
                                        class="form-control" 
                                        id="password" 
                                        name="password" 
-                                       placeholder="Masukkan password Anda">
+                                       placeholder="Masukkan password Anda"
+                                       required>
                             </div>
-
-                            {{-- Pesan Sukses (Akan tampil setelah submit) --}}
-                            <div id="loginMessage" class="alert d-none" role="alert"></div>
 
                             {{-- Tombol Login --}}
                             <button type="submit" 
@@ -71,32 +85,3 @@
 </section>
 
 @endsection
-
-{{-- JAVASCRIPT LOGIC (Selalu Sukses) --}}
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('loginForm');
-        const messageBox = document.getElementById('loginMessage');
-
-        // URL tujuan setelah login berhasil
-        const SUCCESS_REDIRECT = '{{ url('/') }}'; 
-
-        form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Mencegah form submit default
-
-            // 1. Tampilkan status loading/sukses
-            messageBox.classList.remove('d-none', 'alert-danger');
-            messageBox.classList.add('alert-success');
-
-            // Menggunakan pesan yang umum digunakan saat autentikasi berhasil
-            messageBox.innerHTML = 'Autentikasi Berhasil. Mengalihkan Anda ke halaman utama...';
-            
-            // 2. Lakukan pengalihan
-            setTimeout(() => {
-                window.location.href = SUCCESS_REDIRECT;
-            }, 500); // Jeda singkat (0.5 detik)
-        });
-    });
-</script>
-@endpush

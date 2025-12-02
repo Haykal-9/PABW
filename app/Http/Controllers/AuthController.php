@@ -38,4 +38,24 @@ class AuthController extends Controller
 
         return redirect('/login')->with('success', 'Registrasi berhasil! Silakan login.');
     }
+
+    public function showLogin()
+    {
+        return view('login');
+    }
+
+    public function processLogin(Request $request)
+    {
+        $user = User::where('username', $request->username)->first();
+
+        if ($user && Hash::check($request->password, $user->password)) {
+            return redirect('/')->with('success', 'Login berhasil! Selamat datang, ' . $user->nama);
+        }
+        return redirect('/login')->with('error', 'Username atau password salah!');
+    }
+
+    public function processLogout()
+    {   
+        return redirect('/login')->with('success', 'Anda telah logout.');
+    }
 }
