@@ -31,8 +31,8 @@ Route::get('/menu', [MenuController::class, 'menu'])->name('menu');
 Route::post('/menu/{id}/favorite', [MenuController::class, 'favorite'])->name('menu.favorite');
 Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.detail');
 Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
-Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
 Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
+Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::patch('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
@@ -88,11 +88,8 @@ Route::get('/kasir/menu', [KasirController::class, 'menuManagement'])->name('kas
 Route::post('/kasir/menu', [KasirController::class, 'storeMenu'])->name('kasir.menu.store');
 Route::put('/kasir/menu/{id}', [KasirController::class, 'updateMenu'])->name('kasir.menu.update');
 Route::delete('/kasir/menu/{id}', [KasirController::class, 'destroyMenu'])->name('kasir.menu.destroy');
-Route::get('/reservasi', [ReservasiController::class, 'index'])->name('reservasi.index');
-Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
+// --- KASIR RESERVASI MANAGEMENT ROUTES ---
 Route::prefix('kasir')->group(function () {
-    Route::get('/reservasi', [KasirController::class, 'index'])->name('kasir.reservasi');
-    
     // Action Terima & Tolak
     Route::patch('/reservasi/{id}/approve', [KasirController::class, 'approve'])->name('kasir.reservasi.approve');
     Route::post('/reservasi/{id}/reject', [KasirController::class, 'reject'])->name('kasir.reservasi.reject');
