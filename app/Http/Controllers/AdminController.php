@@ -12,7 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect; 
-use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\File;
+use Carbon\Carbon; 
 
 class AdminController extends Controller
 {
@@ -22,12 +23,30 @@ class AdminController extends Controller
     
     public function dashboard()
     {
-        // Data dashboard dikosongkan (nilai 0) sesuai permintaan
+        $today = Carbon::today(); // Ambil tanggal hari ini
+        
+        // 1. Total Pendapatan
+        $totalPendapatan = pembayaran::sum('total_price') ?? 0;
+
+        // 2. Pendapatan Hari Ini
+       // Kode Baru (Memperbaiki Error)
+        $pendapatanHariIni = pembayaran::whereDate('order_date', $today) // Ganti created_at ke order_date
+            ->sum('total_price') ?? 0;
+
+        // 3. Menu Terjual Hari Ini (Menghitung kuantitas item yang dibayar hari ini)
+       // Kode Baru (Memperbaiki Error)
+        $menuTerjualHariIni = detailPembayaran::whereHas('pembayaran', function ($query) use ($today) {
+            $query->whereDate('order_date', $today); // Ganti created_at ke order_date
+        })->sum('quantity') ?? 0;
+
+        // 4. Reservasi Terlaksana (Mengambil status ID 2, sesuai asumsi sistem)
+        $reservasiTerlaksana = reservasi::where('status_id', 2)->count() ?? 0;
+        
         $data = [
-            'pendapatanHariIni' => 0, 
-            'menuTerjualHariIni' => 0, 
-            'totalPendapatan' => 0, 
-            'reservasiTerlaksana' => 0, 
+            'pendapatanHariIni' => $pendapatanHariIni, 
+            'menuTerjualHariIni' => $menuTerjualHariIni, 
+            'totalPendapatan' => $totalPendapatan, 
+            'reservasiTerlaksana' => $reservasiTerlaksana, 
         ];
         
         return view('admin.dashboard', compact('data'));
@@ -103,13 +122,41 @@ class AdminController extends Controller
         return view('admin.ratings', compact('ratings'));
     }
     
-    public function orders()
+    // haykal-9/pabw/PABW-7e82df8ad72ef023c77f1eeca076f5349ec77851/app/Http/Controllers/AdminController.php
+
+ public function orders()
     {
-        // Mengembalikan array kosong sesuai permintaan
-        $orders = [];
+        // Simpler normalized orders for the view
+        $orders = pembayaran::with(['details.menu', 'orderType', 'user', 'status', 'paymentMethod'])
+            ->orderBy('order_date', 'desc')
+            ->get()
+            ->map(function ($p) {
+                $items = $p->details->map(fn($d) => [
+                    'name' => $d->menu->nama ?? 'Unknown',
+                    'qty' => $d->quantity ?? 0,
+                    'price' => (float) ($d->price_per_item ?? $d->menu->price ?? 0),
+                    'image_path' => $d->menu && $d->menu->url_foto ? 'foto/' . $d->menu->url_foto : null,
+                ])->toArray();
+
+                $subtotal = array_reduce($items, fn($carry, $it) => $carry + ($it['qty'] * $it['price']), 0);
+                $tax = (int) round($subtotal * 0.1);
+                $total = isset($p->total_price) ? (float) $p->total_price : $subtotal + $tax;
+
+                return [
+                    'id' => $p->id,
+                    'tanggal' => $p->order_date ? (new \DateTime($p->order_date))->format('Y-m-d') : 'N/A',
+                    'customer' => $p->user->nama ?? 'Unknown',
+                    'subtotal' => $subtotal,
+                    'tax' => $tax,
+                    'total' => $total,
+                    'metode' => data_get($p, 'paymentMethod.method_name') ?? 'N/A',
+                    'status' => ucwords(data_get($p, 'status.status_name') ?? data_get($p, 'status.name') ?? 'N/A'),
+                    'items' => $items,
+                ];
+            });
+
         return view('admin.orders', compact('orders'));
     }
-
     // ====================================================================
     // FUNGSI CRUD MENU (DENGAN LOGIKA UPLOAD FOTO SEDERHANA)
     // ====================================================================
