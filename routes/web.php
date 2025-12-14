@@ -102,5 +102,8 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
 });
 
 Route::get('/kasir/logout', function () {
-    return redirect()->route('kasir.index');
-})->name('logout');
+    \Illuminate\Support\Facades\Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/login')->with('success', 'Anda telah logout.');
+})->name('kasir.logout');

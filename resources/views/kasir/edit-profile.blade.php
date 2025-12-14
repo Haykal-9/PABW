@@ -179,6 +179,14 @@
                                 value="{{ $user['telepon'] }}" required>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label for="alamat" class="form-label">Alamat<span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                            <input type="text" class="form-control" id="alamat" name="alamat"
+                                value="{{ $user['alamat'] }}" required>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Security Section --}}

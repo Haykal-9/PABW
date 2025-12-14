@@ -237,32 +237,8 @@
                             <i class="bi bi-receipt"></i>
                         </div>
                         <div>
-                            <p class="info-card-title">Total Transaksi</p>
+                            <p class="info-card-title">Total Transaksi Yang di Selesaikan</p>
                             <h3 class="info-card-value">{{ $user['total_transaksi'] }}</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <div class="info-card-header">
-                        <div class="info-card-icon">
-                            <i class="bi bi-calendar-check"></i>
-                        </div>
-                        <div>
-                            <p class="info-card-title">Hari Kerja</p>
-                            <h3 class="info-card-value">{{ $user['hari_kerja'] }}</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <div class="info-card-header">
-                        <div class="info-card-icon">
-                            <i class="bi bi-clock-history"></i>
-                        </div>
-                        <div>
-                            <p class="info-card-title">Shift Hari Ini</p>
-                            <h3 class="info-card-value">{{ $user['shift'] }}</h3>
                         </div>
                     </div>
                 </div>
@@ -284,6 +260,10 @@
                     <span class="detail-value">{{ $user['tanggal_bergabung'] }}</span>
                 </div>
                 <div class="detail-row">
+                    <span class="detail-label">Alamat</span>
+                    <span class="detail-value">{{ $user['alamat'] }}</span>
+                </div>
+                <div class="detail-row">
                     <span class="detail-label">Status Akun</span>
                     <span class="detail-value">
                         <span class="badge" style="background-color: #28a745;">{{ $user['status'] }}</span>
@@ -301,7 +281,7 @@
                     <i class="bi bi-pencil-square"></i>
                     Edit Profil
                 </a>
-                <a href="{{ route('logout') }}" class="btn btn-action btn-logout">
+                <a href="{{ route('kasir.logout') }}" class="btn btn-action btn-logout">
                     <i class="bi bi-box-arrow-right"></i>
                     Log Out
                 </a>

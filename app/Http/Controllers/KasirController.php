@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\menu;
 use App\Models\pembayaran;
 use App\Models\detailPembayaran;
@@ -114,7 +115,7 @@ class KasirController extends Controller
                 \DB::table('reservasi_ditolak')->insert([
                     'reservation_id' => $id,
                     'alasan_ditolak' => $request->alasan,
-                    'ditolak_oleh' => 'kasir',
+                    'ditolak_oleh' => Auth::user()->nama, // Nama user yang sedang login
                     'cancelled_at' => now(),
                 ]);
             }
@@ -299,15 +300,16 @@ class KasirController extends Controller
 
     public function profile()
     {
-        // Ambil data user dengan ID 7 (hardcoded untuk sementara)
-        $userData = \App\Models\User::with('role', 'gender')->find(7);
+        // Ambil data user yang sedang login
+        $userData = Auth::user();
+        $userData->load('role', 'gender');
 
         if (!$userData) {
             return redirect()->route('kasir.index')->with('error', 'User tidak ditemukan.');
         }
 
         // Hitung statistik (contoh: total transaksi dari tabel pembayaran)
-        $totalTransaksi = \App\Models\pembayaran::where('user_id', 7)->count();
+        $totalTransaksi = pembayaran::where('user_id', $userData->id)->count();
 
         // Format data untuk view
         $user = [
@@ -316,7 +318,7 @@ class KasirController extends Controller
             'username' => $userData->username,
             'email' => $userData->email,
             'telepon' => $userData->no_telp ?? '-',
-            'role' => $userData->role->role_name ?? 'Member',
+            'role' => $userData->role->role_name ?? 'Kasir',
             'gender' => $userData->gender->gender_name ?? '-',
             'alamat' => $userData->alamat ?? '-',
             'foto' => $userData->profile_picture
@@ -342,8 +344,9 @@ class KasirController extends Controller
      */
     public function editProfile()
     {
-        // Ambil data user dengan ID 7 (hardcoded untuk sementara)
-        $userData = \App\Models\User::with('role', 'gender')->find(7);
+        // Ambil data user yang sedang login
+        $userData = Auth::user();
+        $userData->load('role', 'gender');
 
         if (!$userData) {
             return redirect()->route('kasir.index')->with('error', 'User tidak ditemukan.');
@@ -358,7 +361,7 @@ class KasirController extends Controller
             'telepon' => $userData->no_telp ?? '',
             'alamat' => $userData->alamat ?? '',
             'gender_id' => $userData->gender_id,
-            'role' => $userData->role->role_name ?? 'Member',
+            'role' => $userData->role->role_name ?? 'Kasir',
             'foto' => $userData->profile_picture
                 ? asset('uploads/avatars/' . $userData->profile_picture)
                 : 'https://ui-avatars.com/api/?name=' . urlencode($userData->nama) . '&size=200&background=e87b3e&color=fff&bold=true',
@@ -377,8 +380,8 @@ class KasirController extends Controller
     public function updateProfile(Request $request)
     {
         try {
-            // Hardcode user ID 7 untuk sementara
-            $userId = 7;
+            // Ambil user yang sedang login
+            $userId = Auth::id();
             $user = \App\Models\User::findOrFail($userId);
 
             // Validate request
@@ -386,7 +389,7 @@ class KasirController extends Controller
                 'nama' => 'required|string|max:100',
                 'username' => 'required|string|max:50|unique:users,username,' . $userId,
                 'email' => 'required|email|max:100|unique:users,email,' . $userId,
-                'no_telp' => 'nullable|string|max:20',
+                'telepon' => 'nullable|string|max:20',
                 'alamat' => 'nullable|string',
                 'password' => 'nullable|min:6|confirmed',
                 'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -396,7 +399,7 @@ class KasirController extends Controller
             $user->nama = $request->nama;
             $user->username = $request->username;
             $user->email = $request->email;
-            $user->no_telp = $request->no_telp;
+            $user->no_telp = $request->telepon;
             $user->alamat = $request->alamat;
 
             // Update password jika diisi
@@ -461,7 +464,7 @@ class KasirController extends Controller
 
             // Create payment record
             $payment = pembayaran::create([
-                'user_id' => 2, // Hardcoded to kasir user (id=2)
+                'user_id' => Auth::id(), // User kasir yang sedang login
                 'order_date' => now(),
                 'status_id' => 1, // completed
                 'payment_method_id' => $paymentMethodMap[$request->payment_method] ?? 1,

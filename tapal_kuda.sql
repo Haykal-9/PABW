@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 28 Nov 2025 pada 01.40
+-- Waktu pembuatan: 14 Des 2025 pada 10.00
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -69,7 +69,32 @@ INSERT INTO `detail_pembayaran` (`id`, `pembayaran_id`, `menu_id`, `quantity`, `
 (12, 7, 15, 2, 20000.00, 'setengah porsi'),
 (13, 8, 16, 1, 15000.00, 'enak nagihhh'),
 (14, 9, 20, 1, 13000.00, 'extra cabe'),
-(15, 10, 21, 1, 16000.00, 'bestt!!');
+(15, 10, 21, 1, 16000.00, 'bestt!!'),
+(16, 11, 2, 1, 22000.00, 'Test Customer'),
+(17, 11, 4, 1, 14000.00, 'Test Customer'),
+(18, 11, 15, 1, 20000.00, 'Test Customer'),
+(19, 12, 2, 1, 22000.00, 'Test Customer'),
+(20, 12, 4, 1, 14000.00, 'Test Customer'),
+(21, 12, 15, 1, 20000.00, 'Test Customer'),
+(22, 13, 3, 1, 22000.00, 'test'),
+(23, 14, 2, 1, 22000.00, 'Modal Test'),
+(24, 14, 4, 1, 14000.00, 'Modal Test'),
+(25, 15, 5, 1, 17000.00, 'test'),
+(26, 15, 6, 1, 21000.00, 'test'),
+(27, 15, 1, 1, 14000.00, 'test'),
+(28, 16, 17, 1, 15000.00, 'test'),
+(29, 16, 18, 1, 15000.00, 'test'),
+(30, 16, 11, 1, 17000.00, 'test'),
+(31, 17, 6, 1, 21000.00, 'test'),
+(32, 17, 1, 1, 14000.00, 'test'),
+(33, 18, 2, 1, 22000.00, 'test'),
+(34, 19, 3, 1, 22000.00, 'haykal'),
+(35, 19, 4, 1, 14000.00, 'haykal'),
+(36, 20, 3, 1, 22000.00, 'haykal'),
+(37, 20, 4, 1, 14000.00, 'haykal'),
+(38, 20, 5, 1, 17000.00, 'haykal'),
+(39, 21, 4, 1, 14000.00, 'haykal'),
+(40, 21, 9, 1, 19000.00, 'haykal');
 
 -- --------------------------------------------------------
 
@@ -188,7 +213,7 @@ CREATE TABLE `menu` (
 
 INSERT INTO `menu` (`id`, `nama`, `url_foto`, `type_id`, `price`, `deskripsi`, `status_id`, `created_at`, `updated_at`) VALUES
 (1, 'Kopi Tubruk Arabika', 'arabika.jpg', 1, 14000.00, 'Nikmati kenikmatan sejati dari secangkir Kopi Tubruk Arabika...', 1, '2025-05-05 14:52:58', '2025-06-15 11:03:31'),
-(2, 'Cappucino', 'cappucino.jpg', 1, 22000.00, 'Butuh pelukan hangat dalam bentuk kopi? Coba Cappuccino kami...', 1, '2025-05-05 14:52:58', '2025-06-15 11:03:35'),
+(2, 'Cappucino', 'cappucino.jpg', 1, 22000.00, 'Butuh pelukan hangat dalam bentuk kopi? Coba Cappuccino kami...', 1, '2025-05-05 14:52:58', '2025-12-02 03:51:18'),
 (3, 'ES Kopi Susu', 'kosu.jpg', 1, 22000.00, 'Minuman favorit semua kalangan! Es Kopi Susu kami...', 1, '2025-05-05 14:52:58', '2025-06-15 11:03:41'),
 (4, 'Espresso', 'espresso.jpg', 1, 14000.00, 'Espresso kami dibuat dari biji arabika pilihan...', 1, '2025-05-05 14:52:58', '2025-06-15 11:03:44'),
 (5, 'Espresso Double', 'espresso1.jpg', 1, 17000.00, 'Siap hadapi hari yang panjang? Espresso Double kami...', 1, '2025-05-05 14:52:58', '2025-06-15 11:03:47'),
@@ -388,7 +413,18 @@ INSERT INTO `pembayaran` (`id`, `user_id`, `order_date`, `status_id`, `payment_m
 (7, 8, '2025-06-16 10:32:41', 1, 1, 1),
 (8, 8, '2025-06-16 12:25:38', 1, 1, 1),
 (9, 8, '2025-06-16 12:27:34', 1, 1, 2),
-(10, 8, '2025-06-16 12:29:18', 1, 1, 1);
+(10, 8, '2025-06-16 12:29:18', 1, 1, 1),
+(11, 2, '2025-11-28 04:23:14', 1, 1, 1),
+(12, 2, '2025-11-28 04:24:40', 1, 1, 1),
+(13, 2, '2025-11-28 04:27:05', 1, 1, 1),
+(14, 2, '2025-11-28 04:32:25', 1, 1, 1),
+(15, 2, '2025-11-28 04:37:51', 1, 1, 1),
+(16, 2, '2025-11-28 04:40:04', 1, 1, 1),
+(17, 2, '2025-11-28 07:01:01', 1, 1, 1),
+(18, 2, '2025-11-28 07:05:48', 1, 1, 1),
+(19, 2, '2025-11-30 15:02:01', 1, 1, 1),
+(20, 2, '2025-12-02 10:50:34', 1, 2, 2),
+(21, 2, '2025-12-03 10:18:45', 1, 3, 2);
 
 -- --------------------------------------------------------
 
@@ -422,7 +458,15 @@ INSERT INTO `reservasi` (`id`, `user_id`, `kode_reservasi`, `tanggal_reservasi`,
 (11, 8, 'RSV20250616074515627', '2025-06-24 14:00:00', 5, 'Outdoor', 3, '2025-06-15 22:45:15', '2025-06-15 22:48:26'),
 (12, 9, 'RSV20250616074555866', '2025-06-25 19:00:00', 7, 'Indoor', 3, '2025-06-15 22:45:55', '2025-06-15 22:48:35'),
 (13, 9, 'RSV20250616074641143', '2025-06-18 15:00:00', 3, 'Indoor yaaa', 3, '2025-06-15 22:46:41', '2025-06-15 22:48:42'),
-(14, 7, 'RSV20250616074736369', '2025-06-20 19:30:00', 2, 'Ultah istri', 3, '2025-06-15 22:47:36', '2025-06-15 22:48:52');
+(14, 7, 'RSV20250616074736369', '2025-06-20 19:30:00', 2, 'Ultah istri', 3, '2025-06-15 22:47:36', '2025-06-15 22:48:52'),
+(15, 7, 'RSV-20251202-217', '2025-12-03 19:00:00', 5, 'Meja di dekat jendela', 3, '2025-12-01 21:56:08', '2025-12-01 22:14:36'),
+(16, 7, 'RSV-20251202-368', '2025-12-05 18:00:00', 4, 'Test reservasi', 2, '2025-12-01 22:01:58', '2025-12-01 22:14:20'),
+(17, 7, 'RSV-20251202-469', '2025-12-10 18:30:00', 6, 'Untuk acara ulang tahun', 3, '2025-12-01 22:17:53', '2025-12-01 22:20:36'),
+(18, 7, 'RSV-20251202-986', '2025-12-31 14:44:00', 7, 'meja 2', 1, '2025-12-02 03:36:45', '2025-12-02 03:36:45'),
+(19, 7, 'RSV-20251202-308', '2025-12-31 14:44:00', 7, 'meja 2', 1, '2025-12-02 03:46:38', '2025-12-02 03:46:38'),
+(20, 7, 'RSV-20251202-426', '2025-12-15 18:48:00', 6, 'meja 3', 3, '2025-12-02 03:47:43', '2025-12-02 03:49:19'),
+(21, 10, 'RSV-20251202-506', '2025-12-02 19:50:00', 10, 'meja dekat', 2, '2025-12-02 03:48:56', '2025-12-02 03:49:10'),
+(22, 10, 'RSV-20251203-545', '2025-12-17 18:30:00', 8, 'meja 3 orang', 1, '2025-12-03 03:29:52', '2025-12-03 03:29:52');
 
 -- --------------------------------------------------------
 
@@ -447,7 +491,9 @@ INSERT INTO `reservasi_ditolak` (`id`, `reservation_id`, `alasan_ditolak`, `dito
 (3, 11, 'Reservasi Penuh', 'kasir', '2025-06-15 22:48:26'),
 (4, 12, 'Reservasi Penuh', 'kasir', '2025-06-15 22:48:35'),
 (5, 13, 'Reservasi Penuh', 'kasir', '2025-06-15 22:48:42'),
-(6, 14, 'Reservasi Penuh', 'kasir', '2025-06-15 22:48:52');
+(6, 14, 'Reservasi Penuh', 'kasir', '2025-06-15 22:48:52'),
+(7, 17, 'Kapasitas penuh untuk tanggal tersebut', 'kasir', '2025-12-01 22:20:36'),
+(8, 20, 'penuh', 'kasir', '2025-12-02 03:49:19');
 
 -- --------------------------------------------------------
 
@@ -516,7 +562,9 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('E9zHlj8D2nhHn1XFwk81DvfiCaTK6ICPkUkVrrle', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 OPR/124.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVFk5VFd0NWdldVkwSHFKTEdLbHh6NEhONFo5dFEwQ0g4WGJ2VVBDSSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9rYXNpci9rYXNpciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1764290311);
+('gZi93I9hRV8wwIa8ATxzYisfOEisW1mgjKkE3z0R', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 OPR/124.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiRk96Tnl2NVlFT0NUdTVUYTB5YnhndkhkN3FrVk9udmdJZUtsMTQ4YSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9rYXNpci9yZXNlcnZhc2kiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1764757804),
+('HBA5lTtjKm3CyY5s8Zy4ldoxJkl7T5lkm80gCdds', 10, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 OPR/125.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiVWhGWW9xNVZORURjR0FCbVJYSUNwWmlXaU5KelpiY2hRVW1ZZkdsciI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9rYXNpci9wcm9maWxlIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTA7fQ==', 1765702095),
+('s26c0MKWIkUF1H469SBdm3NDovlN9P5pPeqbDOHB', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 OPR/124.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiT054MEdhSm5hWER5eUN2V0RLd0RBQTN3cEVUUmxtNjNrWUNORWt3dSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1765261168);
 
 -- --------------------------------------------------------
 
@@ -546,9 +594,10 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `role_id`, `username`, `password`, `nama`, `email`, `no_telp`, `gender_id`, `alamat`, `profile_picture`, `created_at`, `updated_at`) VALUES
 (1, 1, 'admin', 'admin123', 'admin tapal kuda', 'tapalkuda@gmail.com', '06790879769', 1, 'jl. sumedang', 'null', NULL, NULL),
 (2, 2, 'kasir', 'kasir123', 'kasir tapal kuda', 'kasirtapal@gmail.com', '09679697283', 2, 'jl. kebon jeruk 04', 'null', NULL, NULL),
-(7, 3, 'salman', 'salman123', 'ridhwan q', 'salmanridhwan@student.telkomuniversity.ac.id', '0895412194060', 1, '0', 'default-avatar.png', '2025-06-15 10:35:03', '2025-06-15 10:35:03'),
+(7, 3, 'salmana', 'salman123', 'ridhwan qo', 'salman@gmail.com', NULL, 1, NULL, 'profile_692ec530191e9.png', '2025-06-15 10:35:03', '2025-12-02 03:53:36'),
 (8, 3, 'bian', 'bian123', 'biantara', 'biantarawi@gmail.com', '083130919334', 1, '0', 'profile_684f8c6bc7380.png', '2025-06-15 20:15:55', '2025-06-15 20:15:55'),
-(9, 3, 'haykal', 'haykal123', 'M haykal', 'haykal@gmail.com', '087684747333', 1, '0', 'default-avatar.png', '2025-06-15 20:17:03', '2025-06-15 20:17:03');
+(9, 3, 'haykal', 'haykal123', 'M haykal', 'haykal@gmail.com', '087684747333', 1, '0', 'default-avatar.png', '2025-06-15 20:17:03', '2025-06-15 20:17:03'),
+(10, 2, 'khaaal', '$2y$12$Ax8MSu8XCOfICf0xQZ9BsOm7pIr61l0o9A3oyjLXOJqA6QIOADCA6', 'haykal', 'hllzrd@gmail.com', NULL, 1, NULL, 'profile_693e79cf34da8.jpg', '2025-12-02 03:35:17', '2025-12-14 01:48:15');
 
 -- --------------------------------------------------------
 
@@ -758,7 +807,7 @@ ALTER TABLE `user_roles`
 -- AUTO_INCREMENT untuk tabel `detail_pembayaran`
 --
 ALTER TABLE `detail_pembayaran`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT untuk tabel `failed_jobs`
@@ -782,7 +831,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT untuk tabel `menu`
 --
 ALTER TABLE `menu`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT untuk tabel `menu_status`
@@ -824,19 +873,19 @@ ALTER TABLE `payment_status`
 -- AUTO_INCREMENT untuk tabel `pembayaran`
 --
 ALTER TABLE `pembayaran`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT untuk tabel `reservasi`
 --
 ALTER TABLE `reservasi`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT untuk tabel `reservasi_ditolak`
 --
 ALTER TABLE `reservasi_ditolak`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `reservation_status`
@@ -854,7 +903,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `user_roles`
