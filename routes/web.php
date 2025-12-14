@@ -31,8 +31,10 @@ Route::get('/menu', [MenuController::class, 'menu'])->name('menu');
 Route::post('/menu/{id}/favorite', [MenuController::class, 'favorite'])->name('menu.favorite');
 Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.detail');
 Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
-Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
-Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
+    Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
+});
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::patch('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
@@ -47,52 +49,56 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
 
-// Routes untuk Admin
-Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-Route::get('/admin/menu', [AdminController::class, 'menu'])->name('admin.menu');
+// Routes untuk Admin via Middleware CheckRole
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/menu', [AdminController::class, 'menu'])->name('admin.menu');
 
-// --- ROUTES CRUD MENU ---
-Route::post('/admin/menu', [AdminController::class, 'storeMenu'])->name('admin.menu.store');
-Route::put('/admin/menu/{id}', [AdminController::class, 'updateMenu'])->name('admin.menu.update');
-Route::delete('/admin/menu/{id}', [AdminController::class, 'destroyMenu'])->name('admin.menu.destroy');
+    // --- ROUTES CRUD MENU ---
+    Route::post('/admin/menu', [AdminController::class, 'storeMenu'])->name('admin.menu.store');
+    Route::put('/admin/menu/{id}', [AdminController::class, 'updateMenu'])->name('admin.menu.update');
+    Route::delete('/admin/menu/{id}', [AdminController::class, 'destroyMenu'])->name('admin.menu.destroy');
 
-// --- ROUTES CRUD USERS ---
-Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
-Route::put('/admin/users/{id}', [AdminController::class, 'updateUserRole'])->name('admin.users.update'); // Update Role
-Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy'); // Delete User
+    // --- ROUTES CRUD USERS ---
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::put('/admin/users/{id}', [AdminController::class, 'updateUserRole'])->name('admin.users.update'); // Update Role
+    Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy'); // Delete User
 
-// --- ROUTES CRUD RESERVATIONS ---
-Route::get('/admin/reservations', [AdminController::class, 'reservations'])->name('admin.reservations');
-Route::put('/admin/reservations/{id}', [AdminController::class, 'updateReservationStatus'])->name('admin.reservations.update'); // Update Status
-Route::delete('/admin/reservations/{id}', [AdminController::class, 'destroyReservation'])->name('admin.reservations.destroy'); // Delete Reservation
+    // --- ROUTES CRUD RESERVATIONS ---
+    Route::get('/admin/reservations', [AdminController::class, 'reservations'])->name('admin.reservations');
+    Route::put('/admin/reservations/{id}', [AdminController::class, 'updateReservationStatus'])->name('admin.reservations.update'); // Update Status
+    Route::delete('/admin/reservations/{id}', [AdminController::class, 'destroyReservation'])->name('admin.reservations.destroy'); // Delete Reservation
 
-// --- ROUTES CRUD RATINGS (HANYA DELETE) ---
-Route::get('/admin/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
-Route::delete('/admin/ratings/{id}', [AdminController::class, 'destroyRating'])->name('admin.ratings.destroy'); // Delete Rating
+    // --- ROUTES CRUD RATINGS (HANYA DELETE) ---
+    Route::get('/admin/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
+    Route::delete('/admin/ratings/{id}', [AdminController::class, 'destroyRating'])->name('admin.ratings.destroy'); // Delete Rating
 
-// --- RIWAYAT PENJUALAN (READ ONLY) ---
-Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
+    // --- RIWAYAT PENJUALAN (READ ONLY) ---
+    Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
+});
 
 // --- KASIR ROUTES ---
-Route::get('/kasir/kasir', [KasirController::class, 'index'])->name('kasir.index');
-Route::post('/kasir/process-payment', [KasirController::class, 'processPayment'])->name('kasir.processPayment');
-Route::get('/kasir/reservasi', [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
-Route::get('/kasir/riwayat', [KasirController::class, 'riwayat'])->name('kasir.riwayat');
-Route::get('/kasir/notifikasi', [KasirController::class, 'notif'])->name('kasir.notif');
-Route::get('/kasir/profile', [KasirController::class, 'profile'])->name('kasir.profile');
-Route::get('/kasir/profile/edit', [KasirController::class, 'editProfile'])->name('kasir.profile.edit');
-Route::put('/kasir/profile', [KasirController::class, 'updateProfile'])->name('kasir.profile.update');
+Route::middleware(['auth', 'role:kasir'])->group(function () {
+    Route::get('/kasir/kasir', [KasirController::class, 'index'])->name('kasir.index');
+    Route::post('/kasir/process-payment', [KasirController::class, 'processPayment'])->name('kasir.processPayment');
+    Route::get('/kasir/reservasi', [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
+    Route::get('/kasir/riwayat', [KasirController::class, 'riwayat'])->name('kasir.riwayat');
+    Route::get('/kasir/notifikasi', [KasirController::class, 'notif'])->name('kasir.notif');
+    Route::get('/kasir/profile', [KasirController::class, 'profile'])->name('kasir.profile');
+    Route::get('/kasir/profile/edit', [KasirController::class, 'editProfile'])->name('kasir.profile.edit');
+    Route::put('/kasir/profile', [KasirController::class, 'updateProfile'])->name('kasir.profile.update');
 
-// --- KASIR MENU MANAGEMENT ROUTES ---
-Route::get('/kasir/menu', [KasirController::class, 'menuManagement'])->name('kasir.menu');
-Route::post('/kasir/menu', [KasirController::class, 'storeMenu'])->name('kasir.menu.store');
-Route::put('/kasir/menu/{id}', [KasirController::class, 'updateMenu'])->name('kasir.menu.update');
-Route::delete('/kasir/menu/{id}', [KasirController::class, 'destroyMenu'])->name('kasir.menu.destroy');
-// --- KASIR RESERVASI MANAGEMENT ROUTES ---
-Route::prefix('kasir')->group(function () {
-    // Action Terima & Tolak
-    Route::patch('/reservasi/{id}/approve', [KasirController::class, 'approve'])->name('kasir.reservasi.approve');
-    Route::post('/reservasi/{id}/reject', [KasirController::class, 'reject'])->name('kasir.reservasi.reject');
+    // --- KASIR MENU MANAGEMENT ROUTES ---
+    Route::get('/kasir/menu', [KasirController::class, 'menuManagement'])->name('kasir.menu');
+    Route::post('/kasir/menu', [KasirController::class, 'storeMenu'])->name('kasir.menu.store');
+    Route::put('/kasir/menu/{id}', [KasirController::class, 'updateMenu'])->name('kasir.menu.update');
+    Route::delete('/kasir/menu/{id}', [KasirController::class, 'destroyMenu'])->name('kasir.menu.destroy');
+    // --- KASIR RESERVASI MANAGEMENT ROUTES ---
+    Route::prefix('kasir')->group(function () {
+        // Action Terima & Tolak
+        Route::patch('/reservasi/{id}/approve', [KasirController::class, 'approve'])->name('kasir.reservasi.approve');
+        Route::post('/reservasi/{id}/reject', [KasirController::class, 'reject'])->name('kasir.reservasi.reject');
+    });
 });
 
 Route::get('/kasir/logout', function () {

@@ -29,47 +29,57 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link fw-semibold px-3 py-2" href="{{ url('/reservasi') }}"
-                        style="color: #704214; transition: all 0.3s ease; position: relative;">
-                        Reservasi
-                    </a>
-                </li>
+                @auth
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3 py-2" href="{{ url('/reservasi') }}"
+                            style="color: #704214; transition: all 0.3s ease; position: relative;">
+                            Reservasi
+                        </a>
+                    </li>
+                @endauth
 
-                <li class="nav-item">
-                    <a class="nav-link fw-semibold px-3 py-2" href="{{ url('/profil/7') }}"
-                        style="color: #704214; transition: all 0.3s ease; position: relative;">
-                        Profil
-                    </a>
-                </li>
+                @auth
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3 py-2" href="{{ url('/profil/' . Auth::id()) }}"
+                            style="color: #704214; transition: all 0.3s ease; position: relative;">
+                            <i class="fas fa-user" style="color: #8B6F47;"></i>
+                            <span class="ms-2">Profile</span>
+                        </a>
+                    </li>
+                @endauth
 
                 <!-- Cart with Badge -->
-                <li class="nav-item">
-                    <a class="nav-link position-relative px-3 py-2 d-flex align-items-center" href="{{ url('/cart') }}"
-                        style="color: #704214; transition: all 0.3s ease;">
-                        <i class="fas fa-shopping-cart" style="color: #8B6F47;"></i>
-                        <span class="ms-2">Keranjang</span>
+                <!-- Cart with Badge -->
+                @auth
+                    <li class="nav-item">
+                        <a class="nav-link position-relative px-3 py-2 d-flex align-items-center" href="{{ url('/cart') }}"
+                            style="color: #704214; transition: all 0.3s ease;">
+                            <i class="fas fa-shopping-cart" style="color: #8B6F47;"></i>
+                            <span class="ms-2">Keranjang</span>
 
-                        @if(session('cart') && count(session('cart')) > 0)
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                                style="background: linear-gradient(135deg, #D4AF37, #CFB53B); color: #2C2416; font-weight: 700; border: 1px solid #8B6F47;">
-                                {{ count(session('cart')) }}
-                            </span>
-                        @endif
-                    </a>
-                </li>
+                            @if(session('cart') && count(session('cart')) > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                                    style="background: linear-gradient(135deg, #D4AF37, #CFB53B); color: #2C2416; font-weight: 700; border: 1px solid #8B6F47;">
+                                    {{ count(session('cart')) }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+                @endauth
 
-                <!-- Login Button with Vintage Style -->
-                <li class="nav-item ms-lg-2">
-                    <a class="btn px-4 py-2 fw-bold" href="{{ url('/login') }}" style="background: linear-gradient(135deg, #8B6F47, #704214); 
-                              color: #F5F1E8; 
-                              border: 2px solid #D4AF37; 
-                              letter-spacing: 0.5px;
-                              transition: all 0.3s ease;
-                              box-shadow: 0 2px 8px rgba(112, 66, 20, 0.2);">
-                        Login
-                    </a>
-                </li>
+                <!-- Login Button with Vintage Style (Only for Guests) -->
+                @guest
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn px-4 py-2 fw-bold" href="{{ url('/login') }}" style="background: linear-gradient(135deg, #8B6F47, #704214); 
+                                                  color: #F5F1E8; 
+                                                  border: 2px solid #D4AF37; 
+                                                  letter-spacing: 0.5px;
+                                                  transition: all 0.3s ease;
+                                                  box-shadow: 0 2px 8px rgba(112, 66, 20, 0.2);">
+                            Login
+                        </a>
+                    </li>
+                @endguest
             </ul>
         </div>
     </div>

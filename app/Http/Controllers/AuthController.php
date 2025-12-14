@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\GenderType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -27,7 +28,7 @@ class AuthController extends Controller
         User::create([
             'role_id' => 3,
             'username' => $request->username,
-            'password' => Hash::make($request->password), 
+            'password' => Hash::make($request->password),
             'nama' => $request->nama,
             'email' => $request->email,
             'no_telp' => $request->no_telp,
@@ -49,13 +50,38 @@ class AuthController extends Controller
         $user = User::where('username', $request->username)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
-            return redirect('/')->with('success', 'Login berhasil! Selamat datang, ' . $user->nama);
+            // Auth::login($user); // Manual login needed since we are not using standard Auth::attempt here with 'web' guard automatically? 
+            // Wait, Hash::check confirms password but doesn't log them in. 
+            // We should use Auth::login($user) or regenerate session if not using Auth::attempt.
+            // However, the original code didn't show Auth::login, it just redirected. 
+            // Laravel's standard way is Auth::attempt. 
+            // Let's stick to the user's flow but ensure they are actually logged in.
+
+            Auth::login($user); // Log the user in
+            $request->session()->regenerate(); // Regenerate session to prevent fixation
+
+            $message = 'Login berhasil! Selamat datang, ' . $user->nama;
+
+            return match ($user->role_id) {
+                1 => redirect()->route('admin.dashboard')->with('success', $message),
+                2 => redirect()->route('kasir.index')->with('success', $message),
+                3 => redirect('/')->with('success', $message),
+                default => redirect('/')->with('success', $message),
+            };
         }
-        return redirect('/login')->with('error', 'Userna    me atau password salah!');
+        return redirect('/login')->with('error', 'Username atau password salah!');
     }
 
-    public function processLogout()
-    {   
+    public function processLogout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Ensure cart is cleared (though invalidate() should do it)
+        // $request->session()->forget('cart'); 
+
         return redirect('/login')->with('success', 'Anda telah logout.');
     }
 }

@@ -18,8 +18,8 @@ class ReservasiController extends Controller
 
     public function create()
     {
-        // Ambil data user dengan ID 7 (hardcoded untuk sementara)
-        $user = User::find(10);
+        // Ambil data user yang sedang login
+        $user = Auth::user();
 
         // Tampilkan form reservasi dengan data user
         return view('customers.Reservasi', compact('user'));
@@ -36,7 +36,7 @@ class ReservasiController extends Controller
         ]);
 
         // 2. Setup Data
-        $userId = 10; // Hardcode User 7 untuk sementara
+        $userId = Auth::id();
 
         // Gabungkan Tanggal dan Jam
         $waktuFix = Carbon::parse($request->tanggal_reservasi . ' ' . $request->jam_reservasi);
