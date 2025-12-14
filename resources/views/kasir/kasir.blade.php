@@ -455,7 +455,6 @@
             const checkoutBtn = document.querySelector('.btn-checkout');
             const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
 
-            // --- Sisa JavaScript sama persis dengan file HTML sebelumnya ---
             const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
 
             // Menu items sudah di-render oleh Laravel Blade, tidak perlu renderMenuItems()
@@ -463,7 +462,7 @@
             const renderCart = () => {
                 cartItemsContainer.innerHTML = '';
                 if (cart.length === 0) {
-                    cartItemsContainer.innerHTML = '<p class="text-center text-muted">Keranjang Anda kosong</p>';
+                    cartItemsContainer.innerHTML = '<p class="text-center">Keranjang Anda kosong</p>';
                 } else {
                     cart.forEach(item => {
                         const cartItemDiv = document.createElement('div');

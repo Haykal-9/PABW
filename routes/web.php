@@ -96,5 +96,5 @@ Route::prefix('kasir')->group(function () {
 });
 
 Route::get('/kasir/logout', function () {
-    return redirect()->route('kasir');
+    return redirect()->route('kasir.index');
 })->name('logout');
