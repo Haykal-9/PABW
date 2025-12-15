@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\GenderType;
 
@@ -12,13 +13,22 @@ class ProfileController extends Controller
 {
     public function show($id)
     {
+        // Authorization: User can only view their own profile
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        if (Auth::id() != $id) {
+            abort(403, 'Anda tidak memiliki akses ke profil ini.');
+        }
+
         $user = User::with([
             'reservasi.status', 
             'pembayaran.status',
             'pembayaran.details.menu',
             'pembayaran.paymentMethod',
             'pembayaran.orderType'
-        ])->find($id);
+        ])->findOrFail($id);
 
         $reservasiOngoing = $user->reservasi->filter(function ($r) {
             return $r->tanggal_reservasi >= now();
@@ -35,8 +45,16 @@ class ProfileController extends Controller
 
     public function edit($id)
     {
-        $user = User::find($id);
+        // Authorization: User can only edit their own profile
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
 
+        if (Auth::id() != $id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit profil ini.');
+        }
+
+        $user = User::findOrFail($id);
         $genders = GenderType::all();
 
         return view('customers.edit_profile', compact('user', 'genders'));
@@ -44,7 +62,16 @@ class ProfileController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
+        // Authorization: User can only update their own profile
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        if (Auth::id() != $id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengubah profil ini.');
+        }
+
+        $user = User::findOrFail($id);
 
         if ($request->hasFile('profile_picture')) {
             $pathLama = public_path('uploads/profile/' . $user->profile_picture);

@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OrderController;
 
 // Kasir Controllers
 use App\Http\Controllers\KasirController;
@@ -40,27 +41,46 @@ Route::get('/logout', [AuthController::class, 'processLogout']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'processRegister']);
 
-// Routes untuk Pengguna (Customer)
+// Routes untuk Pengguna (Customer) - Public Routes
 Route::get('/menu', [MenuController::class, 'menu'])->name('menu');
-Route::post('/menu/{id}/favorite', [MenuController::class, 'favorite'])->name('menu.favorite');
 Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.detail');
-Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
-Route::middleware(['auth'])->group(function () {
-    Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
-    Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
-});
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::patch('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
 Route::patch('/cart/update-note', [CartController::class, 'updateNote'])->name('cart.update.note');
 Route::delete('/cart/remove', [CartController::class, 'removeCart'])->name('cart.remove');
-Route::get('/checkout', [CheckoutController::class, 'create']);
-Route::get('/profil/{id}', [ProfileController::class, 'show'])->name('profile.show');
-Route::get('/profil/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::put('/profil/{id}', [ProfileController::class, 'update'])->name('profile.update');
-Route::post('/menu/{id}/review', [ReviewController::class, 'store'])->name('menu.review.store');
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+// Routes untuk Pengguna (Customer) - Requires Authentication
+Route::middleware(['auth'])->group(function () {
+    // Favorite
+    Route::post('/menu/{id}/favorite', [MenuController::class, 'favorite'])->name('menu.favorite');
+    
+    // Review
+    Route::post('/menu/{id}/review', [ReviewController::class, 'store'])->name('menu.review.store');
+    
+    // Reservasi
+    Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
+    Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
+    Route::get('/my-reservations', [ReservasiController::class, 'myReservations'])->name('reservations.index');
+    Route::get('/my-reservations/{id}', [ReservasiController::class, 'show'])->name('reservations.show');
+    Route::post('/my-reservations/{id}/cancel', [ReservasiController::class, 'cancel'])->name('reservations.cancel');
+    
+    // Checkout
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    
+    // Profile (with authorization check in controller)
+    Route::get('/profil/{id}', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profil/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profil/{id}', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+// Routes untuk Order History & Detail (Customer)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+});
 
 
 // Routes untuk Admin via Middleware CheckRole

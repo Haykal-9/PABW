@@ -56,4 +56,81 @@ class ReservasiController extends Controller
 
         return redirect()->route('reservasi.create')->with('success', 'Reservasi berhasil dibuat! Kode reservasi Anda: ' . $kode . '. Tunggu konfirmasi dari kasir.');
     }
+
+    /**
+     * Display all user's reservations
+     */
+    public function myReservations()
+    {
+        // Check authentication
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Get all user's reservations with status
+        $reservations = Reservasi::with('status')
+            ->where('user_id', Auth::id())
+            ->orderBy('tanggal_reservasi', 'desc')
+            ->paginate(10);
+
+        return view('customers.reservations.index', compact('reservations'));
+    }
+
+    /**
+     * Show reservation detail
+     */
+    public function show($id)
+    {
+        // Check authentication
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Get reservation with authorization check
+        $reservasi = Reservasi::with('status')
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
+
+        return view('customers.reservations.show', compact('reservasi'));
+    }
+
+    /**
+     * Cancel reservation
+     */
+    public function cancel($id)
+    {
+        // Check authentication
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Get reservation with authorization check
+        $reservasi = Reservasi::where('user_id', Auth::id())
+            ->findOrFail($id);
+
+        // Check if reservation can be cancelled
+        // Only pending (1) or confirmed (2) reservations can be cancelled
+        if ($reservasi->status_id == 3) {
+            return redirect()->back()->with('error', 'Reservasi ini sudah dibatalkan sebelumnya.');
+        }
+
+        // Check if reservation date is not in the past
+        if (Carbon::parse($reservasi->tanggal_reservasi)->isPast()) {
+            return redirect()->back()->with('error', 'Tidak dapat membatalkan reservasi yang sudah lewat.');
+        }
+
+        // Check if reservation is less than 2 hours away (optional business rule)
+        $reservationTime = Carbon::parse($reservasi->tanggal_reservasi);
+        $hoursUntilReservation = now()->diffInHours($reservationTime, false);
+        
+        if ($hoursUntilReservation < 2 && $hoursUntilReservation > 0) {
+            return redirect()->back()->with('error', 'Tidak dapat membatalkan reservasi kurang dari 2 jam sebelum waktu reservasi. Silakan hubungi restoran.');
+        }
+
+        // Update status to cancelled (status_id = 3)
+        $reservasi->status_id = 3;
+        $reservasi->save();
+
+        return redirect()->back()->with('success', 'Reservasi berhasil dibatalkan.');
+    }
 }

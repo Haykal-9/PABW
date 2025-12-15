@@ -31,9 +31,20 @@
 
                 @auth
                     <li class="nav-item">
-                        <a class="nav-link fw-semibold px-3 py-2" href="{{ url('/reservasi') }}"
+                        <a class="nav-link fw-semibold px-3 py-2" href="{{ route('reservations.index') }}"
                             style="color: #704214; transition: all 0.3s ease; position: relative;">
-                            Reservasi
+                            <i class="fas fa-calendar-alt" style="color: #8B6F47;"></i>
+                            <span class="ms-2">Reservasi</span>
+                        </a>
+                    </li>
+                @endauth
+
+                @auth
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3 py-2" href="{{ route('orders.index') }}"
+                            style="color: #704214; transition: all 0.3s ease; position: relative;">
+                            <i class="fas fa-shopping-bag" style="color: #8B6F47;"></i>
+                            <span class="ms-2">Pesanan</span>
                         </a>
                     </li>
                 @endauth

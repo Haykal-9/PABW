@@ -14,13 +14,18 @@ class CheckoutController extends Controller
 {
     public function index()
     {
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login untuk melakukan checkout.');
+        }
+
         $cart = session()->get('cart', []);
 
         if (empty($cart)) {
             return redirect()->route('menu')->with('error', 'Keranjang Anda kosong.');
         }
 
-        $user = Auth::user() ?? User::find(7);
+        $user = Auth::user();
 
         $total = 0;
         foreach ($cart as $id => $details) {
@@ -32,8 +37,25 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        $user = Auth::user() ?? User::find(7);
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login untuk melakukan checkout.');
+        }
+
+        // Validate request
+        $request->validate([
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'order_type_id' => 'required|exists:order_types,id',
+        ]);
+
         $cart = session()->get('cart', []);
+
+        // Check if cart is empty
+        if (empty($cart)) {
+            return redirect()->route('menu')->with('error', 'Keranjang Anda kosong.');
+        }
+
+        $user = Auth::user();
         $total = 0;
 
         foreach ($cart as $details) {
@@ -42,7 +64,7 @@ class CheckoutController extends Controller
 
         $order = Pembayaran::create([
             'user_id' => $user->id,
-            'status_id' => 1, 
+            'status_id' => 2, // 2 = pending (based on PaymentStatusSeeder)
             'payment_method_id' => $request->payment_method_id,
             'order_type_id' => $request->order_type_id,
             'order_date' => now(),
@@ -61,8 +83,8 @@ class CheckoutController extends Controller
 
         session()->forget('cart');
 
-        return redirect()->route('cart.index')
-            ->with('success', 'Pesanan berhasil dibuat! Silakan tunggu konfirmasi.');
+        return redirect()->route('orders.show', $order->id)
+            ->with('success', 'Pesanan berhasil dibuat! Invoice #INV-' . str_pad($order->id, 4, '0', STR_PAD_LEFT));
 
     }
 }
