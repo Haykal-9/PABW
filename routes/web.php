@@ -8,9 +8,15 @@ use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\KasirController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AuthController;
+
+// Kasir Controllers
+use App\Http\Controllers\KasirController;
+use App\Http\Controllers\KasirReservasiController;
+use App\Http\Controllers\KasirNotifikasiController;
+use App\Http\Controllers\KasirProfileController;
+use App\Http\Controllers\KasirMenuController;
 
 
 // Route Halaman Utama
@@ -61,17 +67,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // --- ROUTES CRUD USERS ---
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
-    Route::put('/admin/users/{id}', [AdminController::class, 'updateUserRole'])->name('admin.users.update'); // Update Role
-    Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy'); // Delete User
+    Route::put('/admin/users/{id}', [AdminController::class, 'updateUserRole'])->name('admin.users.update');
+    Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 
     // --- ROUTES CRUD RESERVATIONS ---
     Route::get('/admin/reservations', [AdminController::class, 'reservations'])->name('admin.reservations');
-    Route::put('/admin/reservations/{id}', [AdminController::class, 'updateReservationStatus'])->name('admin.reservations.update'); // Update Status
-    Route::delete('/admin/reservations/{id}', [AdminController::class, 'destroyReservation'])->name('admin.reservations.destroy'); // Delete Reservation
+    Route::put('/admin/reservations/{id}', [AdminController::class, 'updateReservationStatus'])->name('admin.reservations.update');
+    Route::delete('/admin/reservations/{id}', [AdminController::class, 'destroyReservation'])->name('admin.reservations.destroy');
 
     // --- ROUTES CRUD RATINGS (HANYA DELETE) ---
     Route::get('/admin/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
-    Route::delete('/admin/ratings/{id}', [AdminController::class, 'destroyRating'])->name('admin.ratings.destroy'); // Delete Rating
+    Route::delete('/admin/ratings/{id}', [AdminController::class, 'destroyRating'])->name('admin.ratings.destroy');
 
     // --- RIWAYAT PENJUALAN (READ ONLY) ---
     Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
@@ -79,26 +85,29 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // --- KASIR ROUTES ---
 Route::middleware(['auth', 'role:kasir'])->group(function () {
+    // Main Kasir (KasirController)
     Route::get('/kasir/kasir', [KasirController::class, 'index'])->name('kasir.index');
     Route::post('/kasir/process-payment', [KasirController::class, 'processPayment'])->name('kasir.processPayment');
-    Route::get('/kasir/reservasi', [KasirController::class, 'reservasikasir'])->name('kasir.reservasi');
     Route::get('/kasir/riwayat', [KasirController::class, 'riwayat'])->name('kasir.riwayat');
-    Route::get('/kasir/notifikasi', [KasirController::class, 'notif'])->name('kasir.notif');
-    Route::get('/kasir/profile', [KasirController::class, 'profile'])->name('kasir.profile');
-    Route::get('/kasir/profile/edit', [KasirController::class, 'editProfile'])->name('kasir.profile.edit');
-    Route::put('/kasir/profile', [KasirController::class, 'updateProfile'])->name('kasir.profile.update');
 
-    // --- KASIR MENU MANAGEMENT ROUTES ---
-    Route::get('/kasir/menu', [KasirController::class, 'menuManagement'])->name('kasir.menu');
-    Route::post('/kasir/menu', [KasirController::class, 'storeMenu'])->name('kasir.menu.store');
-    Route::put('/kasir/menu/{id}', [KasirController::class, 'updateMenu'])->name('kasir.menu.update');
-    Route::delete('/kasir/menu/{id}', [KasirController::class, 'destroyMenu'])->name('kasir.menu.destroy');
-    // --- KASIR RESERVASI MANAGEMENT ROUTES ---
-    Route::prefix('kasir')->group(function () {
-        // Action Terima & Tolak
-        Route::patch('/reservasi/{id}/approve', [KasirController::class, 'approve'])->name('kasir.reservasi.approve');
-        Route::post('/reservasi/{id}/reject', [KasirController::class, 'reject'])->name('kasir.reservasi.reject');
-    });
+    // Reservasi Management (KasirReservasiController)
+    Route::get('/kasir/reservasi', [KasirReservasiController::class, 'index'])->name('kasir.reservasi');
+    Route::patch('/kasir/reservasi/{id}/approve', [KasirReservasiController::class, 'approve'])->name('kasir.reservasi.approve');
+    Route::post('/kasir/reservasi/{id}/reject', [KasirReservasiController::class, 'reject'])->name('kasir.reservasi.reject');
+
+    // Notifikasi (KasirNotifikasiController)
+    Route::get('/kasir/notifikasi', [KasirNotifikasiController::class, 'index'])->name('kasir.notif');
+
+    // Profile (KasirProfileController)
+    Route::get('/kasir/profile', [KasirProfileController::class, 'index'])->name('kasir.profile');
+    Route::get('/kasir/profile/edit', [KasirProfileController::class, 'edit'])->name('kasir.profile.edit');
+    Route::put('/kasir/profile', [KasirProfileController::class, 'update'])->name('kasir.profile.update');
+
+    // Menu Management (KasirMenuController)
+    Route::get('/kasir/menu', [KasirMenuController::class, 'index'])->name('kasir.menu');
+    Route::post('/kasir/menu', [KasirMenuController::class, 'store'])->name('kasir.menu.store');
+    Route::put('/kasir/menu/{id}', [KasirMenuController::class, 'update'])->name('kasir.menu.update');
+    Route::delete('/kasir/menu/{id}', [KasirMenuController::class, 'destroy'])->name('kasir.menu.destroy');
 });
 
 Route::get('/kasir/logout', function () {
