@@ -61,9 +61,7 @@ Route::middleware(['auth'])->group(function () {
     // Reservasi
     Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
     Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
-    Route::get('/my-reservations', [ReservasiController::class, 'myReservations'])->name('reservations.index');
-    Route::get('/my-reservations/{id}', [ReservasiController::class, 'show'])->name('reservations.show');
-    Route::post('/my-reservations/{id}/cancel', [ReservasiController::class, 'cancel'])->name('reservations.cancel');
+    Route::post('/reservasi/{id}/cancel', [ReservasiController::class, 'cancel'])->name('reservations.cancel');
     
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');

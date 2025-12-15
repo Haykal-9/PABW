@@ -31,7 +31,7 @@
 
                 @auth
                     <li class="nav-item">
-                        <a class="nav-link fw-semibold px-3 py-2" href="{{ route('reservations.index') }}"
+                        <a class="nav-link fw-semibold px-3 py-2" href="{{ route('reservasi.create') }}"
                             style="color: #704214; transition: all 0.3s ease; position: relative;">
                             <i class="fas fa-calendar-alt" style="color: #8B6F47;"></i>
                             <span class="ms-2">Reservasi</span>
