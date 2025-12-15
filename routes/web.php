@@ -19,12 +19,12 @@ use App\Http\Controllers\KasirProfileController;
 use App\Http\Controllers\KasirMenuController;
 
 // Admin Controllers
-use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\AdminMenuController;
-use App\Http\Controllers\Admin\AdminUserController;
-use App\Http\Controllers\Admin\AdminReservationController;
-use App\Http\Controllers\Admin\AdminRatingController;
-use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminMenuController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminReservationController;
+use App\Http\Controllers\AdminRatingController;
+use App\Http\Controllers\AdminOrderController;
 
 
 // Route Halaman Utama

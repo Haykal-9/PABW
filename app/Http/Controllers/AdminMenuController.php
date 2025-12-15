@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
 
 class AdminMenuController extends Controller
 {
@@ -48,7 +49,9 @@ class AdminMenuController extends Controller
 
         menu::create($menuData);
 
-        return Redirect::route('admin.menu')->with('success', 'Menu berhasil ditambahkan.');
+        \Log::info('Menu ditambahkan oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
+        
+        return Redirect::route('admin.menu')->with('success', 'Menu berhasil ditambahkan oleh ' . Auth::user()->nama . '.');
     }
 
     public function update(Request $request, $id)
@@ -82,6 +85,8 @@ class AdminMenuController extends Controller
 
         $menu->update($menuData);
 
+        \Log::info('Menu ' . $request->nama . ' diperbarui oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
+        
         return Redirect::route('admin.menu')->with('success', 'Menu ' . $request->nama . ' berhasil diperbarui.');
     }
 
@@ -98,6 +103,7 @@ class AdminMenuController extends Controller
         $deleted = menu::destroy($id);
 
         if ($deleted) {
+            \Log::info('Menu ID ' . $id . ' dihapus oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
             return response()->noContent();
         }
     }

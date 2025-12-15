@@ -68,18 +68,17 @@
                                             {{-- PERBAIKAN: Menggunakan $order['items'] (aman jika null) --}}
                                             @foreach ($order['items'] ?? [] as $item)
                                                 @php
-                                                    $subtotal_item = $item['qty'] * $item['price'];
-                                                    $subtotal_items += $subtotal_item;
+                                                    $subtotal_items += $item['subtotal'];
                                                 @endphp
                                                 <tr>
                                                     <td>
                                                         {{-- Perlu penyesuaian path gambar (asumsi sudah diperbaiki di Controller) --}}
-                                                        <img src="{{ asset($item['image_path'] ?? 'images/default.png') }}" alt="{{ $item['name'] }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                                        <img src="{{ asset($item['image_path'] ?? 'images/default.png') }}" alt="{{ $item['nama'] }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
                                                     </td>
-                                                    <td>{{ $item['name'] }}</td>
-                                                    <td class="text-center">{{ $item['qty'] }}</td>
+                                                    <td>{{ $item['nama'] }}</td>
+                                                    <td class="text-center">{{ $item['quantity'] }}</td>
                                                     <td class="text-end">Rp {{ number_format($item['price'], 0, ',', '.') }}</td>
-                                                    <td class="text-end">Rp {{ number_format($subtotal_item, 0, ',', '.') }}</td>
+                                                    <td class="text-end">Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</td>
                                                 </tr>
                                             @endforeach
                                             @if(empty($order['items'] ?? []))
@@ -94,17 +93,9 @@
                                     <div class="row justify-content-end">
                                         <div class="col-md-5">
                                             <dl class="row small">
-                                                {{-- PERBAIKAN: Menggunakan $order['subtotal'] dari Controller --}}
-                                                <dt class="col-6 text-end">Subtotal Pesanan:</dt>
-                                                <dd class="col-6 text-end">Rp {{ number_format($order['subtotal'], 0, ',', '.') }}</dd>
-                                                
-                                                {{-- PERBAIKAN: Menggunakan $order['tax'] dari Controller --}}
-                                                <dt class="col-6 text-end border-top pt-1">Pajak (10%):</dt>
-                                                <dd class="col-6 text-end border-top pt-1">Rp {{ number_format($order['tax'], 0, ',', '.') }}</dd>
-                                                
-                                                {{-- Menggunakan $order['total'] dari Controller --}}
-                                                <dt class="col-6 text-end border-top pt-1 text-danger">TOTAL AKHIR:</dt>
-                                                <dd class="col-6 text-end border-top pt-1 fw-bold text-danger">Rp {{ number_format($order['total'], 0, ',', '.') }}</dd>
+                                                {{-- PERBAIKAN: Menggunakan $order['total'] dari Controller (tanpa pajak) --}}
+                                                <dt class="col-6 text-end text-danger">TOTAL:</dt>
+                                                <dd class="col-6 text-end fw-bold text-danger">Rp {{ number_format($order['total'], 0, ',', '.') }}</dd>
                                             </dl>
                                         </div>
                                     </div>

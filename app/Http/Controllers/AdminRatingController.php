@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminRatingController extends Controller
 {
@@ -24,9 +25,11 @@ class AdminRatingController extends Controller
 
     public function destroy($id)
     {
+        $rating = review::find($id);
         $deleted = review::destroy($id);
 
         if ($deleted) {
+            \Log::info('Rating ID ' . $id . ' dihapus oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
             return response()->noContent();
         }
     }

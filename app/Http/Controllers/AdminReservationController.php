@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\reservasi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminReservationController extends Controller
 {
@@ -31,9 +32,11 @@ class AdminReservationController extends Controller
 
     public function destroy($id)
     {
+        $reservation = reservasi::find($id);
         $deleted = reservasi::destroy($id);
 
         if ($deleted) {
+            \Log::info('Reservasi ' . ($reservation->kode_reservasi ?? 'ID ' . $id) . ' dihapus oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
             return response()->noContent();
         }
     }

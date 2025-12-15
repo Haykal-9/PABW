@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminUserController extends Controller
 {
@@ -23,9 +24,16 @@ class AdminUserController extends Controller
 
     public function destroy($id)
     {
+        // Cegah admin menghapus dirinya sendiri
+        if ($id == Auth::id()) {
+            return response()->json(['error' => 'Tidak dapat menghapus akun sendiri'], 403);
+        }
+        
+        $user = User::find($id);
         $deleted = User::destroy($id);
 
         if ($deleted) {
+            \Log::info('User ' . ($user->nama ?? 'ID ' . $id) . ' dihapus oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
             return response()->noContent();
         }
     }
