@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class UserSeeder extends Seeder
                 'id' => 1,
                 'role_id' => 1,
                 'username' => 'admin',
-                'password' => 'admin123',
+                'password' => Hash::make('admin123'),
                 'nama' => 'admin tapal kuda',
                 'email' => 'tapalkuda@gmail.com',
                 'no_telp' => '06790879769',
@@ -32,7 +33,7 @@ class UserSeeder extends Seeder
                 'id' => 2,
                 'role_id' => 2,
                 'username' => 'kasir',
-                'password' => 'kasir123',
+                'password' => Hash::make('kasir123'),
                 'nama' => 'kasir tapal kuda',
                 'email' => 'kasirtapal@gmail.com',
                 'no_telp' => '09679697283',
@@ -46,7 +47,7 @@ class UserSeeder extends Seeder
                 'id' => 7,
                 'role_id' => 3,
                 'username' => 'salman',
-                'password' => 'salman123',
+                'password' => Hash::make('salman123'),
                 'nama' => 'ridhwan q',
                 'email' => 'salmanridhwan@student.telkomuniversity.ac.id',
                 'no_telp' => '0895412194060',
@@ -60,7 +61,7 @@ class UserSeeder extends Seeder
                 'id' => 8,
                 'role_id' => 3,
                 'username' => 'bian',
-                'password' => 'bian123',
+                'password' => Hash::make('bian123'),
                 'nama' => 'biantara',
                 'email' => 'biantarawi@gmail.com',
                 'no_telp' => '083130919334',
@@ -74,7 +75,7 @@ class UserSeeder extends Seeder
                 'id' => 9,
                 'role_id' => 3,
                 'username' => 'haykal',
-                'password' => 'haykal123',
+                'password' => Hash::make('haykal123'),
                 'nama' => 'M haykal',
                 'email' => 'haykal@gmail.com',
                 'no_telp' => '087684747333',

@@ -27,7 +27,7 @@ class AdminController extends Controller
         $pendapatanHariIni = detailPembayaran::whereHas('pembayaran', function ($query) use ($today) {
             $query->whereDate('order_date', $today);
         })
-            ->selectRaw('SUM(quantity * price_per_item) as total')
+            ->selectRaw('SUM(quantity * price_per_item) as total')  
             ->value('total') ?? 0;
 
         $menuTerjualHariIni = detailPembayaran::whereHas('pembayaran', function ($query) use ($today) {
@@ -54,7 +54,6 @@ class AdminController extends Controller
             'kategori' => $m->type->type_name ?? 'N/A',
             'kategori_id' => $m->type_id ?? null,
             'harga' => $m->price,
-            'stok' => $m->stok ?? 0,
             'status' => ucwords($m->status->status_name ?? 'N/A'),
             'image_path' => $m->url_foto ? 'foto/' . $m->url_foto : null,
             'deskripsi' => $m->deskripsi,
@@ -98,8 +97,7 @@ class AdminController extends Controller
 
     public function ratings()
     {
-        $ratings = review::with(['user', 'menu_item'])
-            ->get()->map(fn($r) => [
+        $ratings = review::with(['user', 'menu_item']) ->get()->map(fn($r) => [
                 'id' => $r->id,
                 'menu' => $r->menu_item->nama ?? 'Menu Dihapus',
                 'user' => $r->user->nama ?? 'User Dihapus',
@@ -112,37 +110,12 @@ class AdminController extends Controller
     }
 
     public function orders()
-    {
-        $orders = pembayaran::with(['details.menu', 'orderType', 'user', 'status', 'paymentMethod'])
-            ->orderBy('order_date', 'desc')
-            ->get()
-            ->map(function ($p) {
-                $items = $p->details->map(fn($d) => [
-                    'name' => $d->menu->nama ?? 'Unknown',
-                    'qty' => $d->quantity ?? 0,
-                    'price' => (float) ($d->price_per_item ?? $d->menu->price ?? 0),
-                    'image_path' => $d->menu && $d->menu->url_foto ? 'foto/' . $d->menu->url_foto : null,
-                ])->toArray();
-
-                $subtotal = array_reduce($items, fn($carry, $it) => $carry + ($it['qty'] * $it['price']), 0);
-                $tax = (int) round($subtotal * 0.1);
-                $total = $subtotal + $tax;
-
-                return [
-                    'id' => $p->id,
-                    'tanggal' => $p->order_date ? (new \DateTime($p->order_date))->format('Y-m-d') : 'N/A',
-                    'customer' => $p->user->nama ?? 'Unknown',
-                    'subtotal' => $subtotal,
-                    'tax' => $tax,
-                    'total' => $total,
-                    'metode' => data_get($p, 'paymentMethod.method_name') ?? 'N/A',
-                    'status' => ucwords(data_get($p, 'status.status_name') ?? data_get($p, 'status.name') ?? 'N/A'),
-                    'items' => $items,
-                ];
-            });
-
-        return view('admin.orders', compact('orders'));
-    }
+{
+   
+    $orders = collect([]); 
+    
+    return view('admin.orders', compact('orders'));
+}
 
     public function storeMenu(Request $request)
     {
@@ -166,17 +139,13 @@ class AdminController extends Controller
 
         menu::create($menuData);
 
-        $statusMessage = $request->status == 1 ? 'Tersedia' : 'Habis';
-        return Redirect::route('admin.menu')->with('success', 'Menu ' . $request->nama . ' berhasil ditambahkan. Status: ' . $statusMessage . '.');
+       return Redirect::route('admin.menu')->with('success', 'Menu berhasil ditambahkan.');
     }
 
     public function updateMenu(Request $request, $id)
     {
         $menu = menu::find($id);
 
-        if (!$menu) {
-            return Redirect::route('admin.menu')->with('error', 'Menu tidak ditemukan.');
-        }
 
         $path_to_save = $menu->url_foto;
 
@@ -211,7 +180,7 @@ class AdminController extends Controller
     public function destroyMenu($id)
     {
         $menu = menu::find($id);
-        if ($menu && $menu->url_foto) {
+        if ($menu->url_foto) {
             $filePath = public_path('foto/' . $menu->url_foto);
             if (File::exists($filePath)) {
                 File::delete($filePath);
@@ -224,7 +193,6 @@ class AdminController extends Controller
             return response()->noContent();
         }
 
-        return response('Gagal menghapus menu.', 404);
     }
 
     public function destroyUser($id)
@@ -235,7 +203,7 @@ class AdminController extends Controller
             return response()->noContent();
         }
 
-        return response('Gagal menghapus pengguna.', 404);
+       
     }
 
     public function destroyReservation($id)
@@ -246,7 +214,7 @@ class AdminController extends Controller
             return response()->noContent();
         }
 
-        return response('Gagal menghapus reservasi.', 404);
+        
     }
 
     public function destroyRating($id)
@@ -257,6 +225,6 @@ class AdminController extends Controller
             return response()->noContent();
         }
 
-        return response('Gagal menghapus ulasan.', 404);
+        
     }
 }

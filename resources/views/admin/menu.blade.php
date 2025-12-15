@@ -21,7 +21,7 @@
 
 {{-- Tombol Tambah Menu --}}
 <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#menuModal" id="btn-create-menu">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#menuModal" id="btn-create-menu">
         <i class="fas fa-plus me-1"></i> Tambah Menu Baru
     </button>
 </div>
@@ -99,16 +99,15 @@
             <form id="menuForm" method="POST" action="{{ route('admin.menu.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
-                    <input type="hidden" id="menu-id" name="id">
                     
                     <div class="mb-3">
-                        <label for="menu-nama" class="form-label">Nama Menu</label>
-                        <input type="text" class="form-control" id="menu-nama" name="nama" required>
+                        <label for="nama" class="form-label">Nama Menu</label>
+                        <input type="text" class="form-control" id="nama" name="nama" required>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="menu-kategori" class="form-label">Kategori</label>
-                        <select class="form-control" id="menu-kategori" name="kategori" required>
+                        <label for="kategori" class="form-label">Kategori</label>
+                        <select class="form-control" id="kategori" name="kategori" required>
                             <option value="">Pilih Kategori</option>
                             <option value="1">Kopi</option>
                             <option value="2">Minuman</option>
@@ -118,46 +117,41 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="menu-deskripsi" class="form-label">Deskripsi</label>
-                        <textarea class="form-control" id="menu-deskripsi" name="deskripsi" rows="3"></textarea>
+                        <label for="deskripsi" class="form-label">Deskripsi</label>
+                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label for="menu-harga" class="form-label">Harga (Rp)</label>
-                        <input type="number" class="form-control" id="menu-harga" name="harga" required min="0">
+                        <label for="harga" class="form-label">Harga (Rp)</label>
+                        <input type="number" class="form-control" id="harga" name="harga" required min="0">
                     </div>
                     
-                    {{-- Blok input Stok telah dihapus --}}
-                    
                     <div class="mb-3">
-                        <label for="menu-status" class="form-label">Status</label>
-                        <select class="form-control" id="menu-status" name="status" required>
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-control" id="status" name="status" required>
                             <option value="1">Tersedia</option>
                             <option value="2">Habis</option>
                         </select>
                     </div>
                     
                     {{-- GANTI INPUT URL/PATH menjadi INPUT FILE --}}
-                    <div class="mb-3" id="current-photo-group">
+                    {{-- DITAMBAHKAN style="display: none;" AGAR TERSEMBUNYI SAAT CREATE --}}
+                    <div class="mb-3" id="current-photo-group" style="display: none;">
                         <label class="form-label">Foto Saat Ini</label>
                         <img src="" id="edit-current-photo" style="max-width: 150px; height: auto; display: none;" class="mb-2">
                         <p id="no-photo-text" class="text-muted small"></p>
                     </div>
 
                     <div class="mb-3">
-                        <label for="foto_upload_input" class="form-label">Upload Foto Menu Baru</label>
-                        {{-- PENTING: Nama input harus 'foto_upload' agar sesuai Controller --}}
-                        <input type="file" class="form-control" id="foto_upload_input" name="foto_upload" accept="image/*">
+                        <label for="foto_upload" class="form-label">Upload Foto Menu</label>
+                        <input type="file" class="form-control" id="foto_upload" name="foto_upload" accept="image/*">
                         <small class="text-muted">Kosongkan jika tidak ingin mengganti foto.</small>
                     </div>
-
-                    <input type="hidden" id="menu-gambar-path-lama" name="image_path_old">
-                    {{-- Input image_path (URL/Path) yang lama dihapus agar tidak konflik dengan input type=file --}}
                     
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary" id="modal-save-btn">Simpan Data</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </form>
         </div>
@@ -172,31 +166,69 @@
         const menuModalEl = document.getElementById('menuModal');
         const modalTitle = document.getElementById('menuModalLabel');
         const form = document.getElementById('menuForm');
-        const modal = new bootstrap.Modal(menuModalEl);
         
-        // Elemen untuk preview foto
-        const currentPhoto = document.getElementById('edit-current-photo');
-        const noPhotoText = document.getElementById('no-photo-text');
-
-        // Event listener untuk tombol 'Tambah Menu Baru'
+        // Event untuk reset form saat modal dibuka untuk create
         document.getElementById('btn-create-menu').addEventListener('click', function() {
             modalTitle.textContent = 'Tambah Menu Baru';
-            form.reset(); 
-            // Atur default value dan action
+            form.reset();
             form.action = '{{ route('admin.menu.store') }}';
-            document.getElementById('menu-id').value = '';
-            document.getElementById('menu-kategori').value = '1'; // Default ID Kopi
-            document.getElementById('menu-status').value = '1'; // Default ID Tersedia
             
-            // Sembunyikan preview foto lama
-            currentPhoto.style.display = 'none';
-            noPhotoText.textContent = '';
-            
-            // Hapus field _method PUT jika ada
-            const methodField = document.querySelector('#menuForm input[name="_method"][value="PUT"]');
-            if (methodField) {
-                methodField.remove();
-            }
+            // Hapus method PUT jika ada
+            const methodField = form.querySelector('input[name="_method"]');
+            if (methodField) methodField.remove();
+        });
+
+        // Event untuk edit menu
+        document.querySelectorAll('.btn-edit').forEach(button => {
+            button.addEventListener('click', function() {
+                modalTitle.textContent = 'Edit Menu';
+                const row = this.closest('tr');
+                
+                form.action = '{{ url("/admin/menu") }}/' + row.dataset.id;
+                
+                document.getElementById('nama').value = row.dataset.nama;
+                document.getElementById('kategori').value = row.dataset.kategoriId;
+                document.getElementById('harga').value = row.dataset.harga;
+                document.getElementById('status').value = row.dataset.status === 'Tersedia' ? 1 : 2;
+                document.getElementById('deskripsi').value = row.dataset.deskripsi;
+                
+                // Tambah method PUT
+                let methodField = form.querySelector('input[name="_method"]');
+                if (!methodField) {
+                    methodField = document.createElement('input');
+                    methodField.type = 'hidden';
+                    methodField.name = '_method';
+                    methodField.value = 'PUT';
+                    form.appendChild(methodField);
+                }
+            });
+        });
+
+        // Event untuk delete menu
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', async function() {
+                const menuId = this.dataset.id;
+                if (!confirm('Hapus menu ini?')) return;
+                
+                try {
+                    const response = await fetch('{{ url("/admin/menu") }}/' + menuId, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Gagal menghapus menu');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan');
+                }
+            });
         });
 
         // Event listener untuk tombol 'Edit'
@@ -206,6 +238,9 @@
                 
                 const row = this.closest('tr');
                 const imagePath = row.dataset.imagePath;
+
+                // Tampilkan seluruh grup foto saat Edit
+                currentPhotoGroup.style.display = 'block'; // <<< BARIS INI UNTUK MENAMPILKAN GRUP FOTO
 
                 // Tampilkan preview foto saat ini
                 if (imagePath && imagePath !== 'null' && imagePath !== 'default.jpg') {

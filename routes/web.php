@@ -18,12 +18,12 @@ Route::get('/', [HomeController::class, 'index']);
 Route::get('/home', [HomeController::class, 'index']);
 
 // Routes untuk Autentikasi
-Route::get('/login', [AuthController::class, 'showLogin']);
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'processLogin']);
 Route::get('/logout', [AuthController::class, 'processLogout']);
 
 // Route untuk Registrasi
-Route::get('/register', [AuthController::class, 'showRegister']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'processRegister']);
 
 // Routes untuk Pengguna (Customer)
