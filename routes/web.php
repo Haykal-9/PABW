@@ -18,6 +18,14 @@ use App\Http\Controllers\KasirNotifikasiController;
 use App\Http\Controllers\KasirProfileController;
 use App\Http\Controllers\KasirMenuController;
 
+// Admin Controllers
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminMenuController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminReservationController;
+use App\Http\Controllers\Admin\AdminRatingController;
+use App\Http\Controllers\Admin\AdminOrderController;
+
 
 // Route Halaman Utama
 Route::get('/', [HomeController::class, 'index']);
@@ -57,30 +65,30 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.s
 
 // Routes untuk Admin via Middleware CheckRole
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/admin/menu', [AdminController::class, 'menu'])->name('admin.menu');
-
+    Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    
     // --- ROUTES CRUD MENU ---
-    Route::post('/admin/menu', [AdminController::class, 'storeMenu'])->name('admin.menu.store');
-    Route::put('/admin/menu/{id}', [AdminController::class, 'updateMenu'])->name('admin.menu.update');
-    Route::delete('/admin/menu/{id}', [AdminController::class, 'destroyMenu'])->name('admin.menu.destroy');
+    Route::get('/admin/menu', [AdminMenuController::class, 'index'])->name('admin.menu');
+    Route::post('/admin/menu', [AdminMenuController::class, 'store'])->name('admin.menu.store');
+    Route::put('/admin/menu/{id}', [AdminMenuController::class, 'update'])->name('admin.menu.update');
+    Route::delete('/admin/menu/{id}', [AdminMenuController::class, 'destroy'])->name('admin.menu.destroy');
 
     // --- ROUTES CRUD USERS ---
-    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users');
     Route::put('/admin/users/{id}', [AdminController::class, 'updateUserRole'])->name('admin.users.update');
-    Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+    Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
 
     // --- ROUTES CRUD RESERVATIONS ---
-    Route::get('/admin/reservations', [AdminController::class, 'reservations'])->name('admin.reservations');
+    Route::get('/admin/reservations', [AdminReservationController::class, 'index'])->name('admin.reservations');
     Route::put('/admin/reservations/{id}', [AdminController::class, 'updateReservationStatus'])->name('admin.reservations.update');
-    Route::delete('/admin/reservations/{id}', [AdminController::class, 'destroyReservation'])->name('admin.reservations.destroy');
+    Route::delete('/admin/reservations/{id}', [AdminReservationController::class, 'destroy'])->name('admin.reservations.destroy');
 
     // --- ROUTES CRUD RATINGS (HANYA DELETE) ---
-    Route::get('/admin/ratings', [AdminController::class, 'ratings'])->name('admin.ratings');
-    Route::delete('/admin/ratings/{id}', [AdminController::class, 'destroyRating'])->name('admin.ratings.destroy');
+    Route::get('/admin/ratings', [AdminRatingController::class, 'index'])->name('admin.ratings');
+    Route::delete('/admin/ratings/{id}', [AdminRatingController::class, 'destroy'])->name('admin.ratings.destroy');
 
     // --- RIWAYAT PENJUALAN (READ ONLY) ---
-    Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
+    Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
 });
 
 // --- KASIR ROUTES ---
