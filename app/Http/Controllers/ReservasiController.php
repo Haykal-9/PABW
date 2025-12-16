@@ -57,46 +57,6 @@ class ReservasiController extends Controller
         return redirect()->route('reservasi.create')->with('success', 'Reservasi berhasil dibuat! Kode reservasi Anda: ' . $kode . '. Tunggu konfirmasi dari kasir.');
     }
 
-    /**
-     * Display all user's reservations
-     */
-    public function myReservations()
-    {
-        // Check authentication
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
-        }
-
-        // Get all user's reservations with status
-        $reservations = Reservasi::with('status')
-            ->where('user_id', Auth::id())
-            ->orderBy('tanggal_reservasi', 'desc')
-            ->paginate(10);
-
-        return view('customers.reservations.index', compact('reservations'));
-    }
-
-    /**
-     * Show reservation detail
-     */
-    public function show($id)
-    {
-        // Check authentication
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
-        }
-
-        // Get reservation with authorization check
-        $reservasi = Reservasi::with('status')
-            ->where('user_id', Auth::id())
-            ->findOrFail($id);
-
-        return view('customers.reservations.show', compact('reservasi'));
-    }
-
-    /**
-     * Cancel reservation
-     */
     public function cancel($id)
     {
         // Check authentication
