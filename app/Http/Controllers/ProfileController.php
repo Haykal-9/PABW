@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\GenderType;
 use App\Models\Pembayaran;
 use App\Models\Reservasi;
+use App\Models\Notification;
 use Carbon\Carbon;
 
 class ProfileController extends Controller
@@ -164,6 +165,16 @@ class ProfileController extends Controller
         $order->status_id = 3;
         $order->save();
 
+        // Create notification
+        Notification::create([
+            'user_id' => $userId,
+            'type' => 'order_cancelled',
+            'title' => 'Pesanan Dibatalkan',
+            'message' => 'Pesanan Anda dengan ID #' . $order->id . ' telah berhasil dibatalkan.',
+            'link' => route('profile.show', ['id' => $userId]),
+            'is_read' => false
+        ]);
+
         return redirect()->route('profile.show', ['id' => $userId])
             ->with('success', 'Pesanan berhasil dibatalkan.');
     }
@@ -206,6 +217,16 @@ class ProfileController extends Controller
         // Update status to cancelled (status_id = 3)
         $reservasi->status_id = 3;
         $reservasi->save();
+
+        // Create notification
+        Notification::create([
+            'user_id' => $userId,
+            'type' => 'reservation_cancelled',
+            'title' => 'Reservasi Dibatalkan',
+            'message' => 'Reservasi Anda dengan kode ' . $reservasi->kode_reservasi . ' telah berhasil dibatalkan.',
+            'link' => route('profile.show', ['id' => $userId]),
+            'is_read' => false
+        ]);
 
         return redirect()->route('profile.show', ['id' => $userId])
             ->with('success', 'Reservasi berhasil dibatalkan.');
