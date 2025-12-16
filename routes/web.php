@@ -95,6 +95,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // --- ROUTES CRUD USERS ---
     Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users');
+    Route::post('/admin/users', [AdminUserController::class, 'store'])->name('admin.users.store');
     Route::put('/admin/users/{id}', [AdminController::class, 'updateUserRole'])->name('admin.users.update');
     Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
 
