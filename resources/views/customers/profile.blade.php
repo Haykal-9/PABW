@@ -24,7 +24,6 @@
                         <a href="{{ route('profile.edit', ['id' => $user->id]) }}" class="btn btn-outline-primary btn-sm">
                             <i class="fas fa-edit me-1"></i> Edit Profil
                         </a>
-                        <a href="/logout" class="btn btn-outline-danger btn-sm ms-2">Logout</a>
                     </div>
                 </div>
             </div>
@@ -166,6 +165,17 @@
                                                 </h5>
                                                 <p class="card-text mb-1"><i class="fas fa-users me-2"></i> {{ $res->jumlah_orang }} Orang</p>
                                                 <p class="card-text small text-muted">Note: {{ $res->message }}</p>
+                                                
+                                                {{-- Tombol Batalkan Reservasi --}}
+                                                @if($res->status_id != 3)
+                                                    <form method="POST" action="{{ route('profile.reservation.cancel', ['userId' => $user->id, 'reservationId' => $res->id]) }}" 
+                                                          class="mt-3" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan reservasi ini?');">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-danger btn-sm w-100">
+                                                            <i class="fas fa-times-circle me-1"></i> Batalkan Reservasi
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

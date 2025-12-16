@@ -60,7 +60,6 @@ Route::middleware(['auth'])->group(function () {
     // Reservasi
     Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
     Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
-    Route::post('/reservasi/{id}/cancel', [ReservasiController::class, 'cancel'])->name('reservations.cancel');
     
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -74,6 +73,9 @@ Route::middleware(['auth'])->group(function () {
     // Order History & Detail (in Profile)
     Route::get('/profil/{userId}/pesanan/{orderId}', [ProfileController::class, 'showOrder'])->name('profile.order.show');
     Route::post('/profil/{userId}/pesanan/{orderId}/cancel', [ProfileController::class, 'cancelOrder'])->name('profile.order.cancel');
+    
+    // Reservation Cancellation (in Profile)
+    Route::post('/profil/{userId}/reservasi/{reservationId}/cancel', [ProfileController::class, 'cancelReservation'])->name('profile.reservation.cancel');
 });
 
 
