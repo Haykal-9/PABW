@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\GenderType;
+use App\Models\Pembayaran;
 
 class ProfileController extends Controller
 {
@@ -97,5 +98,77 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.show', ['id' => $user->id])
             ->with('success', 'Profil berhasil diperbarui!');
+    }
+
+    /**
+     * Display the specified order detail.
+     */
+    public function showOrder($userId, $orderId)
+    {
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Authorization check
+        if (Auth::id() != $userId) {
+            abort(403, 'Anda tidak memiliki akses ke pesanan ini.');
+        }
+
+        // Get order with authorization check
+        $order = Pembayaran::with([
+            'details.menu',
+            'paymentMethod',
+            'orderType',
+            'status',
+            'user'
+        ])
+            ->where('user_id', Auth::id())
+            ->findOrFail($orderId);
+
+        // Calculate totals
+        $subtotal = 0;
+        foreach ($order->details as $detail) {
+            $detail->total = $detail->quantity * $detail->price_per_item;
+            $subtotal += $detail->total;
+        }
+
+        // You can add tax or service charge here if needed
+        $tax = 0; // 0% for now
+        $total = $subtotal + $tax;
+
+        return view('customers.history.order_detail', compact('order', 'subtotal', 'tax', 'total'));
+    }
+
+    /**
+     * Cancel an order
+     */
+    public function cancelOrder(Request $request, $userId, $orderId)
+    {
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Authorization check
+        if (Auth::id() != $userId) {
+            abort(403, 'Anda tidak memiliki akses untuk membatalkan pesanan ini.');
+        }
+
+        // Get order with authorization check
+        $order = Pembayaran::where('user_id', Auth::id())
+            ->findOrFail($orderId);
+
+        // Only allow cancellation if order is still pending (status_id = 2 based on PaymentStatusSeeder)
+        if ($order->status_id != 2) {
+            return redirect()->back()->with('error', 'Pesanan tidak dapat dibatalkan. Status: ' . $order->status->status_name);
+        }
+
+        // Update status to cancelled (status_id = 3 based on PaymentStatusSeeder)
+        $order->status_id = 3;
+        $order->save();
+
+        return redirect()->route('profile.show', ['id' => $userId])
+            ->with('success', 'Pesanan berhasil dibatalkan.');
     }
 }

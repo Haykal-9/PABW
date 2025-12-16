@@ -83,7 +83,7 @@ class CheckoutController extends Controller
 
         session()->forget('cart');
 
-        return redirect()->route('orders.show', $order->id)
+        return redirect()->route('profile.order.show', ['userId' => Auth::id(), 'orderId' => $order->id])
             ->with('success', 'Pesanan berhasil dibuat! Invoice #INV-' . str_pad($order->id, 4, '0', STR_PAD_LEFT));
 
     }

@@ -10,7 +10,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\OrderController;
 
 // Kasir Controllers
 use App\Http\Controllers\KasirController;
@@ -71,13 +70,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profil/{id}', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profil/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil/{id}', [ProfileController::class, 'update'])->name('profile.update');
-});
-
-// Routes untuk Order History & Detail (Customer)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
-    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    
+    // Order History & Detail (in Profile)
+    Route::get('/profil/{userId}/pesanan/{orderId}', [ProfileController::class, 'showOrder'])->name('profile.order.show');
+    Route::post('/profil/{userId}/pesanan/{orderId}/cancel', [ProfileController::class, 'cancelOrder'])->name('profile.order.cancel');
 });
 
 
