@@ -49,7 +49,28 @@
                     </li>
                 @endauth
 
-                <!-- Cart with Badge -->
+                <!-- Notifications with Badge -->
+                @auth
+                    <li class="nav-item">
+                        <a class="nav-link position-relative px-3 py-2 d-flex align-items-center" href="{{ route('notifications.index') }}"
+                            style="color: #704214; transition: all 0.3s ease;" id="notificationBell">
+                            <i class="fas fa-bell" style="color: #8B6F47;"></i>
+                            <span class="ms-2">Notifikasi</span>
+                            
+                            @php
+                                $unreadCount = Auth::check() ? \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->count() : 0;
+                            @endphp
+                            
+                            @if($unreadCount > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" id="notificationBadge"
+                                    style="background: linear-gradient(135deg, #DC3545, #C82333); color: white; font-weight: 700; border: 1px solid #8B6F47;">
+                                    {{ $unreadCount }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+                @endauth
+
                 <!-- Cart with Badge -->
                 @auth
                     <li class="nav-item">
@@ -130,4 +151,58 @@
         transform: scale(1.02);
         transition: all 0.3s ease;
     }
+
+    /* Notification bell animation */
+    @keyframes bellRing {
+        0%, 100% { transform: rotate(0deg); }
+        10%, 30% { transform: rotate(-10deg); }
+        20%, 40% { transform: rotate(10deg); }
+    }
+
+    #notificationBell:hover .fa-bell {
+        animation: bellRing 0.5s ease-in-out;
+    }
+
+    /* Badge pulse animation */
+    @keyframes badgePulse {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); }
+        50% { transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    #notificationBadge {
+        animation: badgePulse 2s infinite;
+    }
 </style>
+
+@auth
+<script>
+    // Auto-update notification count every 30 seconds
+    setInterval(function() {
+        fetch('{{ route("notifications.unreadCount") }}')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('notificationBadge');
+                const bell = document.getElementById('notificationBell');
+                
+                if (data.count > 0) {
+                    if (!badge) {
+                        // Create badge if it doesn't exist
+                        const newBadge = document.createElement('span');
+                        newBadge.id = 'notificationBadge';
+                        newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill';
+                        newBadge.style.cssText = 'background: linear-gradient(135deg, #DC3545, #C82333); color: white; font-weight: 700; border: 1px solid #8B6F47;';
+                        newBadge.textContent = data.count;
+                        bell.appendChild(newBadge);
+                    } else {
+                        badge.textContent = data.count;
+                    }
+                } else {
+                    if (badge) {
+                        badge.remove();
+                    }
+                }
+            })
+            .catch(error => console.error('Error fetching notification count:', error));
+    }, 30000); // Update every 30 seconds
+</script>
+@endauth

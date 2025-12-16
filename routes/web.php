@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\NotificationController;
 
 // Kasir Controllers
 use App\Http\Controllers\KasirController;
@@ -77,6 +78,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Reservation Cancellation (in Profile)
     Route::post('/profil/{userId}/reservasi/{reservationId}/cancel', [ProfileController::class, 'cancelReservation'])->name('profile.reservation.cancel');
+    
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unreadCount');
 });
 
 
