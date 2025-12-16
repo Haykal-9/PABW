@@ -4,7 +4,7 @@
 <div class="container mx-auto px-4 py-8 max-w-4xl">
     {{-- Back Button --}}
     <div class="mb-6">
-        <a href="{{ route('orders.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">
+        <a href="{{ route('profile.show', ['id' => Auth::id()]) }}#orders" class="text-amber-600 hover:text-amber-700 font-medium">
             <i class="fas fa-arrow-left mr-2"></i>Kembali ke Riwayat Pesanan
         </a>
     </div>
@@ -158,14 +158,14 @@
             </div>
 
             {{-- Action Buttons --}}
-            <div class="mt-8 pt-6 border-t border-gray-200 flex flex-wrap gap-3">
+            <div class="mt-8 pt-6 border-t border-gray-200 flex flex-wrap gap-3 no-print">
                 <button onclick="window.print()" 
                         class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                     <i class="fas fa-print mr-2"></i>Cetak Invoice
                 </button>
 
                 @if($order->status_id == 2)
-                    <form action="{{ route('orders.cancel', $order->id) }}" method="POST" class="inline"
+                    <form action="{{ route('profile.order.cancel', ['userId' => Auth::id(), 'orderId' => $order->id]) }}" method="POST" class="inline"
                           onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')">
                         @csrf
                         <button type="submit" 
@@ -207,7 +207,7 @@
             left: 0;
             top: 0;
         }
-        button, .no-print {
+        .no-print {
             display: none !important;
         }
     }
