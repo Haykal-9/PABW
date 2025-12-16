@@ -13,6 +13,7 @@ use App\Http\Controllers\AuthController;
 
 // Kasir Controllers
 use App\Http\Controllers\KasirController;
+use App\Http\Controllers\KasirRiwayatController;
 use App\Http\Controllers\KasirReservasiController;
 use App\Http\Controllers\KasirNotifikasiController;
 use App\Http\Controllers\KasirProfileController;
@@ -53,27 +54,27 @@ Route::delete('/cart/remove', [CartController::class, 'removeCart'])->name('cart
 Route::middleware(['auth'])->group(function () {
     // Favorite
     Route::post('/menu/{id}/favorite', [MenuController::class, 'favorite'])->name('menu.favorite');
-    
+
     // Review
     Route::post('/menu/{id}/review', [ReviewController::class, 'store'])->name('menu.review.store');
-    
+
     // Reservasi
     Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
     Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
-    
+
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-    
+
     // Profile (with authorization check in controller)
     Route::get('/profil/{id}', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profil/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil/{id}', [ProfileController::class, 'update'])->name('profile.update');
-    
+
     // Order History & Detail (in Profile)
     Route::get('/profil/{userId}/pesanan/{orderId}', [ProfileController::class, 'showOrder'])->name('profile.order.show');
     Route::post('/profil/{userId}/pesanan/{orderId}/cancel', [ProfileController::class, 'cancelOrder'])->name('profile.order.cancel');
-    
+
     // Reservation Cancellation (in Profile)
     Route::post('/profil/{userId}/reservasi/{reservationId}/cancel', [ProfileController::class, 'cancelReservation'])->name('profile.reservation.cancel');
 });
@@ -82,7 +83,7 @@ Route::middleware(['auth'])->group(function () {
 // Routes untuk Admin via Middleware CheckRole
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    
+
     // --- ROUTES CRUD MENU ---
     Route::get('/admin/menu', [AdminMenuController::class, 'index'])->name('admin.menu');
     Route::post('/admin/menu', [AdminMenuController::class, 'store'])->name('admin.menu.store');
@@ -113,7 +114,7 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     // Main Kasir (KasirController)
     Route::get('/kasir/kasir', [KasirController::class, 'index'])->name('kasir.index');
     Route::post('/kasir/process-payment', [KasirController::class, 'processPayment'])->name('kasir.processPayment');
-    Route::get('/kasir/riwayat', [KasirController::class, 'riwayat'])->name('kasir.riwayat');
+    Route::get('/kasir/riwayat', [KasirRiwayatController::class, 'index'])->name('kasir.riwayat');
 
     // Reservasi Management (KasirReservasiController)
     Route::get('/kasir/reservasi', [KasirReservasiController::class, 'index'])->name('kasir.reservasi');
