@@ -57,9 +57,6 @@ class ReservasiController extends Controller
         return redirect()->route('reservasi.create')->with('success', 'Reservasi berhasil dibuat! Kode reservasi Anda: ' . $kode . '. Tunggu konfirmasi dari kasir.');
     }
 
-    /**
-     * Cancel reservation (can be called from profile page)
-     */
     public function cancel($id)
     {
         // Check authentication
