@@ -6,12 +6,13 @@ Sequence diagram ini menunjukkan alur proses **Login** pada aplikasi Tapal Kuda.
 
 ## Aktor dan Komponen
 
-| Komponen | Deskripsi |
-|----------|-----------|
-| **User** | Pengguna yang ingin login ke sistem |
-| **LoginView** | Halaman login (login.blade.php) |
-| **AuthController** | Controller yang menangani autentikasi |
-| **User Model** | Model User untuk query database |
+| Komponen | Notasi | Deskripsi |
+|----------|--------|-----------|
+| **User** | Actor | Pengguna yang ingin login ke sistem |
+| **:V_homepage** | View | Halaman utama (homepage.blade.php) |
+| **:V_login** | View | Halaman login (login.blade.php) |
+| **:C_Auth** | Controller | AuthController untuk autentikasi |
+| **:M_Users** | Model | Model User untuk query database |
 
 ---
 
@@ -19,47 +20,21 @@ Sequence diagram ini menunjukkan alur proses **Login** pada aplikasi Tapal Kuda.
 
 ```mermaid
 sequenceDiagram
-    autonumber
-    
-    actor User as User
-    participant View as LoginView<br/>(login.blade.php)
-    participant Controller as AuthController
-    participant Model as User Model
+    actor User
+    participant V_homepage as :V_homepage
+    participant V_login as :V_login
+    participant C_Auth as :C_Auth
+    participant M_Users as :M_Users
 
-    %% Show Login Page
-    rect rgb(240, 248, 255)
-        Note over User, View: Menampilkan Halaman Login
-        User->>Controller: GET /login
-        Controller->>View: return view('login')
-        View-->>User: Tampilkan form login
-    end
+    User->>V_homepage: 1. menekan tombol login
+    V_homepage->>C_Auth: 2. showLogin()
+    C_Auth->>V_login: 3. return view login
+    V_login-->>User: return view login
 
-    %% Submit Login
-    rect rgb(255, 250, 240)
-        Note over User, Model: Proses Login
-        User->>Controller: POST /login (username, password)
-        Controller->>Model: where('username', $username)->first()
-        Model-->>Controller: $user / null
-    end
-
-    %% Validation
-    alt User ditemukan dan password benar
-        rect rgb(220, 255, 220)
-            Note over Controller, User: Login Berhasil
-            alt role_id = 1 (Admin)
-                Controller-->>User: Redirect to /admin/dashboard
-            else role_id = 2 (Kasir)
-                Controller-->>User: Redirect to /kasir
-            else role_id = 3 (Customer)
-                Controller-->>User: Redirect to /
-            end
-        end
-    else User tidak ditemukan atau password salah
-        rect rgb(255, 220, 220)
-            Note over Controller, User: Login Gagal
-            Controller-->>User: Redirect to /login + error message
-        end
-    end
+    User->>C_Auth: 4. input username & password
+    C_Auth->>M_Users: 5. processLogin(request)
+    M_Users-->>C_Auth: return user data
+    C_Auth-->>User: 6. redirect sesuai role
 ```
 
 ---
