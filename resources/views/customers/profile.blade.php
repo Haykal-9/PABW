@@ -21,8 +21,11 @@
                         <p class="text-muted mb-0">{{ $user->email }}</p>
                     </div>
                     <div class="ms-auto">
-                        <a href="{{ route('profile.edit', ['id' => $user->id]) }}" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ route('profile.edit', ['id' => $user->id]) }}" class="btn btn-outline-primary btn-sm me-2">
                             <i class="fas fa-edit me-1"></i> Edit Profil
+                        </a>
+                        <a href="/logout" class="btn btn-outline-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin logout?')">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
                         </a>
                     </div>
                 </div>

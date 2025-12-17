@@ -14,7 +14,6 @@ class CheckoutController extends Controller
 {
     public function index()
     {
-        // Check if user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login untuk melakukan checkout.');
         }

@@ -50,13 +50,6 @@ class AuthController extends Controller
         $user = User::where('username', $request->username)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
-            // Auth::login($user); // Manual login needed since we are not using standard Auth::attempt here with 'web' guard automatically? 
-            // Wait, Hash::check confirms password but doesn't log them in. 
-            // We should use Auth::login($user) or regenerate session if not using Auth::attempt.
-            // However, the original code didn't show Auth::login, it just redirected. 
-            // Laravel's standard way is Auth::attempt. 
-            // Let's stick to the user's flow but ensure they are actually logged in.
-
             Auth::login($user); // Log the user in
             $request->session()->regenerate(); // Regenerate session to prevent fixation
 
@@ -78,9 +71,6 @@ class AuthController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        // Ensure cart is cleared (though invalidate() should do it)
-        // $request->session()->forget('cart'); 
 
         return redirect('/login')->with('success', 'Anda telah logout.');
     }
