@@ -3,50 +3,58 @@
 @section('admin_page_title', 'Data Pengguna')
 
 @section('admin_content')
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">Data Pengguna Sistem</h6>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddUser">
-            <i class="fas fa-plus"></i> Tambah User
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Data Pengguna Sistem</h4>
+        <p class="text-muted small mb-0">Kelola seluruh akun pengguna aplikasi.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#modalAddUser">
+            <i class="fas fa-plus me-1"></i> Tambah User
         </button>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Tanggal Terdaftar</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $user)
-                    {{-- Data role dan nama dihapus dari data-* karena tidak lagi dibutuhkan --}}
-                    <tr data-id="{{ $user['id'] }}">
-                        <td>{{ $user['id'] }}</td>
-                        <td>{{ $user['nama'] }}</td>
-                        <td>{{ $user['email'] }}</td>
-                        <td id="user-role-{{ $user['id'] }}">
-                             <span class="badge bg-{{ $user['role'] == 'Admin' ? 'info' : ($user['role'] == 'Kasir' ? 'warning' : 'secondary') }}">
-                                 {{ $user['role'] }}
-                             </span>
-                        </td>
-                        <td>{{ $user['terdaftar'] }}</td>
-                        <td>
-                            {{-- Hanya menyisakan tombol Hapus --}}
-                            <button class="btn btn-sm btn-danger btn-delete-user" data-id="{{ $user['id'] }}">
-                                <i class="fas fa-trash"></i> Hapus
-                            </button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+</div>
+
+<div class="card border-0 shadow-sm overflow-hidden">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <!-- <th class="ps-4 py-3 text-uppercase small fw-bold text-muted">ID</th> -->
+                    <th class="py-3 text-uppercase small fw-bold text-muted">Nama</th>
+                    <th class="py-3 text-uppercase small fw-bold text-muted">Email</th>
+                    <th class="py-3 text-uppercase small fw-bold text-muted">Role</th>
+                    <th class="py-3 text-uppercase small fw-bold text-muted">Tanggal Terdaftar</th>
+                    <th class="py-3 text-uppercase small fw-bold text-muted text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($users as $user)
+                <tr data-id="{{ $user['id'] }}">
+                    <!-- ID tidak ditampilkan -->
+                    <td>
+                        <div class="fw-bold">{{ $user['nama'] }}</div>
+                    </td>
+                    <td>
+                        <div class="small text-dark">{{ $user['email'] }}</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-{{ $user['role'] == 'Admin' ? 'info' : ($user['role'] == 'Kasir' ? 'warning' : 'secondary') }} px-3 py-2">
+                            {{ $user['role'] }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="small text-muted">{{ $user['terdaftar'] }}</span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-danger btn-delete-user" data-id="{{ $user['id'] }}">
+                            <i class="fas fa-trash"></i> Hapus
+                        </button>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 

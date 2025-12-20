@@ -7,7 +7,6 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\NotificationController;
@@ -100,12 +99,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // --- ROUTES CRUD USERS ---
     Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users');
     Route::post('/admin/users', [AdminUserController::class, 'store'])->name('admin.users.store');
-    Route::put('/admin/users/{id}', [AdminController::class, 'updateUserRole'])->name('admin.users.update');
+    // Route::put('/admin/users/{id}', [AdminController::class, 'updateUserRole'])->name('admin.users.update');
     Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
 
     // --- ROUTES CRUD RESERVATIONS ---
     Route::get('/admin/reservations', [AdminReservationController::class, 'index'])->name('admin.reservations');
-    Route::put('/admin/reservations/{id}', [AdminController::class, 'updateReservationStatus'])->name('admin.reservations.update');
+    // Route::put('/admin/reservations/{id}', [AdminController::class, 'updateReservationStatus'])->name('admin.reservations.update');
     Route::delete('/admin/reservations/{id}', [AdminReservationController::class, 'destroy'])->name('admin.reservations.destroy');
 
     // --- ROUTES CRUD RATINGS (HANYA DELETE) ---
@@ -114,6 +113,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // --- RIWAYAT PENJUALAN (READ ONLY) ---
     Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
+    Route::get('/admin/orders/report', [AdminOrderController::class, 'report'])->name('admin.orders.report');
 });
 
 // --- KASIR ROUTES ---
