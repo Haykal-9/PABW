@@ -3,148 +3,162 @@
 @section('title', 'Buat Reservasi')
 
 @section('content')
+    <section class="reservation-section min-vh-100 position-relative d-flex align-items-center py-5"
+        style="background: radial-gradient(circle at top right, #1f1a18, #0f0c0b); margin-top: 0px;">
 
-    <div class="container py-5 my-md-5">
-        <div class="row g-5 align-items-center">
+        <div class="container">
+            <div class="row g-0 rounded-4 overflow-hidden shadow-2xl"
+                style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);">
 
-            {{-- KOLOM KIRI: FORMULIR RESERVASI --}}
-            <div class="col-lg-6 order-lg-1 order-2" data-aos="fade-right">
+                {{-- LEFT COLUMN: ATMOSPHERIC VISUAL --}}
+                <div class="col-lg-5 position-relative min-vh-50 d-none d-lg-block">
+                    <div class="h-100 w-100 position-absolute top-0 start-0">
+                        <img src="{{ asset('tapalkuda/image.png') }}" class="w-100 h-100 object-fit-cover"
+                            alt="Interior Tapal Kuda">
+                        <div class="position-absolute top-0 start-0 w-100 h-100"
+                            style="background: linear-gradient(to right, rgba(0,0,0,0.3), rgba(15,12,11,1));"></div>
 
-                <h1 class="display-5 fw-bold text-primary-dark mb-3">Buat Reservasi</h1>
-                <p class="lead text-muted mb-4">
-                    Nikmati seni menyeduh kami. Isi detail reservasi Anda di bawah ini untuk memastikan tempat Anda
-                    tersedia.
-                </p>
-
-
-                {{-- Info Guest Mode --}}
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Mode Guest:</strong> Anda sedang melakukan reservasi menggunakan akun guest. Data akan disimpan
-                    dengan nama: <strong>{{ $user->nama ?? 'Guest User' }}</strong>
+                        <div class="position-absolute bottom-0 start-0 p-5 text-shadow-lg">
+                            <h2 class="display-6 font-serif text-gold fw-bold mb-2">Book Your Table</h2>
+                            <p class="text-light opacity-75 mb-0">Rasakan pengalaman kopi premium dengan suasana yang tak
+                                terlupakan.</p>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- Status Messages (Sukses/Error dari Controller) --}}
-                @if(session('success'))
-                    <div class="alert alert-success fw-bold">{{ session('success') }}</div>
-                @endif
-                @if(session('error'))
-                    <div class="alert alert-danger fw-bold">{{ session('error') }}</div>
-                @endif
+                {{-- MOBILE IMAGE --}}
+                <div class="col-12 d-lg-none position-relative">
+                    <img src="{{ asset('tapalkuda/image.png') }}" class="w-100 object-fit-cover" style="height: 250px;"
+                        alt="Interior">
+                    <div class="position-absolute bottom-0 start-0 w-100 h-100"
+                        style="background: linear-gradient(to top, #0f0c0b, transparent);"></div>
+                </div>
 
+                {{-- RIGHT COLUMN: FORM --}}
+                <div class="col-lg-7 p-4 p-md-5 d-flex flex-column justify-content-center">
 
-                {{-- Menampilkan Pesan Validasi Global --}}
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        Mohon periksa kembali input Anda.
-                    </div>
-                @endif
+                    <h1 class="font-serif text-light mb-4">Reservasi Tempat</h1>
 
-
-                <form method="POST" action="{{ route('reservasi.store') }}">
-                    @csrf
-                    <div class="row g-4">
-
-                        {{-- Baris 1: Nama & Telepon --}}
-                        <div class="col-md-6">
-                            <label for="name" class="form-label fw-semibold small">NAMA LENGKAP</label>
-                            {{-- Field Nama Pemesan --}}
-                            <input name="nama_pemesan" type="text"
-                                class="form-control form-control-lg rounded-0 border-dark" id="name" required
-                                value="{{ old('nama_pemesan', $user->nama ?? '') }}" placeholder="Nama Anda">
-                            @error('nama_pemesan') <div class="text-danger small">{{ $message }}</div> @enderror
+                    {{-- Validasi / Alert --}}
+                    @if(session('success'))
+                        <div
+                            class="alert alert-success border-0 bg-success bg-opacity-10 text-success mb-4 d-flex align-items-center">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <div>{{ session('success') }}</div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="phone" class="form-label fw-semibold small">TELEPON</label>
-                            {{-- Field Nomor Telepon --}}
-                            <input name="no_telp" type="text" class="form-control form-control-lg rounded-0 border-dark"
-                                id="phone" required value="{{ old('no_telp', $user->no_telp ?? '') }}" placeholder="+62...">
-                            @error('no_telp') <div class="text-danger small">{{ $message }}</div> @enderror
+                    @endif
+                    @if(session('error'))
+                        <div
+                            class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 d-flex align-items-center">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <div>{{ session('error') }}</div>
                         </div>
+                    @endif
 
-                        {{-- Baris 2: Email --}}
-                        <div class="col-12">
-                            <label for="email" class="form-label fw-semibold small">EMAIL</label>
-                            {{-- Field Email Pemesan --}}
-                            <input name="email_pemesan" type="email"
-                                class="form-control form-control-lg rounded-0 border-dark" id="email" required
-                                value="{{ old('email_pemesan', $user->email ?? '') }}" placeholder="email@contoh.com">
-                            @error('email_pemesan') <div class="text-danger small">{{ $message }}</div> @enderror
+                    <form method="POST" action="{{ route('reservasi.store') }}">
+                        @csrf
+                        <div class="row g-4">
+
+                            {{-- Hidden User Data (Auto-filled from Auth) --}}
+                            {{-- We assume user must be logged in so we don't need inputs for name/phone if we use what's in
+                            DB,
+                            BUT the original controller stores specific input fields.
+                            Since the user IS logged in, we can pre-fill comfortably. --}}
+
+                            {{-- Nama & Telepon (Pre-filled, Editable) --}}
+                            <div class="col-md-6">
+                                <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Nama Pemesan</label>
+                                <input name="nama_pemesan" type="text" class="form-control form-control-glass text-light"
+                                    required value="{{ old('nama_pemesan', $user->nama) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Telepon</label>
+                                <input name="no_telp" type="text" class="form-control form-control-glass text-light"
+                                    required value="{{ old('no_telp', $user->no_telp) }}">
+                            </div>
+
+                            {{-- Email --}}
+                            <div class="col-12">
+                                <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Email Konfirmasi</label>
+                                <input name="email_pemesan" type="email" class="form-control form-control-glass text-light"
+                                    required value="{{ old('email_pemesan', $user->email) }}">
+                            </div>
+
+                            {{-- Tanggal, Jam, Jumlah --}}
+                            <div class="col-md-4">
+                                <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Tanggal</label>
+                                <input name="tanggal_reservasi" type="date"
+                                    class="form-control form-control-glass text-light" required
+                                    value="{{ old('tanggal_reservasi') }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Jam</label>
+                                <input name="jam_reservasi" type="time" class="form-control form-control-glass text-light"
+                                    required value="{{ old('jam_reservasi') }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Jml. Orang</label>
+                                <input name="jumlah_orang" type="number" min="1"
+                                    class="form-control form-control-glass text-light" required
+                                    value="{{ old('jumlah_orang') }}" placeholder="Ex: 2">
+                            </div>
+
+                            {{-- Pesan --}}
+                            <div class="col-12">
+                                <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Catatan Khusus
+                                    (Opsional)</label>
+                                <textarea name="message" class="form-control form-control-glass text-light" rows="3"
+                                    placeholder="Contoh: Meja dekat jendela, High chair untuk bayi...">{{ old('message') }}</textarea>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit"
+                                    class="btn btn-gold w-100 py-3 rounded-0 fw-bold shadow-lg hover-scale transition-all text-uppercase ls-1">
+                                    Konfirmasi Reservasi
+                                </button>
+                            </div>
+
                         </div>
-
-                        {{-- Baris 3: Jumlah Orang --}}
-                        <div class="col-md-4">
-                            <label for="number_of_people" class="form-label fw-semibold small">JUMLAH ORANG</label>
-                            {{-- Field Jumlah Orang --}}
-                            <input name="jumlah_orang" type="number"
-                                class="form-control form-control-lg rounded-0 border-dark" id="number_of_people" min="1"
-                                required placeholder="Contoh: 4" value="{{ old('jumlah_orang') }}">
-                            @error('jumlah_orang') <div class="text-danger small">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Baris 4: Tanggal --}}
-                        <div class="col-md-4">
-                            <label for="date" class="form-label fw-semibold small">TANGGAL</label>
-                            {{-- Field Tanggal Reservasi --}}
-                            <input name="tanggal_reservasi" type="date"
-                                class="form-control form-control-lg rounded-0 border-dark" id="date" required
-                                value="{{ old('tanggal_reservasi') }}">
-                            @error('tanggal_reservasi') <div class="text-danger small">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Baris 5: Jam --}}
-                        <div class="col-md-4">
-                            <label for="hour" class="form-label fw-semibold small">JAM</label>
-                            {{-- Field Jam Reservasi --}}
-                            <input name="jam_reservasi" type="time"
-                                class="form-control form-control-lg rounded-0 border-dark" id="hour" required
-                                value="{{ old('jam_reservasi') }}">
-                            @error('jam_reservasi') <div class="text-danger small">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Baris 6: Pesan Tambahan --}}
-                        <div class="col-12">
-                            <label for="message" class="form-label fw-semibold small">PESAN (Opsional)</label>
-                            <textarea name="message" class="form-control form-control-lg rounded-0 border-dark" id="message"
-                                rows="3"
-                                placeholder="Contoh: Butuh meja di dekat jendela...">{{ old('message') }}</textarea>
-                            @error('message') <div class="text-danger small">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Tombol Submit --}}
-                        <div class="col-12 mt-4">
-                            <button type="submit"
-                                class="btn btn-primary-dark btn-lg w-100 px-5 py-3 fw-bold shadow-sm rounded-0">
-                                RESERVE A TABLE
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            {{-- KOLOM KANAN: VISUAL & INFORMASI TAMBAHAN --}}
-            <div class="col-lg-6 order-lg-2 order-1" data-aos="fade-left">
-                <div class="bg-light p-4 rounded-3 shadow">
-                    {{-- Gambar Besar --}}
-                    {{-- Asumsi path asset/bg/kopi.jpg ada di public --}}
-                    <img src="{{ asset('asset/bg/kopi.jpg') }}" class="img-fluid rounded mb-4 shadow-sm"
-                        alt="Kedai Kopi Tapal Kuda">
-
-                    {{-- Info Bantuan --}}
-                    <h4 class="fw-bold text-primary-dark mb-3">Informasi Penting</h4>
-                    <ul class="list-unstyled small text-muted">
-                        <li><i class="fas fa-clock text-primary-dark me-2"></i> Jam Operasional Reservasi: 09:00 - 20:00
-                            WIB.</li>
-                        <li><i class="fas fa-users text-primary-dark me-2"></i> Reservasi hanya untuk 4 orang atau lebih.
-                        </li>
-                        <li><i class="fas fa-calendar-check text-primary-dark me-2"></i> Konfirmasi akan dikirim ke email
-                            Anda dalam 1 jam.</li>
-                    </ul>
-                    <a href="{{ url('/contact') }}" class="btn btn-outline-primary-dark btn-sm rounded-0">Hubungi Kami</a>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <style>
+        .shadow-2xl {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .text-shadow-lg {
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .ls-1 {
+            letter-spacing: 1px;
+        }
+
+        .form-control-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 16px;
+        }
+
+        .form-control-glass:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent-gold);
+            color: white;
+            box-shadow: none;
+        }
+
+        /* Fix Date/Time Input Color in Dark Mode */
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+    </style>
 @endsection
 
 @push('scripts')

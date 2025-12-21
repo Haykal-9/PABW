@@ -1,87 +1,74 @@
-<header class="navbar navbar-expand-lg py-3"
-    style="background: linear-gradient(to bottom, #F5F1E8, #E8DCC4); border-bottom: 3px solid #D4AF37; box-shadow: 0 2px 10px rgba(92, 64, 51, 0.15);">
+<header class="navbar navbar-expand-lg py-3 sticky-top navbar-glass">
     <div class="container">
-        <!-- Brand Logo dengan Ornamental -->
-        <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}"
-            style="font-family: 'Playfair Display', serif; color: #704214; font-weight: 700; letter-spacing: 1.5px; font-size: 1.8rem;">
-            TapalKuda
+        <!-- Brand Logo -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
+            <i class="fas fa-coffee text-gold fs-4"></i>
+            <span class="font-serif fw-bold text-gold fs-4 tracking-wider">TapalKuda</span>
         </a>
 
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="color: #704214;">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler border-0 text-gold" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars fs-3"></i>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center gap-1">
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
 
                 <li class="nav-item">
-                    <a class="nav-link fw-semibold px-3 py-2" href="{{ url('/home') }}"
-                        style="color: #704214; transition: all 0.3s ease; position: relative;">
-                        Home
+                    <a class="nav-link px-3 d-flex align-items-center" href="{{ url('/home') }}">
+                        <i class="fas fa-home me-2 text-gold opacity-75"></i> Home
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link fw-semibold px-3 py-2" href="{{ url('/menu') }}"
-                        style="color: #704214; transition: all 0.3s ease; position: relative;">
-                        Menu
+                    <a class="nav-link px-3 d-flex align-items-center" href="{{ url('/menu') }}">
+                        <i class="fas fa-book-open me-2 text-gold opacity-75"></i> Menu
                     </a>
                 </li>
 
                 @auth
                     <li class="nav-item">
-                        <a class="nav-link fw-semibold px-3 py-2" href="{{ route('reservasi.create') }}"
-                            style="color: #704214; transition: all 0.3s ease; position: relative;">
-                            <i class="fas fa-calendar-alt" style="color: #8B6F47;"></i>
-                            <span class="ms-2">Reservasi</span>
+                        <a class="nav-link px-3 d-flex align-items-center" href="{{ route('reservasi.create') }}">
+                            <i class="fas fa-calendar-alt me-2 text-gold opacity-75"></i> Reservasi
                         </a>
                     </li>
-                @endauth
 
-                @auth
                     <li class="nav-item">
-                        <a class="nav-link fw-semibold px-3 py-2" href="{{ url('/profil/' . Auth::id()) }}"
-                            style="color: #704214; transition: all 0.3s ease; position: relative;">
-                            <i class="fas fa-user" style="color: #8B6F47;"></i>
-                            <span class="ms-2">Profile</span>
+                        <a class="nav-link px-3 d-flex align-items-center" href="{{ url('/profil/' . Auth::id()) }}">
+                            <i class="fas fa-user me-2 text-gold opacity-75"></i> Profile
                         </a>
                     </li>
-                @endauth
 
-                <!-- Notifications with Badge -->
-                @auth
+                    <!-- Notifications -->
                     <li class="nav-item">
-                        <a class="nav-link position-relative px-3 py-2 d-flex align-items-center" href="{{ route('notifications.index') }}"
-                            style="color: #704214; transition: all 0.3s ease;" id="notificationBell">
-                            <i class="fas fa-bell" style="color: #8B6F47;"></i>
-                            <span class="ms-2">Notifikasi</span>
-                            
+                        <a class="nav-link px-3 d-flex align-items-center position-relative"
+                            href="{{ route('notifications.index') }}" id="notificationBell">
+                            <i class="fas fa-bell text-gold opacity-75"></i>
+                            <span class="d-lg-none ms-2">Notifikasi</span>
+
                             @php
                                 $unreadCount = Auth::check() ? \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->count() : 0;
                             @endphp
-                            
+
                             @if($unreadCount > 0)
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" id="notificationBadge"
-                                    style="background: linear-gradient(135deg, #DC3545, #C82333); color: white; font-weight: 700; border: 1px solid #8B6F47;">
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-dark"
+                                    id="notificationBadge">
                                     {{ $unreadCount }}
                                 </span>
                             @endif
                         </a>
                     </li>
-                @endauth
 
-                <!-- Cart with Badge -->
-                @auth
+                    <!-- Cart -->
                     <li class="nav-item">
-                        <a class="nav-link position-relative px-3 py-2 d-flex align-items-center" href="{{ url('/cart') }}"
-                            style="color: #704214; transition: all 0.3s ease;">
-                            <i class="fas fa-shopping-cart" style="color: #8B6F47;"></i>
-                            <span class="ms-2">Keranjang</span>
+                        <a class="nav-link px-3 d-flex align-items-center position-relative" href="{{ url('/cart') }}">
+                            <i class="fas fa-shopping-cart text-gold opacity-75"></i>
+                            <span class="d-lg-none ms-2">Keranjang</span>
 
                             @if(session('cart') && count(session('cart')) > 0)
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                                    style="background: linear-gradient(135deg, #D4AF37, #CFB53B); color: #2C2416; font-weight: 700; border: 1px solid #8B6F47;">
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gold text-dark border border-dark">
                                     {{ count(session('cart')) }}
                                 </span>
                             @endif
@@ -89,15 +76,10 @@
                     </li>
                 @endauth
 
-                <!-- Login Button with Vintage Style (Only for Guests) -->
+                <!-- Login Button -->
                 @guest
-                    <li class="nav-item ms-lg-2">
-                        <a class="btn px-4 py-2 fw-bold" href="{{ url('/login') }}" style="background: linear-gradient(135deg, #8B6F47, #704214); 
-                                                  color: #F5F1E8; 
-                                                  border: 2px solid #D4AF37; 
-                                                  letter-spacing: 0.5px;
-                                                  transition: all 0.3s ease;
-                                                  box-shadow: 0 2px 8px rgba(112, 66, 20, 0.2);">
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-gold px-4 py-2" href="{{ url('/login') }}">
                             Login
                         </a>
                     </li>
@@ -107,102 +89,70 @@
     </div>
 </header>
 
-<!-- Ornamental Divider -->
+<!-- Ornamental Divider (Glass Style) -->
 <div
-    style="width: 100%; height: 1px; background: linear-gradient(to right, transparent, #D4AF37, transparent); position: relative;">
-    <div
-        style="position: absolute; left: 50%; transform: translateX(-50%) translateY(-50%); background: #F5F1E8; padding: 0 15px; color: #D4AF37; font-size: 12px;">
-        ❦
+    style="width: 100%; height: 1px; background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5), transparent); position: relative;">
+    <div class="position-absolute top-50 start-50 translate-middle bg-dark text-gold px-2 fs-6">
+        ✦
     </div>
 </div>
 
 <style>
-    /* Hover effects for nav links */
-    .nav-link::after {
-        content: '';
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        height: 2px;
-        background: #D4AF37;
-        transition: width 0.3s ease;
+    /* Custom Badge for Header */
+    .bg-gold {
+        background-color: var(--accent-gold);
+        color: #000;
     }
 
-    .nav-link:hover::after {
-        width: 70%;
-    }
-
-    .nav-link:hover {
-        color: #8B6F47 !important;
-    }
-
-    /* Login button hover */
-    .btn:hover {
-        background: linear-gradient(135deg, #704214, #5C4033) !important;
-        color: #D4AF37 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(112, 66, 20, 0.3) !important;
-    }
-
-    /* Navbar brand hover */
-    .navbar-brand:hover {
-        color: #8B6F47 !important;
-        transform: scale(1.02);
-        transition: all 0.3s ease;
-    }
-
-    /* Notification bell animation */
+    /* Animation for Bell */
     @keyframes bellRing {
-        0%, 100% { transform: rotate(0deg); }
-        10%, 30% { transform: rotate(-10deg); }
-        20%, 40% { transform: rotate(10deg); }
+
+        0%,
+        100% {
+            transform: rotate(0deg);
+        }
+
+        10%,
+        30% {
+            transform: rotate(-10deg);
+        }
+
+        20%,
+        40% {
+            transform: rotate(10deg);
+        }
     }
 
     #notificationBell:hover .fa-bell {
         animation: bellRing 0.5s ease-in-out;
     }
-
-    /* Badge pulse animation */
-    @keyframes badgePulse {
-        0%, 100% { transform: translate(-50%, -50%) scale(1); }
-        50% { transform: translate(-50%, -50%) scale(1.1); }
-    }
-
-    #notificationBadge {
-        animation: badgePulse 2s infinite;
-    }
 </style>
 
 @auth
-<script>
-    // Auto-update notification count every 30 seconds
-    setInterval(function() {
-        fetch('{{ route("notifications.unreadCount") }}')
-            .then(response => response.json())
-            .then(data => {
-                const badge = document.getElementById('notificationBadge');
-                const bell = document.getElementById('notificationBell');
-                
-                if (data.count > 0) {
-                    if (!badge) {
-                        // Create badge if it doesn't exist
-                        const newBadge = document.createElement('span');
-                        newBadge.id = 'notificationBadge';
-                        newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill';
-                        newBadge.style.cssText = 'background: linear-gradient(135deg, #DC3545, #C82333); color: white; font-weight: 700; border: 1px solid #8B6F47;';
-                        newBadge.textContent = data.count;
-                        bell.appendChild(newBadge);
+    <script>
+        // Auto-update notification count
+        setInterval(function () {
+            fetch('{{ route("notifications.unreadCount") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('notificationBadge');
+                    const bell = document.getElementById('notificationBell');
+
+                    if (data.count > 0) {
+                        if (!badge) {
+                            const newBadge = document.createElement('span');
+                            newBadge.id = 'notificationBadge';
+                            newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-dark';
+                            newBadge.textContent = data.count;
+                            bell.appendChild(newBadge);
+                        } else {
+                            badge.textContent = data.count;
+                        }
                     } else {
-                        badge.textContent = data.count;
+                        if (badge) badge.remove();
                     }
-                } else {
-                    if (badge) {
-                        badge.remove();
-                    }
-                }
-            })
-            .catch(error => console.error('Error fetching notification count:', error));
-    }, 30000); // Update every 30 seconds
-</script>
+                })
+                .catch(error => console.error('Error fetching notification count:', error));
+        }, 30000);
+    </script>
 @endauth

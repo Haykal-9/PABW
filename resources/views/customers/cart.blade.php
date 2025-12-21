@@ -1,96 +1,113 @@
 @extends('customers.layouts.app')
 
-@section('title', 'Keranjang Belanja')
+@section('title', 'Shopping Cart')
 
 @section('content')
-
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show container mt-3" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    <section class="cart-section py-5">
+    <div class="min-vh-100 py-5"
+        style="background: radial-gradient(circle at top right, #1f1a18, #0f0c0b); padding-top: 100px !important;">
         <div class="container">
-            <h2 class="fw-bold text-primary-dark mb-4"><i class="fas fa-shopping-cart me-2"></i>Keranjang Saya</h2>
+            {{-- Header --}}
+            <div class="mb-5 border-bottom border-white border-opacity-10 pb-3">
+                <h1 class="font-serif text-light display-6 fw-bold mb-1">My Cart</h1>
+                <p class="text-dim small mb-0">Review your selected items before checkout</p>
+            </div>
+
+            @if(session('success'))
+                <div class="alert alert-success bg-success bg-opacity-10 text-success border-0 mb-4 rounded-0">
+                    <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
 
             @if(session('cart') && count(session('cart')) > 0)
-                <div class="row">
+                <div class="row g-4">
 
-                    <!-- KOLOM KIRI: DAFTAR ITEM -->
+                    <!-- LEFT COLUMN: ITEMS LIST -->
                     <div class="col-lg-8">
-                        <div class="card shadow-sm border-0 mb-4">
+                        <div class="glass-card overflow-hidden mb-4">
                             <div class="card-body p-0">
                                 <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="bg-light">
-                                            <tr>
+                                    <table class="table table-borderless align-middle mb-0 custom-glass-table">
+                                        <thead style="background: rgba(212, 175, 55, 0.1);">
+                                            <tr class="text-gold x-small fw-bold text-uppercase ls-1">
                                                 <th scope="col" class="py-3 ps-4">Menu</th>
-                                                <th scope="col" class="py-3">Harga</th>
-                                                <th scope="col" class="py-3">Jumlah</th>
-                                                <th scope="col" class="py-3">Subtotal</th>
-                                                <th scope="col" class="py-3">Catatan</th>
-                                                <th scope="col" class="py-3 text-end pe-4">Aksi</th>
+                                                <th scope="col" class="py-3 text-center">Price</th>
+                                                <th scope="col" class="py-3 text-center">Qty</th>
+                                                <th scope="col" class="py-3 text-center">Subtotal</th>
+                                                <th scope="col" class="py-3 ps-4" style="width: 200px;">Note</th>
+                                                <th scope="col" class="py-3 text-end pe-4">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach(session('cart') as $id => $details)
-                                                <tr>
-                                                    <td class="ps-4">
+                                                <tr class="border-bottom border-white border-opacity-5 hover-bg-glass">
+                                                    <td class="ps-4 py-4">
                                                         <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('foto/' . $details['photo']) }}"
-                                                                alt="{{ $details['name'] }}" class="rounded me-3"
-                                                                style="width: 60px; height: 60px; object-fit: cover;">
-                                                            <div>
-                                                                <h6 class="mb-0 fw-bold">{{ $details['name'] }}</h6>
+                                                            <div class="position-relative flex-shrink-0">
+                                                                <img src="{{ asset('foto/' . $details['photo']) }}"
+                                                                    alt="{{ $details['name'] }}"
+                                                                    class="rounded shadow-sm object-fit-cover"
+                                                                    style="width: 60px; height: 60px;">
+                                                            </div>
+                                                            <div class="ms-3">
+                                                                <h6 class="mb-0 fw-bold text-light text-nowrap">
+                                                                    {{ $details['name'] }}</h6>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>Rp {{ number_format($details['price'], 0, ',', '.') }}</td>
-                                                    <td style="width: 150px;">
-                                                        <div class="input-group input-group-sm">
-
+                                                    <td class="text-center text-dim">Rp
+                                                        {{ number_format($details['price'], 0, ',', '.') }}</td>
+                                                    <td style="width: 140px;">
+                                                        <div
+                                                            class="input-group input-group-sm bg-transparent border border-white border-opacity-10 rounded">
                                                             <form action="{{ route('cart.update') }}" method="POST"
-                                                                class="d-inline">
+                                                                class="d-contents">
                                                                 @csrf
                                                                 @method('PATCH')
                                                                 <input type="hidden" name="id" value="{{ $id }}">
                                                                 <input type="hidden" name="quantity"
                                                                     value="{{ $details['quantity'] - 1 }}">
-                                                                <button type="submit" class="btn btn-outline-secondary" {{ $details['quantity'] <= 1 ? 'disabled' : '' }}>-</button>
+                                                                <button type="submit"
+                                                                    class="btn btn-link text-dim text-decoration-none px-2 py-1 hover-text-white"
+                                                                    {{ $details['quantity'] <= 1 ? 'disabled' : '' }}>
+                                                                    <i class="fas fa-minus x-small"></i>
+                                                                </button>
                                                             </form>
 
-                                                            <input type="text" class="form-control text-center bg-white"
-                                                                value="{{ $details['quantity'] }}" readonly>
+                                                            <input type="text"
+                                                                class="form-control form-control-sm bg-transparent border-0 text-center text-light p-0"
+                                                                value="{{ $details['quantity'] }}" readonly style="height: 30px;">
 
                                                             <form action="{{ route('cart.update') }}" method="POST"
-                                                                class="d-inline">
+                                                                class="d-contents">
                                                                 @csrf
                                                                 @method('PATCH')
                                                                 <input type="hidden" name="id" value="{{ $id }}">
                                                                 <input type="hidden" name="quantity"
                                                                     value="{{ $details['quantity'] + 1 }}">
-                                                                <button type="submit" class="btn btn-outline-secondary">+</button>
+                                                                <button type="submit"
+                                                                    class="btn btn-link text-dim text-decoration-none px-2 py-1 hover-text-white">
+                                                                    <i class="fas fa-plus x-small"></i>
+                                                                </button>
                                                             </form>
                                                         </div>
                                                     </td>
-                                                    <td class="fw-bold text-primary-dark">
+                                                    <td class="text-center fw-bold text-light">
                                                         Rp
                                                         {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}
                                                     </td>
-                                                    <td style="min-width: 150px;">
+                                                    <td class="ps-4">
                                                         <form action="{{ route('cart.update.note') }}" method="POST">
                                                             @csrf
                                                             @method('PATCH')
                                                             <input type="hidden" name="id" value="{{ $id }}">
                                                             <div class="input-group input-group-sm">
-                                                                <input type="text" 
-                                                                       name="note" 
-                                                                       class="form-control form-control-sm" 
-                                                                       placeholder="Tambah catatan..."
-                                                                       value="{{ $details['note'] ?? '' }}">
-                                                                <button type="submit" class="btn btn-sm btn-outline-secondary" title="Simpan Catatan">
+                                                                <input type="text" name="note"
+                                                                    class="form-control form-control-sm bg-transparent border-secondary text-light placeholder-dim"
+                                                                    placeholder="Add note..." value="{{ $details['note'] ?? '' }}"
+                                                                    style="border-color: rgba(255,255,255,0.1);">
+                                                                <button type="submit" class="btn btn-sm btn-outline-glass"
+                                                                    title="Save Note">
                                                                     <i class="fas fa-check"></i>
                                                                 </button>
                                                             </div>
@@ -101,8 +118,9 @@
                                                             @csrf
                                                             @method('DELETE')
                                                             <input type="hidden" name="id" value="{{ $id }}">
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                                title="Hapus">
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-link text-danger opacity-75 hover-opacity-100 p-0"
+                                                                title="Remove Item">
                                                                 <i class="fas fa-trash-alt"></i>
                                                             </button>
                                                         </form>
@@ -115,30 +133,31 @@
                             </div>
                         </div>
 
-                        <a href="{{ url('/menu') }}" class="btn btn-outline-dark">
-                            <i class="fas fa-arrow-left me-2"></i> Lanjut Belanja
+                        <a href="{{ url('/menu') }}" class="text-decoration-none text-dim hover-text-gold transition-all">
+                            <i class="fas fa-arrow-left me-2"></i> Continue Shopping
                         </a>
                     </div>
 
-                    <!-- KOLOM KANAN: RINGKASAN BELANJA -->
+                    <!-- RIGHT COLUMN: SUMMARY -->
                     <div class="col-lg-4">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-header bg-white py-3">
-                                <h5 class="mb-0 fw-bold">Ringkasan Pesanan</h5>
+                        <div class="glass-card position-sticky" style="top: 100px;">
+                            <div class="card-header bg-transparent py-4 border-bottom border-white border-opacity-10">
+                                <h5 class="mb-0 fw-bold text-light font-serif">Order Summary</h5>
                             </div>
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Total Item</span>
-                                    <span class="fw-bold">{{ count(session('cart')) }}</span>
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between mb-3 text-dim small">
+                                    <span>Total Items</span>
+                                    <span>{{ count(session('cart')) }}</span>
                                 </div>
-                                <div class="d-flex justify-content-between mb-4">
-                                    <span class="text-muted">Total Harga</span>
-                                    <span class="fw-bold fs-5 text-primary-dark">Rp
+                                <div class="d-flex justify-content-between mb-4 align-items-center">
+                                    <span class="text-light">Total Amount</span>
+                                    <span class="fw-bold fs-4 text-gold font-serif">Rp
                                         {{ number_format($total, 0, ',', '.') }}</span>
                                 </div>
-                                <hr>
-                                <a href="{{ url('/checkout') }}" class="btn btn-primary-dark w-100 py-2 fw-bold">
-                                    Checkout Sekarang <i class="fas fa-arrow-right ms-2"></i>
+                                <hr class="border-white border-opacity-10 mb-4">
+                                <a href="{{ url('/checkout') }}"
+                                    class="btn btn-gold w-100 py-3 fw-bold text-uppercase ls-1 shimmer-effect">
+                                    Checkout Now <i class="fas fa-arrow-right ms-2"></i>
                                 </a>
                             </div>
                         </div>
@@ -146,18 +165,125 @@
 
                 </div>
             @else
-                <div class="text-center py-5">
+                <div class="glass-card p-5 text-center my-5 mx-auto" style="max-width: 600px;">
                     <div class="mb-4">
-                        <i class="fas fa-shopping-basket fa-5x text-muted opacity-25"></i>
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle border border-gold border-opacity-25 p-4"
+                            style="width: 100px; height: 100px; background: rgba(212, 175, 55, 0.05);">
+                            <i class="fas fa-shopping-basket fa-3x text-gold opacity-75"></i>
+                        </div>
                     </div>
-                    <h3 class="text-muted fw-bold">Keranjang Anda Kosong</h3>
-                    <p class="text-muted mb-4">Sepertinya Anda belum memesan menu apapun.</p>
-                    <a href="{{ url('/menu') }}" class="btn btn-primary-dark px-4 py-2 rounded-pill">
-                        Mulai Pesan Menu
+                    <h3 class="text-light fw-bold font-serif mb-2">Your Cart is Empty</h3>
+                    <p class="text-dim mb-4">Looks like you haven't added anything to your cart yet.</p>
+                    <a href="{{ url('/menu') }}" class="btn btn-outline-glass px-4 py-2 rounded-pill">
+                        Start Ordering
                     </a>
                 </div>
             @endif
         </div>
-    </section>
+    </div>
 
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .custom-glass-table {
+            background: transparent !important;
+        }
+
+        .custom-glass-table th,
+        .custom-glass-table td {
+            background: transparent !important;
+            color: #fff !important;
+        }
+
+        .custom-glass-table .text-dim {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .hover-bg-glass:hover td {
+            background: rgba(255, 255, 255, 0.02) !important;
+        }
+
+        .text-dim {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .x-small {
+            font-size: 0.75rem;
+        }
+
+        .ls-1 {
+            letter-spacing: 1px;
+        }
+
+        .w-20 {
+            width: 20px;
+            text-align: center;
+        }
+
+        .btn-outline-glass {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            background: transparent;
+        }
+
+        .btn-outline-glass:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-gold {
+            background: linear-gradient(45deg, #d4af37, #f2d06b);
+            color: #000;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(45deg, #c5a028, #e1c05b);
+            color: #000;
+            transform: translateY(-1px);
+        }
+
+        /* Shimmer Effect */
+        .shimmer-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: skewX(-25deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                left: 200%;
+            }
+        }
+
+        .hover-text-gold:hover {
+            color: var(--accent-gold) !important;
+        }
+
+        .hover-text-white:hover {
+            color: #fff !important;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .placeholder-dim::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
 @endsection

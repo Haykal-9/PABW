@@ -44,14 +44,15 @@ Route::post('/register', [AuthController::class, 'processRegister']);
 // Routes untuk Pengguna (Customer) - Public Routes
 Route::get('/menu', [MenuController::class, 'menu'])->name('menu');
 Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.detail');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
-Route::patch('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
-Route::patch('/cart/update-note', [CartController::class, 'updateNote'])->name('cart.update.note');
-Route::delete('/cart/remove', [CartController::class, 'removeCart'])->name('cart.remove');
-
 // Routes untuk Pengguna (Customer) - Requires Authentication
 Route::middleware(['auth'])->group(function () {
+    // CART ROUTES (Moved here to force login)
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::patch('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
+    Route::patch('/cart/update-note', [CartController::class, 'updateNote'])->name('cart.update.note');
+    Route::delete('/cart/remove', [CartController::class, 'removeCart'])->name('cart.remove');
+
     // Favorite
     Route::post('/menu/{id}/favorite', [MenuController::class, 'favorite'])->name('menu.favorite');
 
@@ -77,7 +78,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Reservation Cancellation (in Profile)
     Route::post('/profil/{userId}/reservasi/{reservationId}/cancel', [ProfileController::class, 'cancelReservation'])->name('profile.reservation.cancel');
-    
+
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
