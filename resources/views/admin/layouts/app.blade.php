@@ -32,6 +32,15 @@
             transition: all 0.3s;
             z-index: 1000;
         }
+
+        #sidebar-wrapper.toggled {
+            margin-left: -260px;
+        }
+
+        #page-content-wrapper.toggled {
+            margin-left: 0;
+            width: 100%;
+        }
         
         .sidebar-heading {
             padding: 2rem 1.5rem;
@@ -111,15 +120,30 @@
             #sidebar-wrapper { margin-left: -260px; }
             #sidebar-wrapper.toggled { margin-left: 0; }
             #page-content-wrapper { margin-left: 0; width: 100%; }
+            #page-content-wrapper.toggled { margin-left: 0; width: 100%; }
         }
+
+           #sidebar-center-toggle {
+                    transition: right 0.3s;
+                }
+                #sidebar-wrapper.toggled #sidebar-center-toggle {
+                    right: -18px;
+                }
+                #sidebar-wrapper:not(.toggled) #sidebar-center-toggle {
+                    right: -18px;
+                }
     </style>
     @stack('styles')
 </head>
 <body>
     <div id="sidebar-wrapper">
         <div class="sidebar-heading">
-            <h4><i class="fas fa-horse me-2 text-warning"></i>TapalKuda</h4>
+            <h4>TapalKuda</h4>
         </div>
+        <!-- Tombol toggle di tengah sidebar -->
+        <button id="sidebar-center-toggle" type="button" class="btn btn-light d-none d-md-flex align-items-center justify-content-center" style="position: absolute; right: -18px; top: 50%; transform: translateY(-50%); z-index: 1100; width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee;">
+            <i id="sidebar-arrow" class="fas fa-angle-left"></i>
+        </button>
         <div class="mt-4">
             <div class="nav-item">
                 <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -128,6 +152,7 @@
             </div>
             <div class="nav-item">
                 <a href="{{ route('admin.menu') }}" class="{{ request()->routeIs('admin.menu') ? 'active' : '' }}">
+             
                     <i class="fas fa-mug-hot"></i> Menu
                 </a>
             </div>
@@ -151,19 +176,23 @@
                     <i class="fas fa-star"></i> Review
                 </a>
             </div>
+            <div class="nav-item">
+            </div>
         </div>
     </div>
 
     <div id="page-content-wrapper">
         <nav class="topbar">
             <div class="d-flex align-items-center">
-                <button class="btn border-0 p-0 me-3" id="menu-toggle">
-                    <i class="fas fa-bars fs-4"></i>
-                </button>
+                <!-- Tombol hamburger dihapus, toggle hanya di sidebar -->
                 <h5 class="mb-0 fw-bold">@yield('admin_page_title')</h5>
             </div>
-            <div class="dropdown">
-                <div class="d-flex align-items-center gap-2" style="cursor: pointer" data-bs-toggle="dropdown">
+            <div class="dropdown d-flex align-items-center gap-2">
+                <a href="{{ route('admin.notifications') }}" class="position-relative text-decoration-none text-dark">
+                    <i class="fas fa-bell fa-lg"></i>
+                    <!-- Tambahkan badge notifikasi jika ingin -->
+                </a>
+                <div style="cursor: pointer" data-bs-toggle="dropdown" class="d-flex align-items-center gap-2">
                     <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama ?? 'A') }}&background=C5A059&color=fff" class="rounded-circle" width="35">
                     <span class="fw-semibold small">{{ Auth::user()->nama ?? 'Admin' }}</span>
                 </div>
@@ -180,10 +209,41 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('menu-toggle').addEventListener('click', function() {
-            document.getElementById('sidebar-wrapper').classList.toggle('toggled');
-            document.getElementById('page-content-wrapper').classList.toggle('toggled');
-        });
+        // Sidebar toggle logic
+        const sidebar = document.getElementById('sidebar-wrapper');
+        const pageContent = document.getElementById('page-content-wrapper');
+        const sidebarCenterToggle = document.getElementById('sidebar-center-toggle');
+        const sidebarArrow = document.getElementById('sidebar-arrow');
+
+        // Set initial state (open on desktop, closed on mobile)
+        function setSidebarInitial() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('toggled');
+                pageContent.classList.add('toggled');
+                if (sidebarCenterToggle) sidebarCenterToggle.classList.add('d-none');
+            } else {
+                sidebar.classList.remove('toggled');
+                pageContent.classList.remove('toggled');
+                if (sidebarCenterToggle) sidebarCenterToggle.classList.remove('d-none');
+            }
+        }
+        setSidebarInitial();
+        window.addEventListener('resize', setSidebarInitial);
+
+        if (sidebarCenterToggle) {
+            sidebarCenterToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('toggled');
+                pageContent.classList.toggle('toggled');
+                sidebarArrow.classList.toggle('fa-angle-left', !sidebar.classList.contains('toggled'));
+                sidebarArrow.classList.toggle('fa-angle-right', sidebar.classList.contains('toggled'));
+            });
+        }
+
+        // Set arrow direction on load
+        if (sidebarArrow) {
+            sidebarArrow.classList.toggle('fa-angle-left', !sidebar.classList.contains('toggled'));
+            sidebarArrow.classList.toggle('fa-angle-right', sidebar.classList.contains('toggled'));
+        }
     </script>
     @stack('scripts')
 </body>

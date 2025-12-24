@@ -12,41 +12,68 @@ class AdminOrderController extends Controller
 {
     public function index()
     {
-        $orders = pembayaran::with([
+        $startDate = request('start_date');
+        $endDate = request('end_date');
+        $paymentMethod = request('payment_method');
+        $orderType = request('order_type');
+        $status = request('status');
+        $query = pembayaran::with([
             'user',
             'paymentMethod', 
             'status',
             'orderType',
             'details.menu'
-        ])
-        ->orderBy('order_date', 'desc')
-        ->get()
-        ->map(function($order) {
-            $subtotal = $order->details->sum(function($detail) {
-                return $detail->quantity * $detail->price_per_item;
+        ]);
+        if ($startDate && $endDate) {
+            $query->whereBetween('order_date', [
+                \Carbon\Carbon::parse($startDate)->startOfDay(),
+                \Carbon\Carbon::parse($endDate)->endOfDay()
+            ]);
+        } elseif ($startDate) {
+            $query->whereDate('order_date', '>=', \Carbon\Carbon::parse($startDate)->startOfDay());
+        } elseif ($endDate) {
+            $query->whereDate('order_date', '<=', \Carbon\Carbon::parse($endDate)->endOfDay());
+        }
+        if ($status) {
+            $query->where('status_id', $status);
+        }
+        if ($paymentMethod) {
+            $query->where('payment_method_id', $paymentMethod);
+        }
+        if ($orderType) {
+            $query->where('order_type_id', $orderType);
+        }
+        $orders = $query->orderBy('order_date', 'desc')
+            ->get()
+            ->map(function($order) {
+                $subtotal = $order->details->sum(function($detail) {
+                    return $detail->quantity * $detail->price_per_item;
+                });
+                return [
+                    'id' => $order->id,
+                    'tanggal' => $order->order_date ? date('Y-m-d H:i', strtotime($order->order_date)) : 'N/A',
+                    'customer' => $order->user->nama ?? 'Guest',
+                    'order_type' => $order->orderType->type_name ?? 'N/A',
+                    'metode' => $order->paymentMethod->method_name ?? 'N/A',
+                    'status' => $order->status->status_name ?? 'Pending',
+                    'items' => $order->details->map(function($detail) {
+                        return [
+                            'nama' => $detail->menu->nama ?? 'Item dihapus',
+                            'quantity' => $detail->quantity,
+                            'price' => $detail->price_per_item,
+                            'subtotal' => $detail->quantity * $detail->price_per_item,
+                            'image_path' => $detail->menu->url_foto ? 'foto/' . $detail->menu->url_foto : 'images/default.png',
+                        ];
+                    })->toArray(),
+                    'total' => $subtotal,
+                ];
             });
-            
-            return [
-                'id' => $order->id,
-                'tanggal' => $order->order_date ? date('Y-m-d H:i', strtotime($order->order_date)) : 'N/A',
-                'customer' => $order->user->nama ?? 'Guest',
-                'order_type' => $order->orderType->type_name ?? 'N/A',
-                'metode' => $order->paymentMethod->method_name ?? 'N/A',
-                'status' => $order->status->status_name ?? 'Pending',
-                'items' => $order->details->map(function($detail) {
-                    return [
-                        'nama' => $detail->menu->nama ?? 'Item dihapus',
-                        'quantity' => $detail->quantity,
-                        'price' => $detail->price_per_item,
-                        'subtotal' => $detail->quantity * $detail->price_per_item,
-                        'image_path' => $detail->menu->url_foto ? 'foto/' . $detail->menu->url_foto : 'images/default.png',
-                    ];
-                })->toArray(),
-                'total' => $subtotal,
-            ];
-        });
-        
-        return view('admin.orders', compact('orders'));
+        // Ambil data status, metode pembayaran, dan tipe order dari database
+        $statuses = \App\Models\paymentStatus::all();
+        $paymentMethods = \App\Models\paymentMethods::all();
+        $orderTypes = \App\Models\orderType::all();
+
+        return view('admin.orders', compact('orders', 'statuses', 'paymentMethods', 'orderTypes'));
     }
 
     public function report(Request $request)

@@ -8,16 +8,53 @@
         <h4 class="fw-bold mb-1">Riwayat Penjualan</h4>
         <p class="text-muted small mb-0">Pantau semua transaksi masuk dan status pembayaran pelanggan.</p>
     </div>
-    <div class="d-flex gap-2">
-        <button type="button" class="btn btn-light border shadow-sm px-3" onclick="window.location.reload()">
-            <i class="fas fa-sync-alt me-1"></i> Refresh
-        </button>
-        <form method="GET" action="" class="d-flex align-items-center gap-2">
-            <label class="mb-0 small">Dari</label>
-            <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}">
-            <label class="mb-0 small">Sampai</label>
-            <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}">
-            <button type="submit" class="btn btn-primary btn-sm px-3"><i class="fas fa-filter me-1"></i> Filter</button>
+    <div class="w-100">
+        <form method="GET" action="" class="row g-2 align-items-end">
+            <div class="col-md-2 col-6">
+                <label class="form-label mb-1 small">Dari</label>
+                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}">
+            </div>
+            <div class="col-md-2 col-6">
+                <label class="form-label mb-1 small">Sampai</label>
+                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}">
+            </div>
+            <div class="col-md-2 col-6">
+                <label class="form-label mb-1 small">Status</label>
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">Semua</option>
+                    @if(isset($statuses))
+                        @foreach($statuses as $status)
+                            <option value="{{ $status->id }}" {{ request('status') == $status->id ? 'selected' : '' }}>{{ $status->status_name }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+            <div class="col-md-2 col-6">
+                <label class="form-label mb-1 small">Metode</label>
+                <select name="payment_method" class="form-select form-select-sm">
+                    <option value="">Semua</option>
+                    @if(isset($paymentMethods))
+                        @foreach($paymentMethods as $method)
+                            <option value="{{ $method->id }}" {{ request('payment_method') == $method->id ? 'selected' : '' }}>{{ $method->method_name }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+            <div class="col-md-2 col-6">
+                <label class="form-label mb-1 small">Tipe Order</label>
+                <select name="order_type" class="form-select form-select-sm">
+                    <option value="">Semua</option>
+                    @if(isset($orderTypes))
+                        @foreach($orderTypes as $type)
+                            <option value="{{ $type->id }}" {{ request('order_type') == $type->id ? 'selected' : '' }}>{{ $type->type_name }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+            <div class="col-md-2 col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm w-100"><i class="fas fa-filter me-1"></i> Filter</button>
+                <a href="{{ route('admin.orders') }}" class="btn btn-light border btn-sm w-100"><i class="fas fa-undo me-1"></i> Reset</a>
+            </div>
         </form>
     </div>
 </div>
@@ -141,7 +178,6 @@
             </div>
             <div class="modal-footer border-0 bg-light">
                 <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary px-4">Cetak Struk</button>
             </div>
         </div>
     </div>

@@ -26,6 +26,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\AdminRatingController;
 use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\AdminNotificationController;
 
 
 // Route Halaman Utama
@@ -88,8 +89,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Routes untuk Admin via Middleware CheckRole
+use App\Http\Controllers\AdminTargetController;
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::post('/admin/set-target', [AdminTargetController::class, 'setTarget'])->name('admin.setTarget');
 
     // --- ROUTES CRUD MENU ---
     Route::get('/admin/menu', [AdminMenuController::class, 'index'])->name('admin.menu');
@@ -115,6 +118,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // --- RIWAYAT PENJUALAN (READ ONLY) ---
     Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
     Route::get('/admin/orders/report', [AdminOrderController::class, 'report'])->name('admin.orders.report');
+
+    // Notifikasi Admin
+    Route::get('/admin/notifications', [AdminNotificationController::class, 'index'])->name('admin.notifications');
+    Route::post('/admin/notifications/{id}/read', [AdminNotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+
 });
 
 // --- KASIR ROUTES ---

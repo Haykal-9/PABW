@@ -11,7 +11,15 @@ class AdminRatingController extends Controller
 {
     public function index()
     {
-        $ratings = review::with(['user', 'menu_item'])->get()->map(fn($r) => [
+        $query = review::with(['user', 'menu_item']);
+        $selectedMenu = request('menu');
+        if ($selectedMenu) {
+            $query->whereHas('menu_item', function($q) use ($selectedMenu) {
+                $q->where('nama', $selectedMenu);
+            });
+        }
+        $reviews = $query->get();
+        $ratings = $reviews->map(fn($r) => [
             'id' => $r->id,
             'menu' => $r->menu_item->nama ?? 'Menu Dihapus',
             'user' => $r->user->nama ?? 'User Dihapus',
@@ -20,7 +28,10 @@ class AdminRatingController extends Controller
             'tanggal' => $r->created_at ? $r->created_at->format('Y-m-d') : 'N/A',
         ]);
 
-        return view('admin.ratings', compact('ratings'));
+        // Ambil semua nama menu unik untuk filter
+        $menus = \App\Models\menu::pluck('nama')->unique();
+
+        return view('admin.ratings', compact('ratings', 'menus', 'reviews', 'selectedMenu'));
     }
 
     public function destroy($id)

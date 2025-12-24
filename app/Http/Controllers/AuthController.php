@@ -25,7 +25,7 @@ class AuthController extends Controller
             $file->move(public_path('uploads/profile'), $nama_file);
         }
 
-        User::create([
+        $user = User::create([
             'role_id' => 3,
             'username' => $request->username,
             'password' => Hash::make($request->password),
@@ -35,6 +35,16 @@ class AuthController extends Controller
             'gender_id' => $request->gender_id,
             'alamat' => $request->alamat,
             'profile_picture' => $nama_file,
+        ]);
+
+        // Buat notifikasi untuk admin jika ada user baru
+        \App\Models\Notification::create([
+            'user_id' => 1, // diasumsikan admin utama id=1
+            'type' => 'user_registered',
+            'title' => 'User Baru Terdaftar',
+            'message' => 'User baru dengan nama ' . $user->nama . ' telah mendaftar.',
+            'link' => null,
+            'is_read' => false,
         ]);
 
         return redirect('/login')->with('success', 'Registrasi berhasil! Silakan login.');
