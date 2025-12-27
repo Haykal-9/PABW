@@ -94,4 +94,43 @@ class AuthController extends Controller
             ],
         ], 200);
     }
+
+    /**
+     * Register user baru
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string|unique:users,username|max:255',
+            'password' => 'required|string|min:6|confirmed',
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email|max:255',
+            'no_telp' => 'nullable|string|max:20',
+        ]);
+
+        $user = User::create([
+            'role_id' => 3, // Default role: customer (sesuaikan dengan role_id customer di database Anda)
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'no_telp' => $request->no_telp,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Registration successful. Please login.',
+            'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'nama' => $user->nama,
+                    'email' => $user->email,
+                ],
+            ],
+        ], 201);
+    }
 }

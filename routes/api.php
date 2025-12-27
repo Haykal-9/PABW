@@ -39,6 +39,7 @@ use App\Http\Controllers\Api\NotificationApiController;
 
 // Auth
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 // Menu (Public)
 Route::get('/menus', [MenuApiController::class, 'index']);
@@ -114,6 +115,14 @@ Route::middleware('auth:sanctum')->group(function () {
         // Order History
         Route::get('/orders', [KasirRiwayatApiController::class, 'index']);
         Route::get('/orders/{id}', [KasirRiwayatApiController::class, 'show']);
+
+        // Order Status Management
+        Route::get('/statuses', [KasirRiwayatApiController::class, 'getStatuses']);
+        Route::get('/orders/pending', [KasirRiwayatApiController::class, 'getPending']);
+        Route::post('/orders/{id}/approve', [KasirRiwayatApiController::class, 'approve']);
+        Route::post('/orders/{id}/reject', [KasirRiwayatApiController::class, 'reject']);
+        Route::post('/orders/{id}/complete', [KasirRiwayatApiController::class, 'complete']);
+        Route::put('/orders/{id}/status', [KasirRiwayatApiController::class, 'updateStatus']);
 
         // Profile
         Route::get('/profile', [KasirProfileApiController::class, 'show']);

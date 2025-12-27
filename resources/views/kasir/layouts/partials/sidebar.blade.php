@@ -68,6 +68,9 @@
         <li class="nav-item"><a href="{{ route('kasir.index') }}"
                 class="nav-link @if($activePage == 'kasir') active @endif" title="Kasir"><i
                     class="bi bi-grid-fill"></i></a></li>
+        <li class="nav-item"><a href="{{ route('kasir.pesanan') }}"
+                class="nav-link @if($activePage == 'pesanan') active @endif" title="Pesanan Masuk"><i
+                    class="bi bi-bag-check"></i></a></li>
         <li class="nav-item"><a href="{{ route('kasir.menu') }}"
                 class="nav-link @if($activePage == 'menu') active @endif" title="Menu"><i
                     class="bi bi-card-list"></i></a></li>

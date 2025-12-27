@@ -18,6 +18,7 @@ use App\Http\Controllers\KasirReservasiController;
 use App\Http\Controllers\KasirNotifikasiController;
 use App\Http\Controllers\KasirProfileController;
 use App\Http\Controllers\KasirMenuController;
+use App\Http\Controllers\KasirPesananController;
 
 // Admin Controllers
 use App\Http\Controllers\AdminDashboardController;
@@ -136,6 +137,12 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::get('/kasir/reservasi', [KasirReservasiController::class, 'index'])->name('kasir.reservasi');
     Route::patch('/kasir/reservasi/{id}/approve', [KasirReservasiController::class, 'approve'])->name('kasir.reservasi.approve');
     Route::post('/kasir/reservasi/{id}/reject', [KasirReservasiController::class, 'reject'])->name('kasir.reservasi.reject');
+
+    // Pesanan Management (KasirPesananController)
+    Route::get('/kasir/pesanan', [KasirPesananController::class, 'index'])->name('kasir.pesanan');
+    Route::patch('/kasir/pesanan/{id}/approve', [KasirPesananController::class, 'approve'])->name('kasir.pesanan.approve');
+    Route::post('/kasir/pesanan/{id}/reject', [KasirPesananController::class, 'reject'])->name('kasir.pesanan.reject');
+    Route::patch('/kasir/pesanan/{id}/complete', [KasirPesananController::class, 'complete'])->name('kasir.pesanan.complete');
 
     // Notifikasi (KasirNotifikasiController)
     Route::get('/kasir/notifikasi', [KasirNotifikasiController::class, 'index'])->name('kasir.notif');
