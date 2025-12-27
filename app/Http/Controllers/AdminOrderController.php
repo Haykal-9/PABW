@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\pembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\paymentStatus;
+use App\Models\paymentMethods;
+use App\Models\orderType;
 use Carbon\Carbon;
 
 class AdminOrderController extends Controller
@@ -69,9 +72,10 @@ class AdminOrderController extends Controller
                 ];
             });
         // Ambil data status, metode pembayaran, dan tipe order dari database
-        $statuses = \App\Models\paymentStatus::all();
-        $paymentMethods = \App\Models\paymentMethods::all();
-        $orderTypes = \App\Models\orderType::all();
+        $statuses = paymentStatus::all();
+        $paymentMethods = paymentMethods::all();
+        $orderTypes = orderType::all();
+
 
         return view('admin.orders', compact('orders', 'statuses', 'paymentMethods', 'orderTypes'));
     }

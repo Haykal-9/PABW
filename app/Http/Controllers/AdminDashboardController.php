@@ -32,7 +32,7 @@ class AdminDashboardController extends Controller
         $reservasiTerlaksana = reservasi::where('status_id', 2)->count() ?? 0;
 
         // Ambil data penjualan per menu (top menu)
-        $menuSales = \App\Models\detailPembayaran::selectRaw('menu_id, SUM(quantity) as total_order')
+        $menuSales = detailPembayaran::selectRaw('menu_id, SUM(quantity) as total_order')
             ->groupBy('menu_id')
             ->orderByDesc('total_order')
             ->with('menu')

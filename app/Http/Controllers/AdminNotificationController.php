@@ -22,7 +22,7 @@ class AdminNotificationController extends Controller
 
     public function markAsRead($id)
     {
-        $notif = \App\Models\Notification::findOrFail($id);
+        $notif = Notification::findOrFail($id);
         $notif->is_read = true;
         $notif->save();
         return redirect()->route('admin.notifications')->with('success', 'Notifikasi ditandai sudah dibaca.');

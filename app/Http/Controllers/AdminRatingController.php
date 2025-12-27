@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\menu;
+
 
 class AdminRatingController extends Controller
 {
@@ -29,7 +31,7 @@ class AdminRatingController extends Controller
         ]);
 
         // Ambil semua nama menu unik untuk filter
-        $menus = \App\Models\menu::pluck('nama')->unique();
+        $menus = menu::pluck('nama')->unique();
 
         return view('admin.ratings', compact('ratings', 'menus', 'reviews', 'selectedMenu'));
     }
