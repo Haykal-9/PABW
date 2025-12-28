@@ -54,6 +54,19 @@
                             <div>{{ session('error') }}</div>
                         </div>
                     @endif
+                    @if ($errors->any())
+                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                <strong>Terdapat kesalahan input:</strong>
+                            </div>
+                            <ul class="mb-0 ps-4">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
                     <form method="POST" action="{{ route('reservasi.store') }}">
                         @csrf
@@ -68,39 +81,57 @@
                             {{-- Nama & Telepon (Pre-filled, Editable) --}}
                             <div class="col-md-6">
                                 <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Nama Pemesan</label>
-                                <input name="nama_pemesan" type="text" class="form-control form-control-glass text-light"
+                                <input name="nama_pemesan" type="text" class="form-control form-control-glass text-light @error('nama_pemesan') is-invalid @enderror"
                                     required value="{{ old('nama_pemesan', $user->nama) }}">
+                                @error('nama_pemesan')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Telepon</label>
-                                <input name="no_telp" type="text" class="form-control form-control-glass text-light"
+                                <input name="no_telp" type="text" class="form-control form-control-glass text-light @error('no_telp') is-invalid @enderror"
                                     required value="{{ old('no_telp', $user->no_telp) }}">
+                                @error('no_telp')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             {{-- Email --}}
                             <div class="col-12">
                                 <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Email Konfirmasi</label>
-                                <input name="email_pemesan" type="email" class="form-control form-control-glass text-light"
+                                <input name="email_pemesan" type="email" class="form-control form-control-glass text-light @error('email_pemesan') is-invalid @enderror"
                                     required value="{{ old('email_pemesan', $user->email) }}">
+                                @error('email_pemesan')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             {{-- Tanggal, Jam, Jumlah --}}
                             <div class="col-md-4">
                                 <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Tanggal</label>
                                 <input name="tanggal_reservasi" type="date"
-                                    class="form-control form-control-glass text-light" required
+                                    class="form-control form-control-glass text-light @error('tanggal_reservasi') is-invalid @enderror" required
                                     value="{{ old('tanggal_reservasi') }}">
+                                @error('tanggal_reservasi')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-md-4">
                                 <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Jam</label>
-                                <input name="jam_reservasi" type="time" class="form-control form-control-glass text-light"
+                                <input name="jam_reservasi" type="time" class="form-control form-control-glass text-light @error('jam_reservasi') is-invalid @enderror"
                                     required value="{{ old('jam_reservasi') }}">
+                                @error('jam_reservasi')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-md-4">
                                 <label class="text-gold small fw-bold mb-2 text-uppercase ls-1">Jml. Orang</label>
                                 <input name="jumlah_orang" type="number" min="1"
-                                    class="form-control form-control-glass text-light" required
+                                    class="form-control form-control-glass text-light @error('jumlah_orang') is-invalid @enderror" required
                                     value="{{ old('jumlah_orang') }}" placeholder="Ex: 2">
+                                @error('jumlah_orang')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             {{-- Pesan --}}
