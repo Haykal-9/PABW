@@ -43,8 +43,6 @@ class AuthController extends Controller
             'type' => 'user_registered',
             'title' => 'User Baru Terdaftar',
             'message' => 'User baru dengan nama ' . $user->nama . ' telah mendaftar.',
-            'link' => null,
-            'is_read' => false,
         ]);
 
         return redirect('/login')->with('success', 'Registrasi berhasil! Silakan login.');
