@@ -50,6 +50,11 @@ class MenuController extends Controller
 
     public function favorite($id)
     {
+        // Validate id parameter
+        if (!is_numeric($id) || $id <= 0) {
+            return redirect()->back()->with('error', 'ID menu tidak valid');
+        }
+
         // Check if user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login untuk menambahkan favorit.');
@@ -80,6 +85,11 @@ class MenuController extends Controller
 
     public function show($id)
     {
+        // Validate id parameter
+        if (!is_numeric($id) || $id <= 0) {
+            return redirect()->route('menu')->with('error', 'ID menu tidak valid');
+        }
+
         $menu = Menu::with(['type', 'reviews.user'])->withAvg('reviews', 'rating')->findOrFail($id);
 
         // Check if menu is favorited (only if user is logged in)
@@ -92,6 +102,11 @@ class MenuController extends Controller
 
     public function addToCart($id)
     {
+        // Validate id parameter
+        if (!is_numeric($id) || $id <= 0) {
+            return redirect()->back()->with('error', 'ID menu tidak valid');
+        }
+
         // Validate menu exists and is available
         $menu = Menu::findOrFail($id);
 

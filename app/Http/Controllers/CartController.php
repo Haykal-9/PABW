@@ -42,41 +42,59 @@ class CartController extends Controller
 
     public function updateCart(Request $request)
     {
-        if($request->id && $request->quantity){
-            $cart = session()->get('cart');
-            
+        $request->validate([
+            'id' => 'required|integer|exists:menus,id',
+            'quantity' => 'required|integer|min:1|max:100'
+        ]);
+
+        $cart = session()->get('cart');
+        
+        if(isset($cart[$request->id])){
             $cart[$request->id]["quantity"] = $request->quantity;
             
             session()->put('cart', $cart);
             
             return redirect()->back()->with('success', 'Keranjang berhasil diperbarui');
         }
+        
+        return redirect()->back()->with('error', 'Item tidak ditemukan di keranjang');
     }
 
     public function removeCart(Request $request)
     {
-        if($request->id) {
-            $cart = session()->get('cart');
-            
-            if(isset($cart[$request->id])) {
-                unset($cart[$request->id]);
-                session()->put('cart', $cart);
-            }
+        $request->validate([
+            'id' => 'required|integer'
+        ]);
+
+        $cart = session()->get('cart');
+        
+        if(isset($cart[$request->id])) {
+            unset($cart[$request->id]);
+            session()->put('cart', $cart);
             
             return redirect()->back()->with('success', 'Menu dihapus dari keranjang');
         }
+        
+        return redirect()->back()->with('error', 'Item tidak ditemukan di keranjang');
     }
 
     public function updateNote(Request $request)
     {
-        if($request->id){
-            $cart = session()->get('cart');
-            
+        $request->validate([
+            'id' => 'required|integer|exists:menus,id',
+            'note' => 'nullable|string|max:500'
+        ]);
+
+        $cart = session()->get('cart');
+        
+        if(isset($cart[$request->id])){
             $cart[$request->id]["note"] = $request->note;
             
             session()->put('cart', $cart);
             
             return redirect()->back()->with('success', 'Catatan berhasil disimpan');
         }
+        
+        return redirect()->back()->with('error', 'Item tidak ditemukan di keranjang');
     }
 }

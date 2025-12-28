@@ -17,6 +17,11 @@ class ProfileController extends Controller
 {
     public function show($id)
     {
+        // Validate id parameter
+        if (!is_numeric($id) || $id <= 0) {
+            return redirect()->route('home')->with('error', 'ID tidak valid');
+        }
+
         // Authorization: User can only view their own profile
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
@@ -49,6 +54,11 @@ class ProfileController extends Controller
 
     public function edit($id)
     {
+        // Validate id parameter
+        if (!is_numeric($id) || $id <= 0) {
+            return redirect()->route('home')->with('error', 'ID tidak valid');
+        }
+
         // Authorization: User can only edit their own profile
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
@@ -66,6 +76,11 @@ class ProfileController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Validate id parameter
+        if (!is_numeric($id) || $id <= 0) {
+            return redirect()->route('home')->with('error', 'ID tidak valid');
+        }
+
         // Authorization: User can only update their own profile
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
@@ -76,6 +91,27 @@ class ProfileController extends Controller
         }
 
         $user = User::findOrFail($id);
+
+        // Validasi input
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'no_telp' => 'required|string|regex:/^[0-9]{10,15}$/',
+            'gender_id' => 'required|exists:gender_types,id',
+            'alamat' => 'nullable|string|max:500',
+            'password' => 'nullable|string|min:8|max:255',
+            'profile_picture' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:2048'
+        ], [
+            'nama.required' => 'Nama harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah digunakan',
+            'no_telp.regex' => 'Nomor telepon harus 10-15 digit angka',
+            'password.min' => 'Password minimal 8 karakter',
+            'profile_picture.image' => 'File harus berupa gambar',
+            'profile_picture.mimes' => 'Format gambar harus jpeg, jpg, png, atau gif',
+            'profile_picture.max' => 'Ukuran gambar maksimal 2MB'
+        ]);
 
         if ($request->hasFile('profile_picture')) {
             $pathLama = public_path('uploads/profile/' . $user->profile_picture);
@@ -105,6 +141,11 @@ class ProfileController extends Controller
 
     public function showOrder($userId, $orderId)
     {
+        // Validate parameters
+        if (!is_numeric($userId) || $userId <= 0 || !is_numeric($orderId) || $orderId <= 0) {
+            return redirect()->route('profile.show', ['id' => Auth::id()])->with('error', 'Parameter tidak valid');
+        }
+
         // Check if user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
@@ -142,6 +183,11 @@ class ProfileController extends Controller
 
     public function cancelOrder(Request $request, $userId, $orderId)
     {
+        // Validate parameters
+        if (!is_numeric($userId) || $userId <= 0 || !is_numeric($orderId) || $orderId <= 0) {
+            return redirect()->route('profile.show', ['id' => Auth::id()])->with('error', 'Parameter tidak valid');
+        }
+
         // Check if user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
@@ -181,6 +227,11 @@ class ProfileController extends Controller
 
     public function cancelReservation(Request $request, $userId, $reservationId)
     {
+        // Validate parameters
+        if (!is_numeric($userId) || $userId <= 0 || !is_numeric($reservationId) || $reservationId <= 0) {
+            return redirect()->route('profile.show', ['id' => Auth::id()])->with('error', 'Parameter tidak valid');
+        }
+
         // Check if user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
