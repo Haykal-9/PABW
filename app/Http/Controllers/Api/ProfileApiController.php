@@ -117,37 +117,48 @@ class ProfileApiController extends Controller
         }
     }
 
-    /**
-     * Get user's order history
-     */
-    public function orders()
-    {
-        $orders = Pembayaran::with(['status', 'payment_method', 'order_type'])
-            ->where('user_id', Auth::id())
-            ->orderBy('order_date', 'desc')
-            ->get();
+   /**
+ * Get user's order history
+ */
+public function orders()
+{
+    $orders = Pembayaran::with(['details.menu', 'status', 'payment_method', 'order_type'])  // ← TAMBAH details.menu
+        ->where('user_id', Auth::id())
+        ->orderBy('order_date', 'desc')
+        ->get();
 
-        $data = $orders->map(function ($order) {
-            $total = $order->details->sum(function ($detail) {
-                return $detail->quantity * $detail->price_per_item;
-            });
-
-            return [
-                'id' => $order->id,
-                'invoice' => 'INV-' . str_pad($order->id, 4, '0', STR_PAD_LEFT),
-                'tanggal' => $order->order_date->format('Y-m-d H:i:s'),
-                'total' => $total,
-                'status' => $order->status->status_name ?? 'pending',
-                'payment_method' => $order->payment_method->payment_name ?? null,
-                'order_type' => $order->order_type->type_name ?? null,
-            ];
+    $data = $orders->map(function ($order) {
+        $total = $order->details->sum(function ($detail) {
+            return $detail->quantity * $detail->price_per_item;
         });
 
-        return response()->json([
-            'success' => true,
-            'data' => $data
-        ]);
-    }
+        // Generate items summary
+        $itemsSummary = $order->details->map(function ($detail) {
+            $menuName = $detail->menu->nama ?? 'Unknown';
+            return "{$menuName} x{$detail->quantity}";
+        })->implode(', ');
+
+        // Count total items
+        $itemCount = $order->details->sum('quantity');
+
+        return [
+            'id' => $order->id,
+            'invoice' => 'INV-' . str_pad($order->id, 4, '0', STR_PAD_LEFT),
+            'tanggal' => (string) $order->order_date,
+            'total' => $total,
+            'status' => $order->status->status_name ?? 'pending',
+            'payment_method' => $order->payment_method->payment_name ?? null,
+            'order_type' => $order->order_type->type_name ?? null,
+            'items_summary' => $itemsSummary,  // ← TAMBAH INI
+            'item_count' => $itemCount,        // ← TAMBAH INI
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'data' => $data
+    ]);
+}
 
     /**
      * Get order detail
@@ -185,7 +196,7 @@ class ProfileApiController extends Controller
             'data' => [
                 'id' => $order->id,
                 'invoice' => 'INV-' . str_pad($order->id, 4, '0', STR_PAD_LEFT),
-                'tanggal' => $order->order_date->format('Y-m-d H:i:s'),
+                'tanggal' => (string) $order->order_date,
                 'status' => $order->status->status_name ?? 'pending',
                 'payment_method' => $order->payment_method->payment_name ?? null,
                 'order_type' => $order->order_type->type_name ?? null,
