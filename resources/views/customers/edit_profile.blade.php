@@ -40,6 +40,19 @@
                                     <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
                                 </div>
                             @endif
+                            @if ($errors->any())
+                                <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-0">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        <strong>Terdapat kesalahan input:</strong>
+                                    </div>
+                                    <ul class="mb-0 ps-4">
+                                        @foreach ($errors->all() as $error)
+                                            <li class="small">{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
 
                             <form action="{{ route('profile.update', ['id' => $user->id]) }}" method="POST"
                                 enctype="multipart/form-data">
@@ -78,8 +91,11 @@
                                         <div class="form-group">
                                             <label class="text-gold x-small fw-bold text-uppercase mb-2 ls-1">Full
                                                 Name</label>
-                                            <input type="text" name="nama" class="form-control form-control-glass rounded-0"
+                                            <input type="text" name="nama" class="form-control form-control-glass rounded-0 @error('nama') is-invalid @enderror"
                                                 value="{{ old('nama', $user->nama) }}" placeholder="Enter your full name">
+                                            @error('nama')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
 
@@ -89,8 +105,11 @@
                                             <label class="text-gold x-small fw-bold text-uppercase mb-2 ls-1">Email
                                                 Address</label>
                                             <input type="email" name="email"
-                                                class="form-control form-control-glass rounded-0"
+                                                class="form-control form-control-glass rounded-0 @error('email') is-invalid @enderror"
                                                 value="{{ old('email', $user->email) }}" placeholder="name@example.com">
+                                            @error('email')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
 
@@ -100,8 +119,11 @@
                                             <label class="text-gold x-small fw-bold text-uppercase mb-2 ls-1">Phone
                                                 Number</label>
                                             <input type="text" name="no_telp"
-                                                class="form-control form-control-glass rounded-0"
+                                                class="form-control form-control-glass rounded-0 @error('no_telp') is-invalid @enderror"
                                                 value="{{ old('no_telp', $user->no_telp) }}">
+                                            @error('no_telp')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
 
@@ -110,13 +132,16 @@
                                         <div class="form-group">
                                             <label class="text-gold x-small fw-bold text-uppercase mb-2 ls-1">Gender</label>
                                             <select name="gender_id"
-                                                class="form-select form-control-glass rounded-0 text-light bg-dark">
+                                                class="form-select form-control-glass rounded-0 text-light bg-dark @error('gender_id') is-invalid @enderror">
                                                 @foreach($genders as $gender)
                                                     <option value="{{ $gender->id }}" {{ $user->gender_id == $gender->id ? 'selected' : '' }}>
                                                         {{ $gender->gender_name }}
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            @error('gender_id')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
 
@@ -125,8 +150,11 @@
                                         <div class="form-group">
                                             <label class="text-gold x-small fw-bold text-uppercase mb-2 ls-1">Shipping
                                                 Address</label>
-                                            <textarea name="alamat" class="form-control form-control-glass rounded-0"
+                                            <textarea name="alamat" class="form-control form-control-glass rounded-0 @error('alamat') is-invalid @enderror"
                                                 rows="3">{{ old('alamat', $user->alamat) }}</textarea>
+                                            @error('alamat')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
 

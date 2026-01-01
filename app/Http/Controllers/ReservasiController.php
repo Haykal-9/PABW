@@ -29,10 +29,13 @@ class ReservasiController extends Controller
     {
         // 1. Validasi Input
         $request->validate([
+            'nama_pemesan' => 'required|string|max:255',
+            'no_telp' => 'required|string|regex:/^[0-9]{10,15}$/',
+            'email_pemesan' => 'required|email|max:255',
             'tanggal_reservasi' => 'required|date|after_or_equal:today',
-            'jam_reservasi' => 'required',
-            'jumlah_orang' => 'required|integer|min:1',
-            'message' => 'nullable|string'
+            'jam_reservasi' => 'required|date_format:H:i',
+            'jumlah_orang' => 'required|integer|min:1|max:50',
+            'message' => 'nullable|string|max:1000'
         ]);
 
         // 2. Setup Data
@@ -59,6 +62,11 @@ class ReservasiController extends Controller
 
     public function cancel($id)
     {
+        // Validate id parameter
+        if (!is_numeric($id) || $id <= 0) {
+            return redirect()->back()->with('error', 'ID reservasi tidak valid');
+        }
+
         // Check authentication
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');

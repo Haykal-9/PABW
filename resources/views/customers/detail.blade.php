@@ -121,6 +121,15 @@
                         {{-- Collapsible Review Form --}}
                         <div class="collapse mb-4" id="reviewForm">
                             <div class="glass-card p-4 rounded-3 border-0">
+                                @if ($errors->any())
+                                    <div class="alert alert-danger bg-danger bg-opacity-10 text-danger border-0 mb-3 rounded-2">
+                                        <div class="small">
+                                            @foreach ($errors->all() as $error)
+                                                <div><i class="fas fa-exclamation-circle me-1"></i> {{ $error }}</div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                                 <form action="{{ route('menu.review.store', $menu->id) }}" method="POST">
                                     @csrf
                                     <div class="mb-3">
@@ -141,8 +150,11 @@
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <textarea name="comment" class="form-control form-control-glass text-light" rows="3"
-                                            placeholder="Bagaimana rasanya?" required></textarea>
+                                        <textarea name="comment" class="form-control form-control-glass text-light @error('comment') is-invalid @enderror" rows="3"
+                                            placeholder="Bagaimana rasanya?">{{ old('comment') }}</textarea>
+                                        @error('comment')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <button type="submit" class="btn btn-gold btn-sm w-100 rounded-pill">Kirim</button>
                                 </form>

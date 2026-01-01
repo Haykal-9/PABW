@@ -43,8 +43,13 @@ class CheckoutController extends Controller
 
         // Validate request
         $request->validate([
-            'payment_method_id' => 'required|exists:payment_methods,id',
-            'order_type_id' => 'required|exists:order_types,id',
+            'payment_method_id' => 'required|integer|exists:payment_methods,id',
+            'order_type_id' => 'required|integer|exists:order_types,id',
+        ], [
+            'payment_method_id.required' => 'Metode pembayaran harus dipilih',
+            'payment_method_id.exists' => 'Metode pembayaran tidak valid',
+            'order_type_id.required' => 'Tipe pesanan harus dipilih',
+            'order_type_id.exists' => 'Tipe pesanan tidak valid'
         ]);
 
         $cart = session()->get('cart', []);

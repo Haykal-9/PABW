@@ -6,11 +6,7 @@ use Illuminate\Support\Facades\Route;
 // Auth Controllers
 use App\Http\Controllers\Api\AuthController;
 
-// Admin Controllers
-use App\Http\Controllers\Api\AdminMenuApiController;
-use App\Http\Controllers\Api\AdminRatingApiController;
-use App\Http\Controllers\Api\AdminReservationApiController;
-use App\Http\Controllers\Api\AdminUserApiController;
+// ...existing code...
 
 // Kasir Controllers
 use App\Http\Controllers\Api\KasirApiController;
@@ -131,29 +127,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/profile', [KasirProfileApiController::class, 'update']); // For multipart/form-data
     });
 
-    // ============================================
-    // ADMIN ROUTES (Require role:admin)
-    // ============================================
-
-    Route::middleware('role:admin')->prefix('admin')->group(function () {
-        // Menu CRUD
-        Route::get('/menus', [AdminMenuApiController::class, 'index']);
-        Route::get('/menus/{id}', [AdminMenuApiController::class, 'show']);
-        Route::post('/menus', [AdminMenuApiController::class, 'store']);
-        Route::put('/menus/{id}', [AdminMenuApiController::class, 'update']);
-        Route::post('/menus/{id}', [AdminMenuApiController::class, 'update']); // For multipart/form-data
-        Route::delete('/menus/{id}', [AdminMenuApiController::class, 'destroy']);
-
-        // Ratings CRUD (hanya index & destroy)
-        Route::get('/ratings', [AdminRatingApiController::class, 'index']);
-        Route::delete('/ratings/{id}', [AdminRatingApiController::class, 'destroy']);
-
-        // Reservations CRUD (hanya index & destroy)
-        Route::get('/reservations', [AdminReservationApiController::class, 'index']);
-        Route::delete('/reservations/{id}', [AdminReservationApiController::class, 'destroy']);
-
-        // Users CRUD (hanya index & destroy)
-        Route::get('/users', [AdminUserApiController::class, 'index']);
-        Route::delete('/users/{id}', [AdminUserApiController::class, 'destroy']);
-    });
 });
