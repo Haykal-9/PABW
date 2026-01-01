@@ -163,7 +163,7 @@ class KasirPesananController extends Controller
 
         return view('kasir.pesanan-proses', [
             'title' => 'Tapal Kuda | Pesanan Diproses',
-            'activePage' => 'pesanan',
+            'activePage' => 'pesanan-proses',
             'pesanan' => $pesanan,
         ]);
     }

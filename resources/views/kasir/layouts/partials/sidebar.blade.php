@@ -71,6 +71,9 @@
         <li class="nav-item"><a href="{{ route('kasir.pesanan') }}"
                 class="nav-link @if($activePage == 'pesanan') active @endif" title="Pesanan Masuk"><i
                     class="bi bi-bag-check"></i></a></li>
+        <li class="nav-item"><a href="{{ route('kasir.pesanan.proses') }}"
+                class="nav-link @if($activePage == 'pesanan-proses') active @endif" title="Pesanan Diproses"><i
+                    class="bi bi-hourglass-split"></i></a></li>
         <li class="nav-item"><a href="{{ route('kasir.menu') }}"
                 class="nav-link @if($activePage == 'menu') active @endif" title="Menu"><i
                     class="bi bi-card-list"></i></a></li>

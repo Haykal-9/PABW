@@ -140,6 +140,7 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
 
     // Pesanan Management (KasirPesananController)
     Route::get('/kasir/pesanan', [KasirPesananController::class, 'index'])->name('kasir.pesanan');
+    Route::get('/kasir/pesanan/proses', [KasirPesananController::class, 'processing'])->name('kasir.pesanan.proses');
     Route::patch('/kasir/pesanan/{id}/approve', [KasirPesananController::class, 'approve'])->name('kasir.pesanan.approve');
     Route::post('/kasir/pesanan/{id}/reject', [KasirPesananController::class, 'reject'])->name('kasir.pesanan.reject');
     Route::patch('/kasir/pesanan/{id}/complete', [KasirPesananController::class, 'complete'])->name('kasir.pesanan.complete');
