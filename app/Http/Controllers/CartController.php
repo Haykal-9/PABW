@@ -43,7 +43,7 @@ class CartController extends Controller
     public function updateCart(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer|exists:menus,id',
+            'id' => 'required|integer|exists:menu,id',
             'quantity' => 'required|integer|min:1|max:100'
         ]);
 
@@ -81,7 +81,7 @@ class CartController extends Controller
     public function updateNote(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer|exists:menus,id',
+            'id' => 'required|integer|exists:menu,id',
             'note' => 'nullable|string|max:500'
         ]);
 

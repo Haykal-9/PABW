@@ -85,6 +85,20 @@ class UserSeeder extends Seeder
                 'created_at' => '2025-06-16 03:17:03',
                 'updated_at' => '2025-06-16 03:17:03'
             ],
+            [
+                'id' => 10,
+                'role_id' => 3,
+                'username' => 'customer',
+                'password' => Hash::make('customer123'),
+                'nama' => 'Customer Test',
+                'email' => 'customer@gmail.com',
+                'no_telp' => '081234567890',
+                'gender_id' => 1,
+                'alamat' => '0',
+                'profile_picture' => 'default-avatar.png',
+                'created_at' => '2025-06-16 03:18:00',
+                'updated_at' => '2025-06-16 03:18:00'
+            ],
         ]);
     }
 }
