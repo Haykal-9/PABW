@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\reservasi;
+use App\Models\Notification;
 
 class KasirReservasiApiController extends Controller
 {
@@ -99,6 +100,16 @@ class KasirReservasiApiController extends Controller
 
             $reservasi->status_id = 2; // confirmed
             $reservasi->save();
+
+            // Buat notifikasi untuk customer
+            Notification::create([
+                'user_id' => $reservasi->user_id,
+                'type' => 'reservation_confirmed',
+                'title' => 'Reservasi Dikonfirmasi',
+                'message' => 'Reservasi Anda dengan kode ' . $reservasi->kode_reservasi . ' telah dikonfirmasi. Silakan datang tepat waktu.',
+                'link' => '/reservations/' . $reservasi->id,
+                'is_read' => false
+            ]);
 
             return response()->json([
                 'success' => true,
