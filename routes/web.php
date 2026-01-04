@@ -93,8 +93,7 @@ Route::middleware(['auth'])->group(function () {
 use App\Http\Controllers\AdminTargetController;
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    Route::post('/admin/set-target', [AdminTargetController::class, 'setTarget'])->name('admin.setTarget');
-
+    
     // --- ROUTES CRUD MENU ---
     Route::get('/admin/menu', [AdminMenuController::class, 'index'])->name('admin.menu');
     Route::post('/admin/menu', [AdminMenuController::class, 'store'])->name('admin.menu.store');
