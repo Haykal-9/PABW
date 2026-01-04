@@ -46,17 +46,6 @@ class AdminDashboardController extends Controller
             ->with('menu')
             ->get();
 
-        // Ambil data pendapatan per hari untuk grafik bulanan - only completed orders
-        $year = request('year') ?? date('Y');
-        $monthlyIncome = [];
-        for ($month = 1; $month <= 12; $month++) {
-            $monthlyIncome[$month] = detailPembayaran::whereHas('pembayaran', function($query) use ($year, $month) {
-                $query->whereYear('order_date', $year)
-                      ->whereMonth('order_date', $month)
-                      ->where('status_id', 1); // Only completed transactions
-            })->selectRaw('SUM(quantity * price_per_item) as total')->value('total') ?? 0;
-        }
-
         $data = [
             'pendapatanHariIni' => $pendapatanHariIni,
             'menuTerjualHariIni' => $menuTerjualHariIni,
@@ -65,6 +54,6 @@ class AdminDashboardController extends Controller
             'adminName' => $adminName,
         ];
 
-        return view('admin.dashboard', compact('data', 'menuSales', 'monthlyIncome', 'year'));
+        return view('admin.dashboard', compact('data', 'menuSales'));
     }
 }
