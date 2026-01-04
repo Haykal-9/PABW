@@ -149,10 +149,6 @@
                     {{-- FOOTER / ACTIONS --}}
                     <div class="mt-5 pt-5 text-center no-print">
                         <div class="d-flex justify-content-center gap-3 flex-wrap">
-                            <button onclick="window.print()" class="btn btn-outline-glass rounded-pill px-4">
-                                <i class="fas fa-print me-2"></i> Print Invoice
-                            </button>
-
                             @if($order->status_id == 2)
                                 <form action="{{ route('profile.order.cancel', ['userId' => Auth::id(), 'orderId' => $order->id]) }}" method="POST"
                                       onsubmit="return confirm('Are you sure you want to cancel this order?')">
