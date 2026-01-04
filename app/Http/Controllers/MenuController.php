@@ -11,7 +11,9 @@ class MenuController extends Controller
 {
     public function menu(Request $request)
     {
-        $query = Menu::with('type')->withAvg('reviews', 'rating');
+        $query = Menu::with('type')
+            ->withAvg('reviews', 'rating')
+            ->where('status_id', 1); // Only show available menus (tersedia)
 
         if ($request->has('category') && $request->category != 'all') {
             if ($request->category == 'favorite') {
@@ -91,6 +93,11 @@ class MenuController extends Controller
         }
 
         $menu = Menu::with(['type', 'reviews.user'])->withAvg('reviews', 'rating')->findOrFail($id);
+
+        // Check if menu is available
+        if ($menu->status_id != 1) {
+            return redirect()->route('menu')->with('error', 'Menu tidak tersedia saat ini.');
+        }
 
         // Check if menu is favorited (only if user is logged in)
         $menu->is_favorited = Auth::check() && Favorite::where('user_id', Auth::id())
