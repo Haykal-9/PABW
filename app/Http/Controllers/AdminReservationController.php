@@ -36,7 +36,6 @@ class AdminReservationController extends Controller
         $deleted = reservasi::destroy($id);
 
         if ($deleted) {
-            \Log::info('Reservasi ' . ($reservation->kode_reservasi ?? 'ID ' . $id) . ' dihapus oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
             return response()->noContent();
         }
     }

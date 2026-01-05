@@ -48,8 +48,6 @@ class AdminMenuController extends Controller
         ];
 
         menu::create($menuData);
-
-        \Log::info('Menu ditambahkan oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
         
         return Redirect::route('admin.menu')->with('success', 'Menu berhasil ditambahkan oleh ' . Auth::user()->nama . '.');
     }
@@ -84,8 +82,6 @@ class AdminMenuController extends Controller
         ];
 
         $menu->update($menuData);
-
-        \Log::info('Menu ' . $request->nama . ' diperbarui oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
         
         return Redirect::route('admin.menu')->with('success', 'Menu ' . $request->nama . ' berhasil diperbarui.');
     }
@@ -103,7 +99,6 @@ class AdminMenuController extends Controller
         $deleted = menu::destroy($id);
 
         if ($deleted) {
-            \Log::info('Menu ID ' . $id . ' dihapus oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
             return response()->noContent();
         }
     }

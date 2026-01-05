@@ -13,6 +13,8 @@ class AdminNotificationController extends Controller
         $query = Notification::orderBy('created_at', 'desc');
         if ($filter === 'unread') {
             $query->where('is_read', false);
+
+            
         } elseif ($filter === 'read') {
             $query->where('is_read', true);
         }

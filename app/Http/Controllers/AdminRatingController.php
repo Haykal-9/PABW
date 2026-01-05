@@ -42,7 +42,6 @@ class AdminRatingController extends Controller
         $deleted = review::destroy($id);
 
         if ($deleted) {
-            \Log::info('Rating ID ' . $id . ' dihapus oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
             return response()->noContent();
         }
     }

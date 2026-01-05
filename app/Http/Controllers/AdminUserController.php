@@ -66,8 +66,6 @@ class AdminUserController extends Controller
             'alamat' => $validated['alamat'] ?? null,
             'profile_picture' => $profilePath,
         ]);
-
-        \Log::info('User baru ditambahkan oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
         
         return redirect()->route('admin.users')->with('success', 'User berhasil ditambahkan!');
     }
@@ -83,7 +81,6 @@ class AdminUserController extends Controller
         $deleted = User::destroy($id);
 
         if ($deleted) {
-            \Log::info('User ' . ($user->nama ?? 'ID ' . $id) . ' dihapus oleh ' . Auth::user()->nama . ' (ID: ' . Auth::id() . ')');
             return response()->noContent();
         }
     }
