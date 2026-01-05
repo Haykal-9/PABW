@@ -61,7 +61,7 @@
 
 {{-- Statistik Ringkas Penjualan --}}
 <div class="row g-4 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card border-0 shadow-sm p-3">
             <div class="d-flex align-items-center">
                 <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary me-3">
@@ -69,36 +69,51 @@
                 </div>
                 <div>
                     <small class="text-muted fw-bold d-block">TOTAL TRANSAKSI</small>
-                    <h5 class="mb-0 fw-bold">{{ $orders->count() }} Pesanan</h5>
+                    <h5 class="mb-0 fw-bold">{{ $orders->count() }}</h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm p-3">
-            <div class="d-flex align-items-center">
-                <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success me-3">
-                    <i class="fas fa-check-double fa-lg"></i>
-                </div>
-                <div>
-                    <small class="text-muted fw-bold d-block">PEMBAYARAN SELESAI</small>
-                    <h5 class="mb-0 fw-bold">
-                        {{ $orders->where('status_pembayaran', 'Sudah Bayar')->count() }} Pesanan
-                    </h5>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card border-0 shadow-sm p-3">
             <div class="d-flex align-items-center">
                 <div class="bg-warning bg-opacity-10 p-3 rounded-circle text-warning me-3">
                     <i class="fas fa-clock fa-lg"></i>
                 </div>
                 <div>
-                    <small class="text-muted fw-bold d-block">MENUNGGU PEMBAYARAN</small>
+                    <small class="text-muted fw-bold d-block">MENUNGGU</small>
                     <h5 class="mb-0 fw-bold">
-                        {{ $orders->where('status_pembayaran', 'Belum Bayar')->count() }} Pesanan
+                        {{ $orders->where('status', 'pending')->count() }}
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-info bg-opacity-10 p-3 rounded-circle text-info me-3">
+                    <i class="fas fa-spinner fa-lg"></i>
+                </div>
+                <div>
+                    <small class="text-muted fw-bold d-block">DIPROSES</small>
+                    <h5 class="mb-0 fw-bold">
+                        {{ $orders->where('status', 'processing')->count() }}
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success me-3">
+                    <i class="fas fa-check-double fa-lg"></i>
+                </div>
+                <div>
+                    <small class="text-muted fw-bold d-block">SELESAI</small>
+                    <h5 class="mb-0 fw-bold">
+                        {{ $orders->where('status', 'completed')->count() }}
                     </h5>
                 </div>
             </div>
@@ -139,13 +154,25 @@
                         </span>
                     </td>
                     <td>
-                        @if(strtolower($order['status']) == 'sudah bayar' || strtolower($order['status']) == 'selesai' || strtolower($order['status']) == 'completed')
+                        @if(strtolower($order['status']) == 'completed')
                             <span class="badge bg-success-subtle text-success border border-success px-3 py-2">
                                 <i class="fas fa-check-circle me-1"></i> Selesai
                             </span>
-                        @else
+                        @elseif(strtolower($order['status']) == 'processing')
+                            <span class="badge bg-info-subtle text-info border border-info px-3 py-2">
+                                <i class="fas fa-spinner me-1"></i> Diproses
+                            </span>
+                        @elseif(strtolower($order['status']) == 'pending')
                             <span class="badge bg-warning-subtle text-warning border border-warning px-3 py-2">
-                                <i class="fas fa-exclamation-circle me-1"></i> Menunggu
+                                <i class="fas fa-clock me-1"></i> Menunggu
+                            </span>
+                        @elseif(strtolower($order['status']) == 'cancelled')
+                            <span class="badge bg-danger-subtle text-danger border border-danger px-3 py-2">
+                                <i class="fas fa-times-circle me-1"></i> Dibatalkan
+                            </span>
+                        @else
+                            <span class="badge bg-secondary-subtle text-secondary border border-secondary px-3 py-2">
+                                <i class="fas fa-question-circle me-1"></i> {{ ucfirst($order['status']) }}
                             </span>
                         @endif
                     </td>

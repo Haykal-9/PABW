@@ -16,37 +16,35 @@ class AdminDashboardController extends Controller
         $adminName = Auth::user()->nama;
         $today = Carbon::today();
 
-        $totalPendapatan = detailPembayaran::selectRaw('SUM(quantity * price_per_item) as total')
+        $totalPendapatan = detailPembayaran::whereHas('pembayaran', function ($query) {
+            $query->where('status_id', 1); // Only completed transactions
+        })
+            ->selectRaw('SUM(quantity * price_per_item) as total')
             ->value('total') ?? 0;
 
         $pendapatanHariIni = detailPembayaran::whereHas('pembayaran', function ($query) use ($today) {
-            $query->whereDate('order_date', $today);
+            $query->whereDate('order_date', $today)
+                  ->where('status_id', 1); // Only completed transactions
         })
             ->selectRaw('SUM(quantity * price_per_item) as total')  
             ->value('total') ?? 0;
 
         $menuTerjualHariIni = detailPembayaran::whereHas('pembayaran', function ($query) use ($today) {
-            $query->whereDate('order_date', $today);
+            $query->whereDate('order_date', $today)
+                  ->where('status_id', 1); // Only completed transactions
         })->sum('quantity') ?? 0;
 
         $reservasiTerlaksana = reservasi::where('status_id', 2)->count() ?? 0;
 
-        // Ambil data penjualan per menu (top menu)
-        $menuSales = detailPembayaran::selectRaw('menu_id, SUM(quantity) as total_order')
+        // Ambil data penjualan per menu (top menu) - only completed orders
+        $menuSales = detailPembayaran::whereHas('pembayaran', function ($query) {
+            $query->where('status_id', 1); // Only completed transactions
+        })
+            ->selectRaw('menu_id, SUM(quantity) as total_order')
             ->groupBy('menu_id')
             ->orderByDesc('total_order')
             ->with('menu')
             ->get();
-
-        // Ambil data pendapatan per hari untuk grafik bulanan
-        $year = request('year') ?? date('Y');
-        $monthlyIncome = [];
-        for ($month = 1; $month <= 12; $month++) {
-            $monthlyIncome[$month] = detailPembayaran::whereHas('pembayaran', function($query) use ($year, $month) {
-                $query->whereYear('order_date', $year)
-                      ->whereMonth('order_date', $month);
-            })->selectRaw('SUM(quantity * price_per_item) as total')->value('total') ?? 0;
-        }
 
         $data = [
             'pendapatanHariIni' => $pendapatanHariIni,
@@ -56,6 +54,6 @@ class AdminDashboardController extends Controller
             'adminName' => $adminName,
         ];
 
-        return view('admin.dashboard', compact('data', 'menuSales', 'monthlyIncome', 'year'));
+        return view('admin.dashboard', compact('data', 'menuSales'));
     }
 }

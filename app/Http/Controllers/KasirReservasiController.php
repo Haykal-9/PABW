@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\reservasi;
+use App\Models\Notification;
 
 class KasirReservasiController extends Controller
 {
@@ -50,6 +51,16 @@ class KasirReservasiController extends Controller
             $reservasi = reservasi::findOrFail($id);
             $reservasi->status_id = 2;
             $reservasi->save();
+
+            // Buat notifikasi untuk customer
+            Notification::create([
+                'user_id' => $reservasi->user_id,
+                'type' => 'reservation_confirmed',
+                'title' => 'Reservasi Dikonfirmasi',
+                'message' => 'Reservasi Anda dengan kode ' . $reservasi->kode_reservasi . ' telah dikonfirmasi. Silakan datang tepat waktu.',
+                'link' => '/reservations/' . $reservasi->id,
+                'is_read' => false
+            ]);
 
             return redirect()->route('kasir.reservasi')
                 ->with('success', 'Reservasi berhasil dikonfirmasi!');

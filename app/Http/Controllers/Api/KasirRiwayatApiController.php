@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\pembayaran;
 use App\Models\paymentStatus;
+use App\Models\Notification;
 
 class KasirRiwayatApiController extends Controller
 {
@@ -308,10 +309,44 @@ class KasirRiwayatApiController extends Controller
                 ], 404);
             }
 
+            $oldStatusId = $pesanan->status_id;
             $pesanan->status_id = $request->status_id;
             $pesanan->save();
 
             $pesanan->load('status');
+
+            // Buat notifikasi untuk customer jika status berubah ke completed atau cancelled
+            if ($oldStatusId != $request->status_id) {
+                $notifType = '';
+                $notifTitle = '';
+                $notifMessage = '';
+                $invoiceNumber = 'INV-' . str_pad($pesanan->id, 4, '0', STR_PAD_LEFT);
+
+                if ($request->status_id == 1) { // completed
+                    $notifType = 'order_completed';
+                    $notifTitle = 'Pesanan Selesai';
+                    $notifMessage = 'Pesanan Anda dengan invoice #' . $invoiceNumber . ' telah selesai diproses.';
+                } elseif ($request->status_id == 3) { // cancelled
+                    $notifType = 'order_cancelled';
+                    $notifTitle = 'Pesanan Dibatalkan';
+                    $notifMessage = 'Pesanan Anda dengan invoice #' . $invoiceNumber . ' telah dibatalkan.';
+                } elseif ($request->status_id == 2) { // pending
+                    $notifType = 'order_pending';
+                    $notifTitle = 'Pesanan Dalam Proses';
+                    $notifMessage = 'Pesanan Anda dengan invoice #' . $invoiceNumber . ' sedang diproses.';
+                }
+
+                if ($notifType) {
+                    Notification::create([
+                        'user_id' => $pesanan->user_id,
+                        'type' => $notifType,
+                        'title' => $notifTitle,
+                        'message' => $notifMessage,
+                        'link' => '/profile/order/' . $pesanan->user_id . '/' . $pesanan->id,
+                        'is_read' => false
+                    ]);
+                }
+            }
 
             return response()->json([
                 'success' => true,

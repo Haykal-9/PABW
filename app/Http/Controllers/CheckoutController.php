@@ -9,6 +9,7 @@ use App\Models\Pembayaran;
 use App\Models\DetailPembayaran;
 use App\Models\Menu;
 use App\Models\User;
+use App\Models\Notification;
 
 class CheckoutController extends Controller
 {
@@ -84,6 +85,16 @@ class CheckoutController extends Controller
                 'item_notes' => $request->notes[$id] ?? null,
             ]);
         }
+
+        // Buat notifikasi untuk customer
+        Notification::create([
+            'user_id' => $user->id,
+            'type' => 'order_pending',
+            'title' => 'Pesanan Dibuat',
+            'message' => 'Pesanan Anda dengan invoice #INV-' . str_pad($order->id, 4, '0', STR_PAD_LEFT) . ' sedang diproses.',
+            'link' => '/profile/order/' . $user->id . '/' . $order->id,
+            'is_read' => false
+        ]);
 
         session()->forget('cart');
 
