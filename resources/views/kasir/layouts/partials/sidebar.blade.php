@@ -80,12 +80,12 @@
         <li class="nav-item"><a href="{{ route('kasir.reservasi') }}"
                 class="nav-link @if($activePage == 'reservasi') active @endif" title="Reservasi"><i
                     class="bi bi-calendar-check"></i></a></li>
+        <li class="nav-item"><a href="{{ route('kasir.riwayat-reservasi') }}"
+                class="nav-link @if($activePage == 'riwayat-reservasi') active @endif" title="Riwayat Reservasi"><i
+                    class="bi bi-calendar2-check"></i></a></li>
         <li class="nav-item"><a href="{{ route('kasir.riwayat') }}"
                 class="nav-link @if($activePage == 'riwayat') active @endif" title="Riwayat"><i
                     class="bi bi-clock-history"></i></a></li>
-        <li class="nav-item"><a href="{{ route('kasir.notif') }}"
-                class="nav-link @if($activePage == 'notifikasi') active @endif" title="Notifikasi"><i
-                    class="bi bi-bell-fill"></i></a></li>
     </ul>
     <a href="{{ route('kasir.profile') }}" class="nav-link profile-link" title="Profile"><i
             class="bi bi-person-circle"></i></a>

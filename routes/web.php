@@ -15,7 +15,6 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\KasirRiwayatController;
 use App\Http\Controllers\KasirReservasiController;
-use App\Http\Controllers\KasirNotifikasiController;
 use App\Http\Controllers\KasirProfileController;
 use App\Http\Controllers\KasirMenuController;
 use App\Http\Controllers\KasirPesananController;
@@ -93,7 +92,7 @@ Route::middleware(['auth'])->group(function () {
 use App\Http\Controllers\AdminTargetController;
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    
+
     // --- ROUTES CRUD MENU ---
     Route::get('/admin/menu', [AdminMenuController::class, 'index'])->name('admin.menu');
     Route::post('/admin/menu', [AdminMenuController::class, 'store'])->name('admin.menu.store');
@@ -131,6 +130,8 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::get('/kasir/kasir', [KasirController::class, 'index'])->name('kasir.index');
     Route::post('/kasir/process-payment', [KasirController::class, 'processPayment'])->name('kasir.processPayment');
     Route::get('/kasir/riwayat', [KasirRiwayatController::class, 'index'])->name('kasir.riwayat');
+    Route::get('/kasir/riwayat-reservasi', [KasirRiwayatController::class, 'riwayatReservasi'])->name('kasir.riwayat-reservasi');
+    Route::patch('/kasir/riwayat-reservasi/{id}/update-status', [KasirRiwayatController::class, 'updateStatusReservasi'])->name('kasir.riwayat-reservasi.update-status');
 
     // Reservasi Management (KasirReservasiController)
     Route::get('/kasir/reservasi', [KasirReservasiController::class, 'index'])->name('kasir.reservasi');
@@ -143,9 +144,6 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::patch('/kasir/pesanan/{id}/approve', [KasirPesananController::class, 'approve'])->name('kasir.pesanan.approve');
     Route::post('/kasir/pesanan/{id}/reject', [KasirPesananController::class, 'reject'])->name('kasir.pesanan.reject');
     Route::patch('/kasir/pesanan/{id}/complete', [KasirPesananController::class, 'complete'])->name('kasir.pesanan.complete');
-
-    // Notifikasi (KasirNotifikasiController)
-    Route::get('/kasir/notifikasi', [KasirNotifikasiController::class, 'index'])->name('kasir.notif');
 
     // Profile (KasirProfileController)
     Route::get('/kasir/profile', [KasirProfileController::class, 'index'])->name('kasir.profile');

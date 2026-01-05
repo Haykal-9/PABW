@@ -237,7 +237,7 @@
                             <i class="bi bi-receipt"></i>
                         </div>
                         <div>
-                            <p class="info-card-title">Total Transaksi Yang di Selesaikan</p>
+                            <p class="info-card-title">Transaksi Selesai Hari Ini</p>
                             <h3 class="info-card-value">{{ $user['total_transaksi'] }}</h3>
                         </div>
                     </div>

@@ -20,7 +20,9 @@ class KasirProfileController extends Controller
             return redirect()->route('kasir.index')->with('error', 'User tidak ditemukan.');
         }
 
-        $totalTransaksi = pembayaran::where('user_id', $userData->id)->count();
+        $totalTransaksi = pembayaran::where('status_id', 1) // status completed
+            ->whereDate('order_date', \Carbon\Carbon::today())
+            ->count();
 
         $user = [
             'id' => $userData->id,
