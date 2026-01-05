@@ -37,9 +37,9 @@ class AuthController extends Controller
             'profile_picture' => $nama_file,
         ]);
 
-        // Buat notifikasi untuk admin jika ada user baru
+        
         \App\Models\Notification::create([
-            'user_id' => 1, // diasumsikan admin utama id=1
+            'user_id' => 1, 
             'type' => 'user_registered',
             'title' => 'User Baru Terdaftar',
             'message' => 'User baru dengan nama ' . $user->nama . ' telah mendaftar.',

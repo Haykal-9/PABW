@@ -80,14 +80,26 @@ class KasirReservasiController extends Controller
             $reservasi->status_id = 3;
             $reservasi->save();
 
+            $alasan = '';
             if ($request->has('alasan')) {
+                $alasan = $request->alasan;
                 \DB::table('reservasi_ditolak')->insert([
                     'reservation_id' => $id,
-                    'alasan_ditolak' => $request->alasan,
+                    'alasan_ditolak' => $alasan,
                     'ditolak_oleh' => Auth::user()->nama,
                     'cancelled_at' => now(),
                 ]);
             }
+
+            // Buat notifikasi untuk customer
+            Notification::create([
+                'user_id' => $reservasi->user_id,
+                'type' => 'reservation_cancelled',
+                'title' => 'Reservasi Dibatalkan',
+                'message' => 'Maaf, reservasi Anda dengan kode ' . $reservasi->kode_reservasi . ' telah dibatalkan.' . ($alasan ? ' Alasan: ' . $alasan : ''),
+                'link' => '/reservations/' . $reservasi->id,
+                'is_read' => false
+            ]);
 
             return redirect()->route('kasir.reservasi')
                 ->with('success', 'Reservasi berhasil ditolak!');

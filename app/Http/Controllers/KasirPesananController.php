@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\pembayaran;
+use App\Models\Notification;
 
 class KasirPesananController extends Controller
 {
@@ -73,6 +74,16 @@ class KasirPesananController extends Controller
             $pesanan->status_id = 4; // processing
             $pesanan->save();
 
+            // Kirim notifikasi ke customer
+            Notification::create([
+                'user_id' => $pesanan->user_id,
+                'type' => 'order_processing',
+                'title' => 'Pesanan Sedang Diproses',
+                'message' => 'Pesanan Anda dengan invoice #INV-' . str_pad($pesanan->id, 4, '0', STR_PAD_LEFT) . ' sedang diproses oleh kasir.',
+                'link' => '/profile/order/' . $pesanan->user_id . '/' . $pesanan->id,
+                'is_read' => false
+            ]);
+
             return redirect()->route('kasir.pesanan')
                 ->with('success', 'Pesanan berhasil diterima dan sedang diproses!');
         } catch (\Exception $e) {
@@ -90,6 +101,16 @@ class KasirPesananController extends Controller
             $pesanan = pembayaran::findOrFail($id);
             $pesanan->status_id = 3; // cancelled
             $pesanan->save();
+
+            // Kirim notifikasi ke customer
+            Notification::create([
+                'user_id' => $pesanan->user_id,
+                'type' => 'order_cancelled',
+                'title' => 'Pesanan Dibatalkan',
+                'message' => 'Pesanan Anda dengan invoice #INV-' . str_pad($pesanan->id, 4, '0', STR_PAD_LEFT) . ' telah dibatalkan. Silakan hubungi kasir untuk informasi lebih lanjut.',
+                'link' => '/profile/order/' . $pesanan->user_id . '/' . $pesanan->id,
+                'is_read' => false
+            ]);
 
             // Note: Alasan penolakan tidak disimpan karena tabel belum ada
             // Jika ingin menyimpan alasan, buat tabel pesanan_ditolak terlebih dahulu
@@ -111,6 +132,16 @@ class KasirPesananController extends Controller
             $pesanan = pembayaran::findOrFail($id);
             $pesanan->status_id = 1; // completed
             $pesanan->save();
+
+            // Kirim notifikasi ke customer
+            Notification::create([
+                'user_id' => $pesanan->user_id,
+                'type' => 'order_completed',
+                'title' => 'Pesanan Selesai',
+                'message' => 'Pesanan Anda dengan invoice #INV-' . str_pad($pesanan->id, 4, '0', STR_PAD_LEFT) . ' telah selesai. Selamat menikmati!',
+                'link' => '/profile/order/' . $pesanan->user_id . '/' . $pesanan->id,
+                'is_read' => false
+            ]);
 
             return redirect()->back()
                 ->with('success', 'Pesanan berhasil diselesaikan!');
